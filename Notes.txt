@@ -1,0 +1,48 @@
+1. Try to come up with a structure (text, buttons, drop down menu)
+2. Javascript game description.
+   a) Using this HTML Javascript page, add a javascipt game that gives 
+    the user a textbox to type words that are prompted by the game 
+    and when the user hits return their accuracy score is shown and 
+    the user is given the next word. For now, set 10 words in the array 
+    in the javascipt later we will use a database.  
+   b) If a person gets more than 70 percent, move to level two where we play
+   the same game where instead we have an array of small sentences
+   c) Cut back the two arrays to only 3 words and 3 sentences for testing. 
+   d) Add start level two button 
+   e) show the accuracy for both levels 
+      individually
+   f) For the first level, capitalization is not important but for level two
+      it is for the matching.
+   g) BUG: it should clear your score once you click "restart game"
+   h) For testing, put checkboxes that when checked the user has completed those
+      levels with 100 percent accuracy. We do not want to have to test the lower
+      levels as we test the higher levels.
+   i) For level 3, we want to have some kind of javascript animation that 
+      takes the array of words (3) and one by one they move across the screen
+      slowly and the user has to type them in the box. The word will keep looping
+      until the user types something in the box.
+   j) BUG 1: When we check level 2 checkbox, it should give us the option to start  
+      level 3 and level 2 has a 100 percent accuracy. 
+      BUG 2: The word that is moving is hidden behind the text box, it should  
+      be visible 
+      BUG 3: The textbox should be cleared from the input from previous games
+      BUG 4: Dsiplay level 3 accuracy score along with level 1 and 2 at the end
+      the game for level 3.
+   k) BUG 5: each level should tell me what level I am on.
+      BUG 6: I could see the words for game 3, but they were not moving.
+   l) the checkboxes are not working, remove them, and check the game to ensure 
+      that there are no issues
+   m) Create a box between the text that says "type the words as fast and accurately 
+      as you can" and the text box that you type the words in. Only show this box
+      in level 3, and have the word scrolling in the box for the user to type   
+      into the text box.
+   n) BUG: The words should not appear randomly, instead it should appear 
+      randomly in its position in the box.
+   o) BUG: Even when I type the correct word in game 3, it is not moving onto to the next 
+      word in the array.
+   p) BUG 1: It is no longer displaying the final score for level 3 at the end of 
+      the level.
+      BUG 2: Each time in level 3, make sure that the current word is at a new
+      position even if it is repeated. Try to have it so that no two consecutive 
+      words are starting in the same position.
+   q) BUG: 

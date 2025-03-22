@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        .word-box {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            height: 50px;
+        }
+        .scroll-box {
+            display: none;
+            width: 90%;
+            height: 200px;
+            margin: 20px auto;
+            background-color: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid #ff4500;
+        }
+        .moving-word {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            white-space: nowrap;
+            color: white;
+        }
+        input {
+            padding: 10px;
+            font-size: 18px;
+            width: 80%;
+            text-align: center;
+            border-radius: 5px;
+            border: none;
+            outline: none;
+            margin-top: 20px;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #ff4500;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background-color: #ff6347;
+        }
+        .score {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Typing Game</h1>
+        <p>Type the words as fast and accurately as you can!</p>
+
+        <div class="word-box" id="wordDisplay">Press a button to start a level</div>
+        
+        <div class="scroll-box" id="scrollBox">
+            <span class="moving-word" id="movingWord"></span>
+        </div>
+
+        <input type="text" id="wordInput" placeholder="Type here..." disabled>
+        <div class="score" id="scoreDisplay"></div>
+
+        <div class="button-container">
+            <button class="btn" id="startLevel1Button">Start Level 1</button>
+            <button class="btn" id="startLevel2Button">Start Level 2</button>
+            <button class="btn" id="startLevel3Button">Start Level 3</button>
+        </div>
+    </div>
+
+    <script>
+        const level1Words = ["javascript", "keyboard", "syntax"];
+        const level2Sentences = [
+            "JavaScript is a powerful language.",
+            "Debugging helps improve problem-solving.",
+            "Always test your code for errors."
+        ];
+        const level3Words = ["loop", "event", "callback"];
+
+        const wordInput = document.getElementById("wordInput");
+        const wordDisplay = document.getElementById("wordDisplay");
+        const scoreDisplay = document.getElementById("scoreDisplay");
+        const scrollBox = document.getElementById("scrollBox");
+        const movingWord = document.getElementById("movingWord");
+
+        let words = [];
+        let currentWordIndex = 0;
+        let correctCount = 0;
+        let totalWords = 0;
+        let level = 1;
+        let animationInterval;
+        let lastXPosition = -1;
+
+        function resetGame() {
+            correctCount = 0;
+            wordInput.value = "";
+            wordInput.disabled = true;
+            wordDisplay.textContent = "Press a button to start a level";
+            scoreDisplay.textContent = "";
+            scrollBox.style.display = "none";
+            clearInterval(animationInterval);
+        }
+
+        function startLevel(levelNumber) {
+            level = levelNumber;
+            words = level === 1 ? level1Words : level === 2 ? level2Sentences : level3Words;
+            totalWords = words.length;
+            correctCount = 0;
+            wordInput.value = "";
+            wordInput.disabled = false;
+            wordInput.focus();
+            currentWordIndex = 0;
+            showNextWord();
+        }
+
+        function showNextWord() {
+            if (currentWordIndex >= totalWords) {
+                scoreDisplay.textContent = `Level ${level} Complete! Accuracy: ${(correctCount / totalWords * 100).toFixed(2)}%`;
+                resetGame();
+                return;
+            }
+
+            if (level === 3) {
+                animateWord();
+            } else {
+                wordDisplay.textContent = `Level ${level}: ${words[currentWordIndex]}`;
+            }
+        }
+
+        function animateWord() {
+            clearInterval(animationInterval);
+            scrollBox.style.display = "block";
+            
+            let currentWord = words[currentWordIndex];
+            movingWord.textContent = currentWord;
+            
+            let randomX;
+            do {
+                randomX = Math.random() * (scrollBox.clientWidth - 50);
+            } while (Math.abs(randomX - lastXPosition) < 50); 
+            
+            lastXPosition = randomX;
+            movingWord.style.left = randomX + "px";
+            movingWord.style.top = "0px";
+            
+            let position = 0;
+            animationInterval = setInterval(() => {
+                position += 2;
+                movingWord.style.top = position + "px";
+                if (position > scrollBox.clientHeight) {
+                    clearInterval(animationInterval);
+                    position = 0;
+                }
+            }, 30);
+        }
+
+        wordInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                if (wordInput.value.trim() === words[currentWordIndex]) {
+                    clearInterval(animationInterval);
+                    correctCount++;
+                    currentWordIndex++;
+                    wordInput.value = "";
+                    showNextWord();
+                }
+            }
+        });
+
+        document.getElementById("startLevel1Button").addEventListener("click", () => startLevel(1));
+        document.getElementById("startLevel2Button").addEventListener("click", () => startLevel(2));
+        document.getElementById("startLevel3Button").addEventListener("click", () => startLevel(3));
+
+        resetGame();
+    </script>
+</body>
+</html>
