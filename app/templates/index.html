@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindMoves - Brain Training Games</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="{{ url_for('main.home') }}" class="logo">
+                    <i class="fas fa-brain logo-icon"></i>
+                    <span class="logo-text">MindMoves</span>
+                </a>
+                <div class="nav-links">
+                    <a href="{{ url_for('main.home') }}"><i class="fas fa-home"></i> Home</a>
+                    <a href="{{ url_for('main.about') }}"><i class="fas fa-info-circle"></i> About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Train Your Brain, One Move at a Time</h1>
+                <p>Challenge your mind with our collection of engaging brain training games. Improve your cognitive skills, reaction time, and mental agility while having fun!</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why Choose MindMoves?</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Track Progress</h3>
+                    <p>Monitor your improvement over time with detailed performance metrics</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3>Daily Challenges</h3>
+                    <p>New challenges every day to keep your mind sharp and engaged</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Community</h3>
+                    <p>Compete with others and share your achievements</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="games-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Games</h2>
+            </div>
+            <div class="games-grid">
+                <div class="game-card">
+                    <div class="game-image">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="game-content">
+                        <h3>Speed Game</h3>
+                        <p>Test your reaction time and quick thinking in this fast-paced challenge. How quickly can you respond to changing patterns?</p>
+                        <a href="{{ url_for('main.speed') }}" class="play-button">Play Now</a>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-image">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <div class="game-content">
+                        <h3>Precision Game</h3>
+                        <p>Focus on accuracy and attention to detail. Perfect your precision in this challenging game that tests your spatial awareness.</p>
+                        <a href="{{ url_for('main.precision') }}" class="play-button">Play Now</a>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-image">
+                        <i class="fas fa-hand-pointer"></i>
+                    </div>
+                    <div class="game-content">
+                        <h3>Dexterity Game</h3>
+                        <p>Put your hand-eye coordination to the test. Master complex movements and improve your motor skills in this engaging challenge.</p>
+                        <a href="{{ url_for('main.dexterity') }}" class="play-button">Play Now</a>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-image">
+                        <i class="fas fa-keyboard"></i>
+                    </div>
+                    <div class="game-content">
+                        <h3>Typing Game</h3>
+                        <p>Improve your typing speed and accuracy. Challenge yourself to type faster and more accurately with our dynamic typing exercises.</p>
+                        <a href="{{ url_for('main.typing') }}" class="play-button">Play Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
+
+

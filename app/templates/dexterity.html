@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dexterity Game - MindMoves</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="{{ url_for('main.home') }}" class="logo">
+                    <i class="fas fa-brain logo-icon"></i>
+                    <span class="logo-text">MindMoves</span>
+                </a>
+                <div class="nav-links">
+                    <a href="{{ url_for('main.home') }}"><i class="fas fa-home"></i> Home</a>
+                    <a href="{{ url_for('main.about') }}"><i class="fas fa-info-circle"></i> About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="typing-container">
+        <h1>Dexterity Challenge</h1>
+        <div class="game-card" style="transform: none; margin-bottom: 2rem;">
+            <div class="game-image">
+                <i class="fas fa-hand-pointer"></i>
+            </div>
+            <div class="game-content">
+                <h3>Test Your Hand-Eye Coordination</h3>
+                <p>Welcome to the Dexterity Game! This challenging exercise will help you improve your hand-eye coordination and fine motor skills. Complete various tasks that require precise movements and quick reactions.</p>
+                <a href="#" class="play-button" style="margin-top: 1rem;">Start Challenge</a>
+            </div>
+        </div>
+
+        <div class="features-grid" style="margin-top: 2rem;">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-mouse"></i>
+                </div>
+                <h3>Precision Control</h3>
+                <p>Master the art of precise mouse movements</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-tachometer-alt"></i>
+                </div>
+                <h3>Quick Reactions</h3>
+                <p>Improve your reaction time and accuracy</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Track Progress</h3>
+                <p>Monitor your improvement over time</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

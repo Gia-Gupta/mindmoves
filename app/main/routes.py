@@ -1,35 +1,30 @@
-from flask import Flask, render_template
+from flask import render_template
+from app.main import bp
 
-app = Flask(__name__)
-
-@app.route("/")
+@bp.route("/")
 def home():
     return render_template("index.html")
 
-@app.route("/about")
+@bp.route("/about")
 def about():
     return render_template("about.html")
 
-@app.route("/gameView")
+@bp.route("/gameView")
 def gameView():
     return render_template("gameView.html")
 
-@app.route("/typing")
+@bp.route("/typing")
 def typing():
     return render_template("typing.html")
 
-@app.route("/speed")
+@bp.route("/speed")
 def speed():
     return render_template("speed.html")
 
-@app.route("/dexterity")
+@bp.route("/dexterity")
 def dexterity():
     return render_template("dexterity.html")
 
-@app.route("/precision")
+@bp.route("/precision")
 def precision():
-    return render_template("precision.html")
-
-if __name__ == "__main__":
-    app.run(debug=True)
-
+    return render_template("precision.html") 

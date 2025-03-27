@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precision Game - MindMoves</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="{{ url_for('main.home') }}" class="logo">
+                    <i class="fas fa-brain logo-icon"></i>
+                    <span class="logo-text">MindMoves</span>
+                </a>
+                <div class="nav-links">
+                    <a href="{{ url_for('main.home') }}"><i class="fas fa-home"></i> Home</a>
+                    <a href="{{ url_for('main.about') }}"><i class="fas fa-info-circle"></i> About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="typing-container">
+        <h1>Precision Challenge</h1>
+        <div class="game-card" style="transform: none; margin-bottom: 2rem;">
+            <div class="game-image">
+                <i class="fas fa-bullseye"></i>
+            </div>
+            <div class="game-content">
+                <h3>Master Your Accuracy</h3>
+                <p>Welcome to the Precision Game! This challenging exercise will test and improve your ability to aim accurately and make precise movements. Hit targets with perfect timing and accuracy to achieve the highest score.</p>
+                <a href="#" class="play-button" style="margin-top: 1rem;">Start Challenge</a>
+            </div>
+        </div>
+
+        <div class="features-grid" style="margin-top: 2rem;">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-crosshairs"></i>
+                </div>
+                <h3>Perfect Aim</h3>
+                <p>Develop pinpoint accuracy skills</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3>Timing Mastery</h3>
+                <p>Learn to time your actions perfectly</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3>Score Points</h3>
+                <p>Earn points for perfect precision</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
