@@ -7,6 +7,104 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .game-container {
+            max-width: 800px;
+            margin: 8rem auto 4rem;
+            padding: 2rem;
+            background: var(--card-background);
+            border-radius: 1.5rem;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .game-area {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(244, 114, 182, 0.05));
+            border-radius: 1rem;
+            position: relative;
+            margin: 2rem 0;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        .cursor {
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            position: absolute;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
+            z-index: 1000;
+        }
+
+        .target {
+            position: absolute;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .target:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .timer {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 1rem 0;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1rem 0;
+            font-size: 1.2rem;
+        }
+
+        .stat-item {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(244, 114, 182, 0.1));
+            border-radius: 0.5rem;
+        }
+
+        .start-button {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 1rem 0;
+        }
+
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .start-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .level-indicator {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin: 1rem 0;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -24,42 +122,145 @@
         </div>
     </nav>
 
-    <div class="typing-container">
+    <div class="game-container">
         <h1>Dexterity Challenge</h1>
-        <div class="game-card" style="transform: none; margin-bottom: 2rem;">
-            <div class="game-image">
-                <i class="fas fa-hand-pointer"></i>
+        <p>Test your hand-eye coordination by clicking the circles!</p>
+
+        <div class="level-indicator" id="levelIndicator">Level 1</div>
+        
+        <div class="game-area" id="gameArea">
+            <div class="cursor" id="cursor"></div>
+        </div>
+        
+        <div class="timer" id="timer">Time: 30s</div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <i class="fas fa-bullseye"></i> Hits: <span id="hits">0</span>
             </div>
-            <div class="game-content">
-                <h3>Test Your Hand-Eye Coordination</h3>
-                <p>Welcome to the Dexterity Game! This challenging exercise will help you improve your hand-eye coordination and fine motor skills. Complete various tasks that require precise movements and quick reactions.</p>
-                <a href="#" class="play-button" style="margin-top: 1rem;">Start Challenge</a>
+            <div class="stat-item">
+                <i class="fas fa-times"></i> Misses: <span id="misses">0</span>
             </div>
         </div>
 
-        <div class="features-grid" style="margin-top: 2rem;">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-mouse"></i>
-                </div>
-                <h3>Precision Control</h3>
-                <p>Master the art of precise mouse movements</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-tachometer-alt"></i>
-                </div>
-                <h3>Quick Reactions</h3>
-                <p>Improve your reaction time and accuracy</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <h3>Track Progress</h3>
-                <p>Monitor your improvement over time</p>
-            </div>
-        </div>
+        <button class="start-button" id="startButton">Start Game</button>
     </div>
+
+    <script>
+        const gameArea = document.getElementById('gameArea');
+        const cursor = document.getElementById('cursor');
+        const timerDisplay = document.getElementById('timer');
+        const hitsDisplay = document.getElementById('hits');
+        const missesDisplay = document.getElementById('misses');
+        const startButton = document.getElementById('startButton');
+        const levelIndicator = document.getElementById('levelIndicator');
+
+        let hits = 0;
+        let misses = 0;
+        let timeLeft = 30;
+        let gameInterval;
+        let isGameRunning = false;
+        let currentLevel = 1;
+        let currentTarget = null;
+
+        function createTarget() {
+            // Clear any existing target
+            if (currentTarget) {
+                currentTarget.remove();
+            }
+
+            // Create new target
+            const target = document.createElement('div');
+            target.className = 'target';
+            
+            // Random size based on level
+            const size = Math.max(20, 40 - (currentLevel * 2));
+            target.style.width = `${size}px`;
+            target.style.height = `${size}px`;
+            
+            // Random position
+            const x = Math.random() * (gameArea.clientWidth - size);
+            const y = Math.random() * (gameArea.clientHeight - size);
+            target.style.left = `${x}px`;
+            target.style.top = `${y}px`;
+            
+            target.addEventListener('click', () => {
+                if (isGameRunning) {
+                    hits++;
+                    hitsDisplay.textContent = hits;
+                    target.remove();
+                    currentTarget = null;
+                    createTarget();
+                }
+            });
+            
+            gameArea.appendChild(target);
+            currentTarget = target;
+        }
+
+        function updateCursor(e) {
+            if (isGameRunning) {
+                const rect = gameArea.getBoundingClientRect();
+                cursor.style.left = `${e.clientX - rect.left}px`;
+                cursor.style.top = `${e.clientY - rect.top}px`;
+            }
+        }
+
+        function startGame() {
+            // Reset game state
+            hits = 0;
+            misses = 0;
+            timeLeft = 30;
+            currentLevel = 1;
+            hitsDisplay.textContent = '0';
+            missesDisplay.textContent = '0';
+            levelIndicator.textContent = 'Level 1';
+            startButton.disabled = true;
+            isGameRunning = true;
+            
+            // Clear any existing elements
+            gameArea.innerHTML = '';
+            gameArea.appendChild(cursor);
+            
+            // Create initial target
+            createTarget();
+            
+            // Start timer
+            gameInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = `Time: ${timeLeft}s`;
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            isGameRunning = false;
+            clearInterval(gameInterval);
+            startButton.disabled = false;
+            
+            // Clear any remaining elements
+            gameArea.innerHTML = '';
+            gameArea.appendChild(cursor);
+            
+            // Show final score
+            const accuracy = ((hits / (hits + misses)) * 100).toFixed(1);
+            timerDisplay.textContent = `Game Over! Accuracy: ${accuracy}%`;
+        }
+
+        // Event listeners
+        startButton.addEventListener('click', startGame);
+        gameArea.addEventListener('mousemove', updateCursor);
+        
+        // Track misses when clicking outside targets
+        gameArea.addEventListener('click', (e) => {
+            if (isGameRunning && currentTarget && !e.target.classList.contains('target')) {
+                misses++;
+                missesDisplay.textContent = misses;
+            }
+        });
+    </script>
 </body>
 </html>

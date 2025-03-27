@@ -7,6 +7,217 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .game-container {
+            max-width: 800px;
+            margin: 8rem auto 4rem;
+            padding: 2rem;
+            background: var(--card-background);
+            border-radius: 1.5rem;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .game-area {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(244, 114, 182, 0.05));
+            border-radius: 1rem;
+            position: relative;
+            margin: 2rem 0;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        .tunnel {
+            position: absolute;
+            background: rgba(124, 58, 237, 0.1);
+            border: 2px solid rgba(124, 58, 237, 0.3);
+            border-radius: 20px;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .tunnel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0) 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        .tunnel-start {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #4CAF50;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .tunnel-end {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #f44336;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .obstacle {
+            position: absolute;
+            background: rgba(244, 114, 182, 0.3);
+            border: 2px solid rgba(244, 114, 182, 0.5);
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .obstacle.circle {
+            border-radius: 50%;
+        }
+
+        .obstacle.square {
+            border-radius: 0;
+        }
+
+        .obstacle.triangle {
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .drawing-line {
+            position: absolute;
+            background: var(--primary-color);
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 1;
+            transition: all 0.1s ease;
+            box-shadow: 0 0 5px rgba(124, 58, 237, 0.5);
+        }
+
+        .line-trail {
+            position: absolute;
+            background: rgba(124, 58, 237, 0.3);
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 1;
+            box-shadow: 0 0 3px rgba(124, 58, 237, 0.3);
+        }
+
+        .success-line {
+            position: absolute;
+            background: #4CAF50;
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 1;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        .particle {
+            position: absolute;
+            background: #4CAF50;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+            animation: particle 0.5s ease-out forwards;
+        }
+
+        @keyframes particle {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .cursor {
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            position: absolute;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
+            z-index: 1000;
+            box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
+        }
+
+        .cursor.on-path {
+            background: #4CAF50;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+        }
+
+        .timer {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 1rem 0;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1rem 0;
+            font-size: 1.2rem;
+        }
+
+        .stat-item {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(244, 114, 182, 0.1));
+            border-radius: 0.5rem;
+        }
+
+        .start-button {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 1rem 0;
+        }
+
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .start-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .level-indicator {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin: 1rem 0;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -24,42 +235,452 @@
         </div>
     </nav>
 
-    <div class="typing-container">
+    <div class="game-container">
         <h1>Precision Challenge</h1>
-        <div class="game-card" style="transform: none; margin-bottom: 2rem;">
-            <div class="game-image">
-                <i class="fas fa-bullseye"></i>
+        <p>Draw a line through the tunnel while avoiding the obstacles!</p>
+
+        <div class="level-indicator" id="levelIndicator">Level 1</div>
+        
+        <div class="game-area" id="gameArea">
+            <div class="cursor" id="cursor"></div>
+        </div>
+        
+        <div class="timer" id="timer">Time: 30s</div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <i class="fas fa-check"></i> Success: <span id="success">0</span>
             </div>
-            <div class="game-content">
-                <h3>Master Your Accuracy</h3>
-                <p>Welcome to the Precision Game! This challenging exercise will test and improve your ability to aim accurately and make precise movements. Hit targets with perfect timing and accuracy to achieve the highest score.</p>
-                <a href="#" class="play-button" style="margin-top: 1rem;">Start Challenge</a>
+            <div class="stat-item">
+                <i class="fas fa-times"></i> Collisions: <span id="collisions">0</span>
             </div>
         </div>
 
-        <div class="features-grid" style="margin-top: 2rem;">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-crosshairs"></i>
-                </div>
-                <h3>Perfect Aim</h3>
-                <p>Develop pinpoint accuracy skills</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <h3>Timing Mastery</h3>
-                <p>Learn to time your actions perfectly</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-star"></i>
-                </div>
-                <h3>Score Points</h3>
-                <p>Earn points for perfect precision</p>
-            </div>
-        </div>
+        <button class="start-button" id="startButton">Start Game</button>
     </div>
+
+    <script>
+        const gameArea = document.getElementById('gameArea');
+        const cursor = document.getElementById('cursor');
+        const timerDisplay = document.getElementById('timer');
+        const successDisplay = document.getElementById('success');
+        const collisionsDisplay = document.getElementById('collisions');
+        const startButton = document.getElementById('startButton');
+        const levelIndicator = document.getElementById('levelIndicator');
+
+        let success = 0;
+        let collisions = 0;
+        let timeLeft = 30;
+        let gameInterval;
+        let isGameRunning = false;
+        let currentLevel = 1;
+        let isDrawing = false;
+        let drawingLine = null;
+        let startPoint = null;
+        let currentTunnel = null;
+        let obstacles = [];
+        let lineTrails = [];
+        let isInTunnel = false;
+        let hasExitedTunnel = false;
+        let tunnelSegments = [];
+        let tunnelStart = null;
+        let tunnelEnd = null;
+        let obstacleInterval = null;
+
+        function createTunnel() {
+            // Clear existing tunnel elements
+            if (currentTunnel) {
+                currentTunnel.remove();
+            }
+            tunnelSegments.forEach(seg => seg.remove());
+            tunnelSegments = [];
+            if (tunnelStart) tunnelStart.remove();
+            if (tunnelEnd) tunnelEnd.remove();
+
+            // Create tunnel path
+            const width = Math.max(40, 60 - (currentLevel * 2));
+            const height = 300;
+            const startX = 50;
+            const startY = (gameArea.clientHeight - height) / 2;
+            
+            // Create start point
+            tunnelStart = document.createElement('div');
+            tunnelStart.className = 'tunnel-start';
+            tunnelStart.style.left = `${startX}px`;
+            tunnelStart.style.top = `${startY + height/2}px`;
+            gameArea.appendChild(tunnelStart);
+
+            // Create tunnel segments with curves
+            const numSegments = 4;
+            let currentX = startX;
+            let currentY = startY + height/2;
+            
+            for (let i = 0; i < numSegments; i++) {
+                const segment = document.createElement('div');
+                segment.className = 'tunnel';
+                
+                // Calculate segment dimensions and position
+                const segmentWidth = width;
+                const segmentHeight = height / numSegments;
+                const angle = (i % 2 === 0 ? 1 : -1) * 30; // Alternate between up and down
+                
+                segment.style.width = `${segmentWidth}px`;
+                segment.style.height = `${segmentHeight}px`;
+                segment.style.left = `${currentX}px`;
+                segment.style.top = `${currentY}px`;
+                segment.style.transform = `rotate(${angle}deg)`;
+                segment.style.transformOrigin = '0 0';
+                
+                gameArea.appendChild(segment);
+                tunnelSegments.push(segment);
+                
+                // Update position for next segment
+                currentX += segmentWidth * Math.cos(angle * Math.PI / 180);
+                currentY += segmentHeight * Math.sin(angle * Math.PI / 180);
+            }
+
+            // Create end point
+            tunnelEnd = document.createElement('div');
+            tunnelEnd.className = 'tunnel-end';
+            tunnelEnd.style.left = `${currentX}px`;
+            tunnelEnd.style.top = `${currentY}px`;
+            gameArea.appendChild(tunnelEnd);
+
+            return { startX, startY, width, height, endX: currentX, endY: currentY };
+        }
+
+        function createObstacles(tunnel) {
+            // Clear existing obstacles
+            obstacles.forEach(obs => obs.remove());
+            obstacles = [];
+
+            // Create obstacles
+            const numObstacles = 3 + currentLevel;
+            for (let i = 0; i < numObstacles; i++) {
+                const obstacle = document.createElement('div');
+                const types = ['circle', 'square', 'triangle'];
+                const type = types[Math.floor(Math.random() * types.length)];
+                obstacle.className = `obstacle ${type}`;
+                
+                const size = 20 + Math.random() * 20;
+                obstacle.style.width = `${size}px`;
+                obstacle.style.height = `${size}px`;
+                
+                // Position obstacle near the tunnel
+                const x = tunnel.startX + Math.random() * (tunnel.width * 4);
+                const y = tunnel.startY + Math.random() * tunnel.height;
+                obstacle.style.left = `${x}px`;
+                obstacle.style.top = `${y}px`;
+                
+                gameArea.appendChild(obstacle);
+                obstacles.push(obstacle);
+            }
+
+            // Start obstacle movement
+            if (obstacleInterval) {
+                clearInterval(obstacleInterval);
+            }
+            obstacleInterval = setInterval(moveObstacles, 2000);
+        }
+
+        function moveObstacles() {
+            obstacles.forEach(obstacle => {
+                const currentX = parseFloat(obstacle.style.left);
+                const currentY = parseFloat(obstacle.style.top);
+                
+                // Move obstacle in a random direction
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 50;
+                const newX = currentX + Math.cos(angle) * distance;
+                const newY = currentY + Math.sin(angle) * distance;
+                
+                // Keep obstacles within game area
+                obstacle.style.left = `${Math.max(0, Math.min(newX, gameArea.clientWidth - 50))}px`;
+                obstacle.style.top = `${Math.max(0, Math.min(newY, gameArea.clientHeight - 50))}px`;
+                
+                // Rotate obstacle
+                const currentRotation = parseFloat(obstacle.style.transform.replace('rotate(', '').replace('deg)', '')) || 0;
+                obstacle.style.transform = `rotate(${currentRotation + 45}deg)`;
+            });
+        }
+
+        function createParticles(x, y, color) {
+            for (let i = 0; i < 10; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.background = color;
+                particle.style.width = '5px';
+                particle.style.height = '5px';
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                
+                const angle = (Math.PI * 2 / 10) * i;
+                const distance = 20;
+                const targetX = x + Math.cos(angle) * distance;
+                const targetY = y + Math.sin(angle) * distance;
+                
+                gameArea.appendChild(particle);
+                
+                // Animate particle
+                particle.animate([
+                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                    { transform: `translate(${targetX - x}px, ${targetY - y}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 500,
+                    easing: 'ease-out'
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        function createDrawingLine(startX, startY) {
+            if (drawingLine) {
+                drawingLine.remove();
+            }
+
+            const line = document.createElement('div');
+            line.className = 'drawing-line';
+            line.style.width = '2px';
+            line.style.height = '0';
+            line.style.left = `${startX}px`;
+            line.style.top = `${startY}px`;
+            
+            gameArea.appendChild(line);
+            drawingLine = line;
+            return line;
+        }
+
+        function createLineTrail(x, y, angle, length) {
+            const trail = document.createElement('div');
+            trail.className = 'line-trail';
+            trail.style.width = `${length}px`;
+            trail.style.height = '2px';
+            trail.style.left = `${x}px`;
+            trail.style.top = `${y}px`;
+            trail.style.transform = `rotate(${angle}deg)`;
+            trail.style.transformOrigin = '0 0';
+            
+            gameArea.appendChild(trail);
+            lineTrails.push(trail);
+            
+            // Remove trail after animation
+            setTimeout(() => {
+                trail.style.opacity = '0';
+                setTimeout(() => {
+                    trail.remove();
+                    lineTrails = lineTrails.filter(t => t !== trail);
+                }, 300);
+            }, 500);
+        }
+
+        function checkTunnelCollision(x, y) {
+            return tunnelSegments.some(segment => {
+                const rect = segment.getBoundingClientRect();
+                const gameRect = gameArea.getBoundingClientRect();
+                
+                return x >= rect.left - gameRect.left && 
+                       x <= rect.right - gameRect.left &&
+                       y >= rect.top - gameRect.top && 
+                       y <= rect.bottom - gameRect.top;
+            });
+        }
+
+        function updateDrawingLine(e) {
+            if (isDrawing && drawingLine) {
+                const rect = gameArea.getBoundingClientRect();
+                const currentX = e.clientX - rect.left;
+                const currentY = e.clientY - rect.top;
+                
+                const length = Math.sqrt(
+                    Math.pow(currentX - startPoint.x, 2) + 
+                    Math.pow(currentY - startPoint.y, 2)
+                );
+                const angle = Math.atan2(currentY - startPoint.y, currentX - startPoint.x) * 180 / Math.PI;
+                
+                drawingLine.style.width = `${length}px`;
+                drawingLine.style.transform = `rotate(${angle}deg)`;
+                drawingLine.style.transformOrigin = '0 0';
+                
+                // Create trail effect
+                createLineTrail(startPoint.x, startPoint.y, angle, length);
+                
+                // Check if we're in the tunnel
+                const wasInTunnel = isInTunnel;
+                isInTunnel = checkTunnelCollision(currentX, currentY);
+                
+                // If we were in the tunnel and now we're out, mark as exited
+                if (wasInTunnel && !isInTunnel) {
+                    hasExitedTunnel = true;
+                }
+                
+                // Check for collisions with obstacles
+                checkCollisions(currentX, currentY);
+            }
+        }
+
+        function checkCollisions(x, y) {
+            obstacles.forEach(obstacle => {
+                const rect = obstacle.getBoundingClientRect();
+                const gameRect = gameArea.getBoundingClientRect();
+                
+                if (x >= rect.left - gameRect.left && 
+                    x <= rect.right - gameRect.left &&
+                    y >= rect.top - gameRect.top && 
+                    y <= rect.bottom - gameRect.top) {
+                    collisions++;
+                    collisionsDisplay.textContent = collisions;
+                    endGame();
+                }
+            });
+        }
+
+        function updateCursor(e) {
+            if (isGameRunning) {
+                const rect = gameArea.getBoundingClientRect();
+                cursor.style.left = `${e.clientX - rect.left}px`;
+                cursor.style.top = `${e.clientY - rect.top}px`;
+            }
+        }
+
+        function createSuccessLine(startX, startY, endX, endY) {
+            const line = document.createElement('div');
+            line.className = 'success-line';
+            
+            const length = Math.sqrt(
+                Math.pow(endX - startX, 2) + 
+                Math.pow(endY - startY, 2)
+            );
+            const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+            
+            line.style.width = `${length}px`;
+            line.style.height = '2px';
+            line.style.left = `${startX}px`;
+            line.style.top = `${startY}px`;
+            line.style.transform = `rotate(${angle}deg)`;
+            line.style.transformOrigin = '0 0';
+            
+            gameArea.appendChild(line);
+            
+            // Remove success line after animation
+            setTimeout(() => {
+                line.style.opacity = '0';
+                setTimeout(() => line.remove(), 300);
+            }, 1000);
+        }
+
+        function endDrawing(e) {
+            if (isDrawing) {
+                const rect = gameArea.getBoundingClientRect();
+                const endX = e.clientX - rect.left;
+                const endY = e.clientY - rect.top;
+                
+                isDrawing = false;
+                if (drawingLine) {
+                    drawingLine.remove();
+                    drawingLine = null;
+                }
+                
+                // Check if we successfully drew through the tunnel
+                if (isInTunnel && hasExitedTunnel) {
+                    success++;
+                    successDisplay.textContent = success;
+                    createSuccessLine(startPoint.x, startPoint.y, endX, endY);
+                    createParticles(endX, endY, '#4CAF50');
+                    
+                    // Level up if successful
+                    if (success % 3 === 0) {
+                        currentLevel++;
+                        levelIndicator.textContent = `Level ${currentLevel}`;
+                        const tunnel = createTunnel();
+                        createObstacles(tunnel);
+                    }
+                } else {
+                    createParticles(endX, endY, '#f44336');
+                }
+                
+                // Reset tunnel state
+                isInTunnel = false;
+                hasExitedTunnel = false;
+            }
+        }
+
+        function startGame() {
+            // Reset game state
+            success = 0;
+            collisions = 0;
+            timeLeft = 30;
+            currentLevel = 1;
+            successDisplay.textContent = '0';
+            collisionsDisplay.textContent = '0';
+            levelIndicator.textContent = 'Level 1';
+            startButton.disabled = true;
+            isGameRunning = true;
+            isDrawing = false;
+            isInTunnel = false;
+            hasExitedTunnel = false;
+            
+            // Clear any existing elements
+            gameArea.innerHTML = '';
+            gameArea.appendChild(cursor);
+            
+            // Clear any existing trails
+            lineTrails.forEach(trail => trail.remove());
+            lineTrails = [];
+            
+            // Create initial tunnel and obstacles
+            const tunnel = createTunnel();
+            createObstacles(tunnel);
+            
+            // Start timer
+            gameInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = `Time: ${timeLeft}s`;
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            isGameRunning = false;
+            clearInterval(gameInterval);
+            if (obstacleInterval) {
+                clearInterval(obstacleInterval);
+            }
+            startButton.disabled = false;
+            
+            // Clear any remaining elements
+            gameArea.innerHTML = '';
+            gameArea.appendChild(cursor);
+            
+            // Clear any existing trails
+            lineTrails.forEach(trail => trail.remove());
+            lineTrails = [];
+            
+            // Show final score
+            const accuracy = ((success / (success + collisions)) * 100).toFixed(1);
+            timerDisplay.textContent = `Game Over! Accuracy: ${accuracy}%`;
+        }
+
+        // Event listeners
+        startButton.addEventListener('click', startGame);
+        gameArea.addEventListener('mousemove', updateCursor);
+        
+        gameArea.addEventListener('mousedown', (e) => {
+            if (isGameRunning && !isDrawing) {
+                const rect = gameArea.getBoundingClientRect();
+                startPoint = {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+                createDrawingLine(startPoint.x, startPoint.y);
+                isDrawing = true;
+            }
+        });
+        
+        gameArea.addEventListener('mousemove', updateDrawingLine);
+        gameArea.addEventListener('mouseup', endDrawing);
+        gameArea.addEventListener('mouseleave', endDrawing);
+    </script>
 </body>
 </html>
