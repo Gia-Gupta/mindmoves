@@ -1,0 +1,28 @@
+{
+    "users": [
+        {
+            "first_name": "Derek",
+            "username": "derekstock",
+            "password": "$2b$12$US2kzfbrgXU7o3sInrYM0ug/Ujd58kledtpXZuEYGMGhBfGxgRT0u",
+            "secret_question": "What was your first pet's name?",
+            "secret_answer": "$2b$12$2elNq.kE94GBz/Q5WAF0hOir5E6lfLYFAt9UI62WAM8x5zGQccCFy",
+            "game_history": []
+        },
+        {
+            "first_name": "Steve",
+            "username": "stevetest",
+            "password": "$2b$12$Z0dDEJW0seiEaiCKldPIXu31L0SKw3pp/qRsArDwt80dedGbUk1xO",
+            "secret_question": "What city were you born in?",
+            "secret_answer": "$2b$12$gmN86Ewoz3jCpEtNePmbr.35wvx.c6CZEDzxJgjLkFGO3PMNLL2se",
+            "game_history": []
+        },
+        {
+            "first_name": "test",
+            "username": "test",
+            "password": "$2b$12$HLRoYbgdVIMPg8HOb2/8bum1lUW3bmxSet0uFMyf/MZUDtGmJ8Lwq",
+            "secret_question": "What was your first pet's name?",
+            "secret_answer": "$2b$12$TbgBWRAxx2YY3xPxmzroVOFMiq2hdZ2oDC/W4ZPc5qZiw47pW33sa",
+            "game_history": []
+        }
+    ]
+}

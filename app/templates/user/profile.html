@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-info">
+            <h1>Welcome, {{ user.first_name }}!</h1>
+            <p class="username">@{{ user.username }}</p>
+        </div>
+        <div class="profile-stats">
+            <div class="stat-card">
+                <i class="fas fa-gamepad"></i>
+                <div class="stat-info">
+                    <span class="stat-value">{{ user.game_history|length }}</span>
+                    <span class="stat-label">Games Played</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-trophy"></i>
+                <div class="stat-info">
+                    <span class="stat-value">{{ user.high_scores|length }}</span>
+                    <span class="stat-label">High Scores</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-content">
+        <section class="game-history">
+            <h2>Recent Games</h2>
+            {% if user.game_history %}
+                <div class="history-grid">
+                    {% for game in user.game_history[-5:]|reverse %}
+                    <div class="history-card">
+                        <div class="game-icon">
+                            <i class="fas fa-{{ game.icon }}"></i>
+                        </div>
+                        <div class="game-info">
+                            <h3>{{ game.name }}</h3>
+                            <p>Score: {{ game.score }}%</p>
+                            <span class="game-date">{{ game.date }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="no-data">No games played yet. Start playing to see your history!</p>
+            {% endif %}
+        </section>
+
+        <section class="high-scores">
+            <h2>High Scores</h2>
+            {% if user.high_scores %}
+                <div class="scores-grid">
+                    {% for game, score in user.high_scores.items() %}
+                    <div class="score-card">
+                        <div class="game-icon">
+                            <i class="fas fa-{{ score.icon }}"></i>
+                        </div>
+                        <div class="score-info">
+                            <h3>{{ score.name }}</h3>
+                            <p>Best Score: {{ score.score }}%</p>
+                            <span class="score-date">Achieved on {{ score.date }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="no-data">No high scores yet. Play some games to set your records!</p>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %} 
