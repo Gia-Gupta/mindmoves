@@ -4,7 +4,11 @@
 <section class="hero">
     <div class="container">
         <div class="hero-content">
-            <h1>Brain Training Games</h1>
+            {% if user %}
+                <h1>Welcome back, {{ user.first_name }}!</h1>
+            {% else %}
+                <h1>Brain Training Games</h1>
+            {% endif %}
             <h2>Train Your Brain, One Move at a Time</h2>
             <p>Challenge your mind with our collection of engaging brain training games. Improve your cognitive skills, reaction time, and mental agility while having fun!</p>
         </div>

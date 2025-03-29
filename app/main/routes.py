@@ -4,7 +4,10 @@ from app.auth import register_user, login_user, logout_user, verify_secret_answe
 
 @bp.route("/")
 def home():
-    return render_template("index.html")
+    user = None
+    if 'user' in session:
+        user = get_user(session['user'])
+    return render_template("index.html", user=user)
 
 @bp.route("/about")
 def about():
@@ -53,11 +56,30 @@ def register():
         secret_question = request.form.get('secret_question')
         secret_answer = request.form.get('secret_answer')
         
+        if not all([first_name, username, password, secret_question, secret_answer]):
+            flash('Please fill in all fields', 'error')
+            return render_template('auth/register.html',
+                                first_name=first_name,
+                                username=username,
+                                secret_question=secret_question)
+        
+        # Check if username exists before attempting registration
+        if get_user(username):
+            flash('Username already exists', 'error')
+            return render_template('auth/register.html',
+                                first_name=first_name,
+                                username=username,
+                                secret_question=secret_question)
+        
         if register_user(first_name, username, password, secret_question, secret_answer):
             flash('Registration successful! Please login.', 'success')
             return redirect(url_for('main.login'))
-        else:
-            flash('Username already exists', 'error')
+        
+        # If registration failed for any other reason, preserve form data
+        return render_template('auth/register.html',
+                            first_name=first_name,
+                            username=username,
+                            secret_question=secret_question)
     
     return render_template('auth/register.html')
 

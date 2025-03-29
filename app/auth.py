@@ -51,7 +51,6 @@ def register_user(first_name, username, password, secret_question, secret_answer
     
     users.append(new_user)
     save_users(users)
-    flash('Registration successful! Please login.', 'success')
     return True
 
 def login_user(username, password):

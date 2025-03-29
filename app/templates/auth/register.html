@@ -4,21 +4,14 @@
 <div class="auth-container">
     <div class="auth-box">
         <h2>Create Account</h2>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
         <form method="POST" action="{{ url_for('main.register') }}">
             <div class="form-group">
                 <label for="first_name">First Name</label>
-                <input type="text" id="first_name" name="first_name" required>
+                <input type="text" id="first_name" name="first_name" value="{{ first_name if first_name else '' }}" required>
             </div>
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" name="username" value="{{ username if username else '' }}" required>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
@@ -28,10 +21,10 @@
                 <label for="secret_question">Secret Question</label>
                 <select id="secret_question" name="secret_question" required>
                     <option value="">Select a question</option>
-                    <option value="What was your first pet's name?">What was your first pet's name?</option>
-                    <option value="What city were you born in?">What city were you born in?</option>
-                    <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
-                    <option value="What was your childhood nickname?">What was your childhood nickname?</option>
+                    <option value="What was your first pet's name?" {% if secret_question == "What was your first pet's name?" %}selected{% endif %}>What was your first pet's name?</option>
+                    <option value="What city were you born in?" {% if secret_question == "What city were you born in?" %}selected{% endif %}>What city were you born in?</option>
+                    <option value="What is your mother's maiden name?" {% if secret_question == "What is your mother's maiden name?" %}selected{% endif %}>What is your mother's maiden name?</option>
+                    <option value="What was your childhood nickname?" {% if secret_question == "What was your childhood nickname?" %}selected{% endif %}>What was your childhood nickname?</option>
                 </select>
             </div>
             <div class="form-group">

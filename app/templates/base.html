@@ -51,6 +51,20 @@
         </div>
     </footer>
 
-    {% block extra_js %}{% endblock %}
+    <script>
+        // Hide flash messages after 3 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(message) {
+                setTimeout(function() {
+                    message.style.opacity = '0';
+                    message.style.transform = 'translateY(-100%)';
+                    setTimeout(function() {
+                        message.remove();
+                    }, 300);
+                }, 3000);
+            });
+        });
+    </script>
 </body>
 </html> 

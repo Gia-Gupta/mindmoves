@@ -2,6 +2,7 @@ import pytest
 import os
 import json
 import tempfile
+import bcrypt
 from datetime import datetime
 from unittest.mock import patch, MagicMock
 
@@ -16,10 +17,10 @@ def app():
         test_users_file = os.path.join(temp_dir, 'users.json')
         initial_user = {
             'username': 'testuser',
-            'password': 'pbkdf2:sha256:260000$test_hash',  # Pre-hashed test password
+            'password': bcrypt.hashpw('TestPass123!'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
             'first_name': 'Test',
             'secret_question': 'What is your favorite color?',
-            'secret_answer': 'pbkdf2:sha256:260000$test_answer_hash',  # Pre-hashed answer
+            'secret_answer': bcrypt.hashpw('blue'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
             'registration_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'game_history': [],
             'high_scores': {}

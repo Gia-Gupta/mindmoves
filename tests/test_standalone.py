@@ -3,9 +3,37 @@ from flask import session
 
 def test_home_page_content(client):
     """Test the home page loads with correct content."""
+    # Test when not logged in
     response = client.get('/')
     assert response.status_code == 200
-    assert b'MindMoves' in response.data
+    assert b'Brain Training Games' in response.data
+    assert b'Welcome back' not in response.data
+    
+    # Test when logged in
+    # First register a user
+    register_data = {
+        'first_name': 'Test',
+        'username': 'testuser',
+        'password': 'TestPass123!',
+        'secret_question': 'What is your favorite color?',
+        'secret_answer': 'blue'
+    }
+    client.post('/register', data=register_data, follow_redirects=True)
+    
+    # Login with the user
+    login_data = {
+        'username': 'testuser',
+        'password': 'TestPass123!'
+    }
+    client.post('/login', data=login_data, follow_redirects=True)
+    
+    # Check home page with logged in user
+    response = client.get('/')
+    assert response.status_code == 200
+    assert b'Welcome back, Test!' in response.data
+    assert b'Brain Training Games' not in response.data
+    
+    # Test other content that should always be present
     assert b'Train Your Brain' in response.data
     assert b'Speed Game' in response.data
     assert b'Precision Game' in response.data
@@ -24,7 +52,7 @@ def test_authentication_flow(client):
     }
     response = client.post('/register', data=register_data, follow_redirects=True)
     assert response.status_code == 200
-    assert b'Registration successful!' in response.data
+    assert b'Registration successful! Please login.' in response.data
 
     # 2. Login with new user
     login_data = {
@@ -65,7 +93,7 @@ def test_password_reset_flow(client):
 
     # 2. Reset with valid data
     reset_data = {
-        'username': 'derekstock',
+        'username': 'testuser',
         'secret_answer': 'blue',
         'new_password': 'NewPass123!'
     }
@@ -100,11 +128,11 @@ def test_error_handling(client):
         'secret_answer': ''
     }, follow_redirects=True)
     assert response.status_code == 200
-    assert b'Username already exists' in response.data
+    assert b'Please fill in all fields' in response.data
 
     # Test invalid route
     response = client.get('/nonexistent')
-    assert response.status_code == 404 
+    assert response.status_code == 404
 
 def test_forgot_password_flow(client):
     """Test the complete forgot password flow."""
@@ -115,34 +143,33 @@ def test_forgot_password_flow(client):
     assert response.status_code == 200
     assert b'Username not found' in response.data
     
-    # 2. Test with existing username (derekstock)
+    # 2. Test with existing username (testuser)
     response = client.post('/forgot-password', data={
-        'username': 'derekstock'
+        'username': 'testuser'
     }, follow_redirects=True)
     assert response.status_code == 200
-    assert b'What was your first pet' in response.data  # Secret question should be shown
+    assert b'What is your favorite color' in response.data
     
     # 3. Test with wrong secret answer
     response = client.post('/forgot-password', data={
-        'username': 'derekstock',
+        'username': 'testuser',
         'secret_answer': 'wrong_answer',
         'new_password': 'NewPass123!'
     }, follow_redirects=True)
     assert response.status_code == 200
     assert b'Incorrect secret answer' in response.data
-    assert b'What was your first pet' in response.data  # Question should still be shown
     
     # 4. Test with missing new password
     response = client.post('/forgot-password', data={
-        'username': 'derekstock',
-        'secret_answer': 'wrong_answer'
+        'username': 'testuser',
+        'secret_answer': 'blue'
     }, follow_redirects=True)
     assert response.status_code == 200
     assert b'Please provide all required information' in response.data
     
     # 5. Test with missing secret answer
     response = client.post('/forgot-password', data={
-        'username': 'derekstock',
+        'username': 'testuser',
         'new_password': 'NewPass123!'
     }, follow_redirects=True)
     assert response.status_code == 200
@@ -150,8 +177,8 @@ def test_forgot_password_flow(client):
     
     # 6. Test successful password reset
     response = client.post('/forgot-password', data={
-        'username': 'derekstock',
-        'secret_answer': 'test_answer',  # This should match your actual secret answer
+        'username': 'testuser',
+        'secret_answer': 'blue',
         'new_password': 'NewPass123!'
     }, follow_redirects=True)
     assert response.status_code == 200
@@ -159,7 +186,7 @@ def test_forgot_password_flow(client):
     
     # 7. Verify can login with new password
     response = client.post('/login', data={
-        'username': 'derekstock',
+        'username': 'testuser',
         'password': 'NewPass123!'
     }, follow_redirects=True)
     assert response.status_code == 200
@@ -169,10 +196,61 @@ def test_forgot_password_form_persistence(client):
     """Test that form data persists when showing errors."""
     # 1. Submit with wrong secret answer
     response = client.post('/forgot-password', data={
-        'username': 'derekstock',
+        'username': 'testuser',
         'secret_answer': 'wrong_answer',
         'new_password': 'NewPass123!'
     }, follow_redirects=True)
     assert response.status_code == 200
-    assert b'value="derekstock"' in response.data  # Username should be preserved
-    assert b'What was your first pet' in response.data  # Question should be shown 
+    assert b'value="testuser"' in response.data  # Username should be preserved
+    assert b'What is your favorite color' in response.data  # Question should be shown
+
+def test_registration_errors(client):
+    """Test registration error handling."""
+    # 1. Test empty fields
+    response = client.post('/register', data={
+        'first_name': '',
+        'username': '',
+        'password': '',
+        'secret_question': '',
+        'secret_answer': ''
+    }, follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Please fill in all fields' in response.data
+    
+    # 2. Test duplicate username
+    # First registration
+    response = client.post('/register', data={
+        'first_name': 'Test',
+        'username': 'uniqueuser',
+        'password': 'TestPass123!',
+        'secret_question': 'What was your first pet\'s name?',
+        'secret_answer': 'test'
+    }, follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Registration successful! Please login.' in response.data
+    
+    # Try to register with same username
+    response = client.post('/register', data={
+        'first_name': 'Test2',
+        'username': 'uniqueuser',
+        'password': 'TestPass123!',
+        'secret_question': 'What was your first pet\'s name?',
+        'secret_answer': 'test'
+    }, follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Username already exists' in response.data
+    
+    # Verify form data is preserved
+    assert b'value="Test2"' in response.data  # First name should be preserved
+    assert b'value="uniqueuser"' in response.data  # Username should be preserved
+    assert b'selected' in response.data  # Secret question should be selected
+    
+    # Verify flash message container exists
+    assert b'flash-messages' in response.data
+    assert b'flash-message error' in response.data
+    
+    # Verify JavaScript for auto-hide is present
+    assert b'setTimeout(function()' in response.data
+    assert b'3000' in response.data  # Check for 3 second timeout
+    assert b'opacity = \'0\'' in response.data  # Check for fade out
+    assert b'transform = \'translateY(-100%)\'' in response.data  # Check for slide up 
