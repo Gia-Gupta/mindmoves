@@ -140,6 +140,69 @@
     let isGameRunning = false;
     let currentLevel = 1;
     let currentTarget = null;
+    let cursorX = 0;
+    let cursorY = 0;
+    let isTouchingEdge = false;
+
+    function isCursorTouchingEdge() {
+        if (!currentTarget || !isGameRunning) return false;
+        
+        const targetRect = currentTarget.getBoundingClientRect();
+        const gameRect = gameArea.getBoundingClientRect();
+        
+        // Get target circle center and radius
+        const targetX = targetRect.left - gameRect.left + targetRect.width / 2;
+        const targetY = targetRect.top - gameRect.top + targetRect.height / 2;
+        const targetRadius = targetRect.width / 2;
+        
+        // Get cursor center and radius
+        const cursorRadius = 10; // Half of cursor width
+        
+        // Calculate distance between cursor and target centers
+        const dx = cursorX - targetX;
+        const dy = cursorY - targetY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Return true if cursor is outside or touching the edge
+        return distance >= (targetRadius - cursorRadius);
+    }
+
+    function updateCursor(e) {
+        if (isGameRunning) {
+            const rect = gameArea.getBoundingClientRect();
+            cursorX = e.clientX - rect.left;
+            cursorY = e.clientY - rect.top;
+            cursor.style.left = `${cursorX}px`;
+            cursor.style.top = `${cursorY}px`;
+            
+            // Update cursor appearance based on position
+            isTouchingEdge = isCursorTouchingEdge();
+            cursor.style.backgroundColor = isTouchingEdge ? '#f44336' : '#4CAF50';
+        }
+    }
+
+    function isCursorInsideTarget() {
+        if (!currentTarget || !isGameRunning) return false;
+        
+        const targetRect = currentTarget.getBoundingClientRect();
+        const gameRect = gameArea.getBoundingClientRect();
+        
+        // Get target circle center and radius
+        const targetX = targetRect.left - gameRect.left + targetRect.width / 2;
+        const targetY = targetRect.top - gameRect.top + targetRect.height / 2;
+        const targetRadius = targetRect.width / 2;
+        
+        // Get cursor center and radius
+        const cursorRadius = 10; // Half of cursor width
+        
+        // Calculate distance between cursor and target centers
+        const dx = cursorX - targetX;
+        const dy = cursorY - targetY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Check if cursor is completely inside the target (not touching edge)
+        return distance < (targetRadius - cursorRadius);
+    }
 
     function createTarget() {
         // Clear any existing target
@@ -162,26 +225,8 @@
         target.style.left = `${x}px`;
         target.style.top = `${y}px`;
         
-        target.addEventListener('click', () => {
-            if (isGameRunning) {
-                hits++;
-                hitsDisplay.textContent = hits;
-                target.remove();
-                currentTarget = null;
-                createTarget();
-            }
-        });
-        
         gameArea.appendChild(target);
         currentTarget = target;
-    }
-
-    function updateCursor(e) {
-        if (isGameRunning) {
-            const rect = gameArea.getBoundingClientRect();
-            cursor.style.left = `${e.clientX - rect.left}px`;
-            cursor.style.top = `${e.clientY - rect.top}px`;
-        }
     }
 
     function startGame() {
@@ -255,15 +300,15 @@
     
     gameArea.addEventListener('click', (e) => {
         if (isGameRunning && currentTarget) {
-            const rect = currentTarget.getBoundingClientRect();
-            const gameRect = gameArea.getBoundingClientRect();
-            
-            if (e.clientX < rect.left - gameRect.left || 
-                e.clientX > rect.right - gameRect.left ||
-                e.clientY < rect.top - gameRect.top || 
-                e.clientY > rect.bottom - gameRect.top) {
+            if (isTouchingEdge) {
                 misses++;
                 missesDisplay.textContent = misses;
+            } else if (isCursorInsideTarget()) {
+                hits++;
+                hitsDisplay.textContent = hits;
+                currentTarget.remove();
+                currentTarget = null;
+                createTarget();
             }
         }
     });

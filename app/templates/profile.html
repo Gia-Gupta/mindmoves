@@ -8,31 +8,38 @@
     </div>
 
     <div class="game-history">
-        <h2>Recent Game History</h2>
-        {% if game_history %}
-            <div class="game-history-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Game</th>
-                            <th>Score</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for game in game_history %}
-                            <tr>
-                                <td>{{ game.game_type }}</td>
-                                <td>{{ game.score }}</td>
-                                <td>{{ game.date }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        <h2>Game History</h2>
+        <div class="history-list">
+            {% for score in game_history|sort(attribute='date', reverse=true) %}
+            <div class="history-item">
+                <span class="game-name">{{ score.game_type }}</span>
+                <span class="game-score">{{ "%.2f"|format(score.score) }}</span>
+                <span class="game-date">{{ score.date }}</span>
             </div>
-        {% else %}
-            <p class="no-history">No games played yet. Start playing to see your history!</p>
-        {% endif %}
+            {% endfor %}
+        </div>
     </div>
 </div>
+
+<style>
+.history-item {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+.game-name {
+    flex: 2;
+}
+.game-score {
+    flex: 1;
+    text-align: right;
+}
+.game-date {
+    flex: 1;
+    text-align: right;
+    color: #666;
+}
+</style>
 {% endblock %} 

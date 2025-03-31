@@ -10,42 +10,52 @@
                 {
                     "game_type": "Typing Game - Level 1",
                     "score": 100.0,
-                    "date": "2025-03-30 19:44:21"
-                },
-                {
-                    "game_type": "Typing Game - Level 1",
-                    "score": 100.0,
-                    "date": "2025-03-30 19:44:54"
+                    "date": "2025-03-30 20:09:00"
                 },
                 {
                     "game_type": "Typing Game - Level 2",
                     "score": 100.0,
-                    "date": "2025-03-30 19:45:24"
+                    "date": "2025-03-30 20:09:34"
                 },
                 {
                     "game_type": "Typing Game - Level 3",
                     "score": 100.0,
-                    "date": "2025-03-30 19:45:35"
+                    "date": "2025-03-30 20:09:44"
+                },
+                {
+                    "game_type": "Speed Game",
+                    "score": 100.0,
+                    "date": "2025-03-30 20:10:26"
                 },
                 {
                     "game_type": "Dexterity Game",
                     "score": 50.0,
-                    "date": "2025-03-30 19:51:52"
+                    "date": "2025-03-30 20:11:17"
+                },
+                {
+                    "game_type": "Dexterity Game",
+                    "score": 100.0,
+                    "date": "2025-03-30 20:19:02"
+                },
+                {
+                    "game_type": "Dexterity Game",
+                    "score": 66.66666666666666,
+                    "date": "2025-03-30 20:19:48"
+                },
+                {
+                    "game_type": "Dexterity Game",
+                    "score": 85.71428571428571,
+                    "date": "2025-03-30 20:30:21"
                 },
                 {
                     "game_type": "Typing Game - Level 1",
-                    "score": 100.0,
-                    "date": "2025-03-30 19:52:20"
-                },
-                {
-                    "game_type": "Typing Game - Level 2",
                     "score": 66.66666666666666,
-                    "date": "2025-03-30 19:52:51"
+                    "date": "2025-03-30 20:50:02"
                 },
                 {
-                    "game_type": "Speed Game",
-                    "score": 96.42857142857143,
-                    "date": "2025-03-30 20:04:27"
+                    "game_type": "Dexterity Game",
+                    "score": 93.75,
+                    "date": "2025-03-30 21:04:09"
                 }
             ]
         },
