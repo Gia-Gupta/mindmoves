@@ -8,16 +8,6 @@
             "secret_answer": "$2b$12$2elNq.kE94GBz/Q5WAF0hOir5E6lfLYFAt9UI62WAM8x5zGQccCFy",
             "game_history": [
                 {
-                    "game_type": "Typing Game - Level 1",
-                    "score": 100.0,
-                    "date": "2025-03-30 20:09:00"
-                },
-                {
-                    "game_type": "Typing Game - Level 2",
-                    "score": 100.0,
-                    "date": "2025-03-30 20:09:34"
-                },
-                {
                     "game_type": "Typing Game - Level 3",
                     "score": 100.0,
                     "date": "2025-03-30 20:09:44"
@@ -56,6 +46,16 @@
                     "game_type": "Dexterity Game",
                     "score": 93.75,
                     "date": "2025-03-30 21:04:09"
+                },
+                {
+                    "game_type": "Dexterity Game",
+                    "score": 77.77777777777779,
+                    "date": "2025-03-30 21:23:06"
+                },
+                {
+                    "game_type": "Dexterity Game",
+                    "score": 84.21052631578947,
+                    "date": "2025-03-30 21:34:44"
                 }
             ]
         },
