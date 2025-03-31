@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>Welcome, {{ user.first_name }}!</h1>
+        <p>Username: {{ user.username }}</p>
+    </div>
+
+    <div class="game-history">
+        <h2>Recent Game History</h2>
+        {% if game_history %}
+            <div class="game-history-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Game</th>
+                            <th>Score</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for game in game_history %}
+                            <tr>
+                                <td>{{ game.game_type }}</td>
+                                <td>{{ game.score }}</td>
+                                <td>{{ game.date }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="no-history">No games played yet. Start playing to see your history!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

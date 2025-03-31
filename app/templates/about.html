@@ -1,52 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About - MindMoves</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-content">
-                <a href="{{ url_for('main.home') }}" class="logo">
-                    <i class="fas fa-brain logo-icon"></i>
-                    <span class="logo-text">MindMoves</span>
-                </a>
-                <div class="nav-links">
-                    <a href="{{ url_for('main.home') }}"><i class="fas fa-home"></i> Home</a>
-                    <a href="{{ url_for('main.about') }}"><i class="fas fa-info-circle"></i> About</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+{% extends "base.html" %}
 
-    <div class="typing-container">
-        <h1>About MindMoves</h1>
-        <div class="feature-card" style="margin-bottom: 2rem;">
-            <div class="feature-icon">
-                <i class="fas fa-brain"></i>
-            </div>
-            <h3>Our Mission</h3>
-            <p>MindMoves is dedicated to enhancing cognitive abilities through engaging and interactive brain training games. Our platform offers various challenges designed to improve typing speed, reaction time, precision, and dexterity.</p>
+{% block content %}
+<div class="typing-container">
+    <h1>About MindMoves</h1>
+    <div class="feature-card" style="margin-bottom: 2rem;">
+        <div class="feature-icon">
+            <i class="fas fa-brain"></i>
         </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">
-                <i class="fas fa-gamepad"></i>
-            </div>
-            <h3>Our Games</h3>
-            <p>Each game is carefully crafted to target specific cognitive skills:</p>
-            <ul style="text-align: left; margin-top: 1rem; color: var(--text-secondary);">
-                <li>Typing Game - Improve typing speed and accuracy</li>
-                <li>Speed Game - Enhance reaction time</li>
-                <li>Precision Game - Develop accuracy and focus</li>
-                <li>Dexterity Game - Boost hand-eye coordination</li>
-            </ul>
-        </div>
+        <h3>Our Mission</h3>
+        <p>MindMoves is dedicated to enhancing cognitive abilities through engaging and interactive brain training games. Our platform offers various challenges designed to improve typing speed, reaction time, precision, and dexterity.</p>
     </div>
-</body>
-</html>
+
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-gamepad"></i>
+        </div>
+        <h3>Our Games</h3>
+        <p>Each game is carefully crafted to target specific cognitive skills:</p>
+        <ul style="text-align: left; margin-top: 1rem; color: var(--text-secondary);">
+            <li>Typing Game - Improve typing speed and accuracy</li>
+            <li>Speed Game - Enhance reaction time</li>
+            <li>Precision Game - Develop accuracy and focus</li>
+            <li>Dexterity Game - Boost hand-eye coordination</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

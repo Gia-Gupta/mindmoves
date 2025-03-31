@@ -1,265 +1,410 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Typing Game - MindMoves</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .firework {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 1000;
-        }
+{% extends "base.html" %}
 
-        @keyframes explode {
-            0% {
-                transform: translate(0, 0) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(var(--tx), var(--ty)) scale(0);
-                opacity: 0;
-            }
-        }
+{% block content %}
+<div class="typing-container">
+    <h1>Typing Game</h1>
+    <p>Challenge yourself to type faster and more accurately! Choose a level to begin.</p>
 
-        .firework-particle {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            animation: explode 1.5s ease-out forwards;
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-content">
-                <a href="{{ url_for('main.home') }}" class="logo">
-                    <i class="fas fa-brain logo-icon"></i>
-                    <span class="logo-text">MindMoves</span>
-                </a>
-                <div class="nav-links">
-                    <a href="{{ url_for('main.home') }}"><i class="fas fa-home"></i> Home</a>
-                    <a href="{{ url_for('main.about') }}"><i class="fas fa-info-circle"></i> About</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <div class="typing-container">
-        <h1>Typing Game</h1>
-        <p>Challenge yourself to type faster and more accurately! Choose a level to begin.</p>
-
-        <div class="word-box" id="wordDisplay">Press a button to start a level</div>
-        
-        <div class="scroll-box" id="scrollBox" style="display: none;">
-            <span class="moving-word" id="movingWord"></span>
-        </div>
-
-        <input type="text" id="wordInput" placeholder="Type here and press Enter..." disabled>
-        <div class="score" id="scoreDisplay"></div>
-
-        <div class="button-container">
-            <button class="btn" id="startLevel1Button">
-                <i class="fas fa-1"></i> Level 1
-            </button>
-            <button class="btn" id="startLevel2Button">
-                <i class="fas fa-2"></i> Level 2
-            </button>
-            <button class="btn" id="startLevel3Button">
-                <i class="fas fa-3"></i> Level 3
-            </button>
-        </div>
-
-        <div class="accumulative-scores" style="margin-top: 2rem; text-align: center;">
-            <h3>Your Best Scores:</h3>
-            <div id="level1Score" style="margin: 0.5rem 0;">Level 1: Not completed</div>
-            <div id="level2Score" style="margin: 0.5rem 0;">Level 2: Not completed</div>
-            <div id="level3Score" style="margin: 0.5rem 0;">Level 3: Not completed</div>
-        </div>
+    <div class="word-box" id="wordDisplay">Press a button to start a level</div>
+    
+    <div class="scroll-box" id="scrollBox" style="display: none;">
+        <span class="moving-word" id="movingWord"></span>
     </div>
 
-    <script>
-        const level1Words = ["javascript", "keyboard", "syntax"];
-        const level2Sentences = [
-            "JavaScript is a powerful language.",
-            "Debugging helps improve problem-solving.",
-            "Always test your code for errors."
-        ];
-        const level3Words = ["loop", "event", "callback"];
+    <input type="text" id="wordInput" placeholder="Type here and press Enter..." disabled>
+    <div class="score" id="scoreDisplay"></div>
 
-        const wordInput = document.getElementById("wordInput");
-        const wordDisplay = document.getElementById("wordDisplay");
-        const scoreDisplay = document.getElementById("scoreDisplay");
-        const scrollBox = document.getElementById("scrollBox");
-        const movingWord = document.getElementById("movingWord");
-        const level2Button = document.getElementById("startLevel2Button");
-        const level3Button = document.getElementById("startLevel3Button");
-        const level1ScoreDisplay = document.getElementById("level1Score");
-        const level2ScoreDisplay = document.getElementById("level2Score");
-        const level3ScoreDisplay = document.getElementById("level3Score");
+    <div class="button-container">
+        <button class="btn" id="startLevel1Button">
+            <i class="fas fa-1"></i> Level 1
+        </button>
+        <button class="btn" id="startLevel2Button">
+            <i class="fas fa-2"></i> Level 2
+        </button>
+        <button class="btn" id="startLevel3Button">
+            <i class="fas fa-3"></i> Level 3
+        </button>
+    </div>
 
-        let words = [];
-        let currentWordIndex = 0;
-        let correctCount = 0;
-        let totalWords = 0;
-        let level = 1;
-        let animationInterval;
-        let lastXPosition = -1;
-        let level1Completed = false;
-        let level2Completed = false;
-        let bestScores = {
-            level1: { score: 0, total: 0, percentage: 0 },
-            level2: { score: 0, total: 0, percentage: 0 },
-            level3: { score: 0, total: 0, percentage: 0 }
-        };
+    <div class="accumulative-scores" style="margin-top: 2rem; text-align: center;">
+        <h3>Your Best Scores:</h3>
+        <div id="level1Score" style="margin: 0.5rem 0;">Level 1: Not completed</div>
+        <div id="level2Score" style="margin: 0.5rem 0;">Level 2: Not completed</div>
+        <div id="level3Score" style="margin: 0.5rem 0;">Level 3: Not completed</div>
+    </div>
+</div>
 
-        function updateBestScores() {
-            level1ScoreDisplay.textContent = `Level 1: ${bestScores.level1.score}/${bestScores.level1.total} (${bestScores.level1.percentage}%)`;
-            level2ScoreDisplay.textContent = `Level 2: ${bestScores.level2.score}/${bestScores.level2.total} (${bestScores.level2.percentage}%)`;
-            level3ScoreDisplay.textContent = `Level 3: ${bestScores.level3.score}/${bestScores.level3.total} (${bestScores.level3.percentage}%)`;
-            
-            // Check for perfect scores after updating
-            celebratePerfectScores();
+<style>
+    .firework {
+        position: fixed;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1000;
+    }
+
+    @keyframes explode {
+        0% {
+            transform: translate(0, 0) scale(1);
+            opacity: 1;
         }
+        100% {
+            transform: translate(var(--tx), var(--ty)) scale(0);
+            opacity: 0;
+        }
+    }
 
-        function resetGame() {
-            correctCount = 0;
+    .firework-particle {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        animation: explode 1.5s ease-out forwards;
+    }
+
+    .typing-container {
+        max-width: 800px;
+        margin: 8rem auto 4rem;
+        padding: 2rem;
+        background: var(--card-background);
+        border-radius: 1.5rem;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .word-box {
+        font-size: 2rem;
+        margin: 2rem 0;
+        min-height: 3rem;
+        color: var(--primary-color);
+    }
+
+    .scroll-box {
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(244, 114, 182, 0.05));
+        border-radius: 1rem;
+        position: relative;
+        margin: 2rem 0;
+        overflow: hidden;
+    }
+
+    .moving-word {
+        position: absolute;
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        transition: top 0.05s linear;
+    }
+
+    #wordInput {
+        padding: 1rem;
+        font-size: 1.2rem;
+        width: 80%;
+        max-width: 500px;
+        border: 2px solid var(--primary-color);
+        border-radius: 0.5rem;
+        margin: 1rem 0;
+        text-align: center;
+    }
+
+    .score {
+        font-size: 1.5rem;
+        margin: 1rem 0;
+        color: var(--primary-color);
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+
+    .btn {
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+        border: none;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .accumulative-scores {
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(244, 114, 182, 0.1));
+        padding: 1.5rem;
+        border-radius: 1rem;
+        margin-top: 2rem;
+    }
+</style>
+
+<script>
+    const level1Words = ["javascript", "keyboard", "syntax"];
+    const level2Sentences = [
+        "JavaScript is a powerful language.",
+        "Debugging helps improve problem-solving.",
+        "Always test your code for errors."
+    ];
+    const level3Words = ["loop", "event", "callback"];
+
+    const wordInput = document.getElementById("wordInput");
+    const wordDisplay = document.getElementById("wordDisplay");
+    const scoreDisplay = document.getElementById("scoreDisplay");
+    const scrollBox = document.getElementById("scrollBox");
+    const movingWord = document.getElementById("movingWord");
+    const level2Button = document.getElementById("startLevel2Button");
+    const level3Button = document.getElementById("startLevel3Button");
+    const level1ScoreDisplay = document.getElementById("level1Score");
+    const level2ScoreDisplay = document.getElementById("level2Score");
+    const level3ScoreDisplay = document.getElementById("level3Score");
+
+    let words = [];
+    let currentWordIndex = 0;
+    let correctCount = 0;
+    let totalWords = 0;
+    let level = 1;
+    let animationInterval;
+    let lastXPosition = -1;
+    let level1Completed = false;
+    let level2Completed = false;
+    let bestScores = {
+        level1: { score: 0, total: 0, percentage: 0 },
+        level2: { score: 0, total: 0, percentage: 0 },
+        level3: { score: 0, total: 0, percentage: 0 }
+    };
+
+    function updateBestScores() {
+        level1ScoreDisplay.textContent = `Level 1: ${bestScores.level1.score}/${bestScores.level1.total} (${bestScores.level1.percentage}%)`;
+        level2ScoreDisplay.textContent = `Level 2: ${bestScores.level2.score}/${bestScores.level2.total} (${bestScores.level2.percentage}%)`;
+        level3ScoreDisplay.textContent = `Level 3: ${bestScores.level3.score}/${bestScores.level3.total} (${bestScores.level3.percentage}%)`;
+        
+        // Check for perfect scores after updating
+        celebratePerfectScores();
+    }
+
+    function resetGame() {
+        correctCount = 0;
+        wordInput.value = "";
+        wordInput.disabled = true;
+        wordDisplay.textContent = "Press a button to start a level";
+        scrollBox.style.display = "none";
+        clearInterval(animationInterval);
+    }
+
+    function updateButtonStates() {
+        level2Button.disabled = !level1Completed;
+        level3Button.disabled = !level2Completed;
+        
+        if (!level1Completed) {
+            level2Button.style.opacity = "0.5";
+            level2Button.style.cursor = "not-allowed";
+        } else {
+            level2Button.style.opacity = "1";
+            level2Button.style.cursor = "pointer";
+        }
+        
+        if (!level2Completed) {
+            level3Button.style.opacity = "0.5";
+            level3Button.style.cursor = "not-allowed";
+        } else {
+            level3Button.style.opacity = "1";
+            level3Button.style.cursor = "pointer";
+        }
+    }
+
+    function startLevel(levelNumber) {
+        if (levelNumber === 2 && !level1Completed) return;
+        if (levelNumber === 3 && !level2Completed) return;
+        
+        scoreDisplay.textContent = "";
+        
+        level = levelNumber;
+        words = level === 1 ? level1Words : level === 2 ? level2Sentences : level3Words;
+        totalWords = words.length;
+        correctCount = 0;
+        wordInput.value = "";
+        wordInput.disabled = false;
+        wordInput.focus();
+        currentWordIndex = 0;
+        showNextWord();
+    }
+
+    function showNextWord() {
+        if (currentWordIndex >= totalWords) {
+            const accuracy = (correctCount / totalWords * 100).toFixed(2);
+            
+            if (level === 1) {
+                // Update best scores
+                bestScores.level1 = {
+                    score: correctCount,
+                    total: totalWords,
+                    percentage: accuracy
+                };
+                
+                // Save score if user is logged in
+                saveScore(1, correctCount, totalWords);
+                
+                // Clear any previous content
+                scoreDisplay.innerHTML = "";
+                
+                // Show the score in a larger, more visible format
+                scoreDisplay.innerHTML = `
+                    <div style="font-size: 1.5rem; margin-bottom: 1rem;">
+                        Level ${level} Complete!
+                    </div>
+                    <div style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">
+                        Your Score: ${correctCount}/${totalWords} (${accuracy}%)
+                    </div>
+                `;
+                
+                if (accuracy >= 70) {
+                    level1Completed = true;
+                    scoreDisplay.innerHTML += `<div style="color: #4CAF50; font-size: 1.2rem; margin-top: 1rem;">
+                        Great job! Level 2 is now unlocked!
+                    </div>`;
+                } else {
+                    scoreDisplay.innerHTML += `<div style="color: #f44336; font-size: 1.2rem; margin-top: 1rem;">
+                        Keep practicing! You need 70% to unlock Level 2.
+                    </div>`;
+                }
+            } else if (level === 2) {
+                // Update best scores
+                bestScores.level2 = {
+                    score: correctCount,
+                    total: totalWords,
+                    percentage: accuracy
+                };
+                
+                // Save score if user is logged in
+                saveScore(2, correctCount, totalWords);
+                
+                scoreDisplay.innerHTML = `Level ${level} Complete!<br>Your accuracy: ${accuracy}%`;
+                if (accuracy >= 70) {
+                    level2Completed = true;
+                    scoreDisplay.innerHTML += `<br><span style="color: #4CAF50;">Great job! Level 3 is now unlocked!</span>`;
+                } else {
+                    scoreDisplay.innerHTML += `<br><span style="color: #f44336;">Keep practicing! You need 70% to unlock Level 3.</span>`;
+                }
+            } else if (level === 3) {
+                // Update best scores
+                bestScores.level3 = {
+                    score: correctCount,
+                    total: totalWords,
+                    percentage: accuracy
+                };
+                
+                // Save score if user is logged in
+                saveScore(3, correctCount, totalWords);
+                
+                // Clear any previous content
+                scoreDisplay.innerHTML = "";
+                
+                // Show the score in a larger, more visible format
+                scoreDisplay.innerHTML = `
+                    <div style="font-size: 1.5rem; margin-bottom: 1rem;">
+                        Level ${level} Complete!
+                    </div>
+                    <div style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">
+                        Your Score: ${correctCount}/${totalWords} (${accuracy}%)
+                    </div>
+                `;
+                
+                if (accuracy >= 70) {
+                    scoreDisplay.innerHTML += `<div style="color: #4CAF50; font-size: 1.2rem; margin-top: 1rem;">
+                        Excellent work! You've mastered all three levels!
+                    </div>`;
+                } else {
+                    scoreDisplay.innerHTML += `<div style="color: #f44336; font-size: 1.2rem; margin-top: 1rem;">
+                        Keep practicing! Try to achieve 70% accuracy.
+                    </div>`;
+                }
+            }
+            
+            updateButtonStates();
+            updateBestScores();
+            
+            // Reset the game display but keep the score
+            wordDisplay.textContent = "Press a button to start a level";
             wordInput.value = "";
             wordInput.disabled = true;
-            wordDisplay.textContent = "Press a button to start a level";
             scrollBox.style.display = "none";
             clearInterval(animationInterval);
+            
+            return;
         }
 
-        function updateButtonStates() {
-            level2Button.disabled = !level1Completed;
-            level3Button.disabled = !level2Completed;
-            
-            if (!level1Completed) {
-                level2Button.style.opacity = "0.5";
-                level2Button.style.cursor = "not-allowed";
-            } else {
-                level2Button.style.opacity = "1";
-                level2Button.style.cursor = "pointer";
-            }
-            
-            if (!level2Completed) {
-                level3Button.style.opacity = "0.5";
-                level3Button.style.cursor = "not-allowed";
-            } else {
-                level3Button.style.opacity = "1";
-                level3Button.style.cursor = "pointer";
-            }
+        if (level === 3) {
+            animateWord();
+        } else {
+            wordDisplay.textContent = words[currentWordIndex];
         }
+    }
 
-        function startLevel(levelNumber) {
-            if (levelNumber === 2 && !level1Completed) return;
-            if (levelNumber === 3 && !level2Completed) return;
+    function animateWord() {
+        clearInterval(animationInterval);
+        scrollBox.style.display = "block";
+        
+        let currentWord = words[currentWordIndex];
+        movingWord.textContent = currentWord;
+        wordDisplay.textContent = currentWord;
+        
+        // Make the word larger and more visible
+        movingWord.style.fontSize = "2rem";
+        movingWord.style.fontWeight = "bold";
+        movingWord.style.color = "#7C3AED"; // Purple color for better visibility
+        
+        let randomX;
+        do {
+            randomX = Math.random() * (scrollBox.clientWidth - 100); // Give more space for the word
+        } while (Math.abs(randomX - lastXPosition) < 100); 
+        
+        lastXPosition = randomX;
+        movingWord.style.left = randomX + "px";
+        movingWord.style.top = "0px";
+        
+        let position = 0;
+        animationInterval = setInterval(() => {
+            position += 1;
+            movingWord.style.top = position + "px";
             
-            scoreDisplay.textContent = "";
-            
-            level = levelNumber;
-            words = level === 1 ? level1Words : level === 2 ? level2Sentences : level3Words;
-            totalWords = words.length;
-            correctCount = 0;
-            wordInput.value = "";
-            wordInput.disabled = false;
-            wordInput.focus();
-            currentWordIndex = 0;
-            showNextWord();
-        }
-
-        function showNextWord() {
-            if (currentWordIndex >= totalWords) {
+            if (position > scrollBox.clientHeight) {
+                clearInterval(animationInterval);
                 const accuracy = (correctCount / totalWords * 100).toFixed(2);
                 
-                if (level === 1) {
-                    // Update best scores
-                    bestScores.level1 = {
-                        score: correctCount,
-                        total: totalWords,
-                        percentage: accuracy
-                    };
-                    
-                    // Clear any previous content
-                    scoreDisplay.innerHTML = "";
-                    
-                    // Show the score in a larger, more visible format
-                    scoreDisplay.innerHTML = `
-                        <div style="font-size: 1.5rem; margin-bottom: 1rem;">
-                            Level ${level} Complete!
-                        </div>
-                        <div style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">
-                            Your Score: ${correctCount}/${totalWords} (${accuracy}%)
-                        </div>
-                    `;
-                    
-                    if (accuracy >= 70) {
-                        level1Completed = true;
-                        scoreDisplay.innerHTML += `<div style="color: #4CAF50; font-size: 1.2rem; margin-top: 1rem;">
-                            Great job! Level 2 is now unlocked!
-                        </div>`;
-                    } else {
-                        scoreDisplay.innerHTML += `<div style="color: #f44336; font-size: 1.2rem; margin-top: 1rem;">
-                            Keep practicing! You need 70% to unlock Level 2.
-                        </div>`;
-                    }
-                } else if (level === 2) {
-                    // Update best scores
-                    bestScores.level2 = {
-                        score: correctCount,
-                        total: totalWords,
-                        percentage: accuracy
-                    };
-                    
-                    scoreDisplay.innerHTML = `Level ${level} Complete!<br>Your accuracy: ${accuracy}%`;
-                    if (accuracy >= 70) {
-                        level2Completed = true;
-                        scoreDisplay.innerHTML += `<br><span style="color: #4CAF50;">Great job! Level 3 is now unlocked!</span>`;
-                    } else {
-                        scoreDisplay.innerHTML += `<br><span style="color: #f44336;">Keep practicing! You need 70% to unlock Level 3.</span>`;
-                    }
-                } else if (level === 3) {
-                    // Update best scores
-                    bestScores.level3 = {
-                        score: correctCount,
-                        total: totalWords,
-                        percentage: accuracy
-                    };
-                    
-                    // Clear any previous content
-                    scoreDisplay.innerHTML = "";
-                    
-                    // Show the score in a larger, more visible format
-                    scoreDisplay.innerHTML = `
-                        <div style="font-size: 1.5rem; margin-bottom: 1rem;">
-                            Level ${level} Complete!
-                        </div>
-                        <div style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">
-                            Your Score: ${correctCount}/${totalWords} (${accuracy}%)
-                        </div>
-                    `;
-                    
-                    if (accuracy >= 70) {
-                        scoreDisplay.innerHTML += `<div style="color: #4CAF50; font-size: 1.2rem; margin-top: 1rem;">
-                            Excellent work! You've mastered all three levels!
-                        </div>`;
-                    } else {
-                        scoreDisplay.innerHTML += `<div style="color: #f44336; font-size: 1.2rem; margin-top: 1rem;">
-                            Keep practicing! Try to achieve 70% accuracy.
-                        </div>`;
-                    }
-                }
+                // Update best scores for Level 3
+                bestScores.level3 = {
+                    score: correctCount,
+                    total: totalWords,
+                    percentage: accuracy
+                };
                 
-                updateButtonStates();
+                scoreDisplay.innerHTML = `
+                    <div style="font-size: 1.5rem; margin-bottom: 1rem;">
+                        Game Over!
+                    </div>
+                    <div style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">
+                        Your Score: ${correctCount}/${totalWords} (${accuracy}%)
+                    </div>
+                    <div style="color: #f44336; font-size: 1.2rem; margin-top: 1rem;">
+                        The word went below the box! Try again!
+                    </div>
+                `;
+                
+                // Update the accumulative scores
                 updateBestScores();
                 
                 // Reset the game display but keep the score
@@ -271,167 +416,139 @@
                 
                 return;
             }
+        }, 50);
+    }
 
-            if (level === 3) {
-                animateWord();
-            } else {
-                wordDisplay.textContent = words[currentWordIndex];
-            }
-        }
-
-        function animateWord() {
-            clearInterval(animationInterval);
-            scrollBox.style.display = "block";
+    wordInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            const userInput = wordInput.value.trim();
+            const currentWord = words[currentWordIndex];
             
-            let currentWord = words[currentWordIndex];
-            movingWord.textContent = currentWord;
-            wordDisplay.textContent = currentWord;
-            
-            // Make the word larger and more visible
-            movingWord.style.fontSize = "2rem";
-            movingWord.style.fontWeight = "bold";
-            movingWord.style.color = "#7C3AED"; // Purple color for better visibility
-            
-            let randomX;
-            do {
-                randomX = Math.random() * (scrollBox.clientWidth - 100); // Give more space for the word
-            } while (Math.abs(randomX - lastXPosition) < 100); 
-            
-            lastXPosition = randomX;
-            movingWord.style.left = randomX + "px";
-            movingWord.style.top = "0px";
-            
-            let position = 0;
-            animationInterval = setInterval(() => {
-                position += 1;
-                movingWord.style.top = position + "px";
-                
-                if (position > scrollBox.clientHeight) {
-                    clearInterval(animationInterval);
-                    const accuracy = (correctCount / totalWords * 100).toFixed(2);
-                    
-                    // Update best scores for Level 3
-                    bestScores.level3 = {
-                        score: correctCount,
-                        total: totalWords,
-                        percentage: accuracy
-                    };
-                    
-                    scoreDisplay.innerHTML = `
-                        <div style="font-size: 1.5rem; margin-bottom: 1rem;">
-                            Game Over!
-                        </div>
-                        <div style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">
-                            Your Score: ${correctCount}/${totalWords} (${accuracy}%)
-                        </div>
-                        <div style="color: #f44336; font-size: 1.2rem; margin-top: 1rem;">
-                            The word went below the box! Try again!
-                        </div>
-                    `;
-                    
-                    // Update the accumulative scores
-                    updateBestScores();
-                    
-                    // Reset the game display but keep the score
-                    wordDisplay.textContent = "Press a button to start a level";
-                    wordInput.value = "";
-                    wordInput.disabled = true;
-                    scrollBox.style.display = "none";
-                    clearInterval(animationInterval);
-                    
-                    return;
+            if (level === 1 || level === 2) {
+                // For Level 1 and 2, check if correct but always move to next word/sentence
+                if (userInput.toLowerCase() === currentWord.toLowerCase()) {
+                    correctCount++;
                 }
-            }, 50);
-        }
-
-        wordInput.addEventListener("keydown", (event) => {
-            if (event.key === "Enter") {
-                const userInput = wordInput.value.trim();
-                const currentWord = words[currentWordIndex];
-                
-                if (level === 1 || level === 2) {
-                    // For Level 1 and 2, check if correct but always move to next word/sentence
-                    if (userInput.toLowerCase() === currentWord.toLowerCase()) {
-                        correctCount++;
-                    }
+                currentWordIndex++;
+                wordInput.value = "";
+                showNextWord();
+            } else {
+                // For Level 3, compare case-insensitive
+                if (userInput.toLowerCase() === currentWord.toLowerCase()) {
+                    correctCount++;
                     currentWordIndex++;
                     wordInput.value = "";
                     showNextWord();
-                } else {
-                    // For Level 3, compare case-insensitive
-                    if (userInput.toLowerCase() === currentWord.toLowerCase()) {
-                        correctCount++;
-                        currentWordIndex++;
-                        wordInput.value = "";
-                        showNextWord();
-                    }
                 }
             }
-        });
+        }
+    });
 
-        document.getElementById("startLevel1Button").addEventListener("click", () => startLevel(1));
-        document.getElementById("startLevel2Button").addEventListener("click", () => startLevel(2));
-        document.getElementById("startLevel3Button").addEventListener("click", () => startLevel(3));
+    document.getElementById("startLevel1Button").addEventListener("click", () => startLevel(1));
+    document.getElementById("startLevel2Button").addEventListener("click", () => startLevel(2));
+    document.getElementById("startLevel3Button").addEventListener("click", () => startLevel(3));
 
-        resetGame();
-        updateButtonStates();
+    resetGame();
+    updateButtonStates();
 
-        function createFirework(x, y) {
-            const colors = ['#ff0', '#f0f', '#0ff', '#f00', '#0f0', '#ffa500', '#ff1493', '#00ff00'];
-            const firework = document.createElement('div');
-            firework.className = 'firework';
-            firework.style.left = x + 'px';
-            firework.style.top = y + 'px';
-            document.body.appendChild(firework);
+    function createFirework(x, y) {
+        const colors = ['#ff0', '#f0f', '#0ff', '#f00', '#0f0', '#ffa500', '#ff1493', '#00ff00'];
+        const firework = document.createElement('div');
+        firework.className = 'firework';
+        firework.style.left = x + 'px';
+        firework.style.top = y + 'px';
+        document.body.appendChild(firework);
 
-            // Create more particles
-            for (let i = 0; i < 48; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'firework-particle';
-                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                
-                // Calculate random direction with increased distance
-                const angle = (i * 7.5) * Math.PI / 180;
-                const distance = 80 + Math.random() * 100;
-                const tx = Math.cos(angle) * distance;
-                const ty = Math.sin(angle) * distance;
-                
-                particle.style.setProperty('--tx', `${tx}px`);
-                particle.style.setProperty('--ty', `${ty}px`);
-                
-                firework.appendChild(particle);
-            }
-
-            // Remove firework after longer animation
-            setTimeout(() => {
-                firework.remove();
-            }, 1500);
+        // Create more particles
+        for (let i = 0; i < 48; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'firework-particle';
+            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Calculate random direction with increased distance
+            const angle = (i * 7.5) * Math.PI / 180;
+            const distance = 80 + Math.random() * 100;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+            
+            particle.style.setProperty('--tx', `${tx}px`);
+            particle.style.setProperty('--ty', `${ty}px`);
+            
+            firework.appendChild(particle);
         }
 
-        function celebratePerfectScores() {
-            // Check if all levels are completed with 100%
-            const isPerfect = bestScores.level1.percentage === "100.00" &&
-                            bestScores.level2.percentage === "100.00" &&
-                            bestScores.level3.percentage === "100.00";
+        // Remove firework after longer animation
+        setTimeout(() => {
+            firework.remove();
+        }, 1500);
+    }
 
-            if (isPerfect) {
-                // Create more fireworks over a longer period
-                for (let i = 0; i < 20; i++) {
-                    setTimeout(() => {
-                        const x = Math.random() * window.innerWidth;
-                        const y = Math.random() * window.innerHeight;
-                        createFirework(x, y);
-                    }, i * 150);
-                }
+    function celebratePerfectScores() {
+        // Check if all levels are completed with 100%
+        const isPerfect = bestScores.level1.percentage === "100.00" &&
+                        bestScores.level2.percentage === "100.00" &&
+                        bestScores.level3.percentage === "100.00";
 
-                // Show celebration message
-                scoreDisplay.innerHTML += `
-                    <div style="color: #FFD700; font-size: 2.5rem; margin-top: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
-                        🎉 PERFECT SCORE! 🎉
-                    </div>
-                `;
+        if (isPerfect) {
+            // Create more fireworks over a longer period
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * window.innerHeight;
+                    createFirework(x, y);
+                }, i * 150);
             }
+
+            // Show celebration message
+            scoreDisplay.innerHTML += `
+                <div style="color: #FFD700; font-size: 2.5rem; margin-top: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                    🎉 PERFECT SCORE! 🎉
+                </div>
+            `;
         }
-    </script>
-</body>
-</html>
+    }
+
+    function saveScore(level, score, total) {
+        // Only save if user is logged in
+        if (document.body.classList.contains('logged-in')) {
+            fetch('/save_score', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    game_type: `Typing Game - Level ${level}`,
+                    score: score,
+                    total: total
+                })
+            });
+        }
+    }
+
+    function endLevel() {
+        clearInterval(animationInterval);
+        wordInput.disabled = true;
+        const percentage = (correctCount / totalWords) * 100;
+        scoreDisplay.textContent = `Score: ${correctCount}/${totalWords} (${percentage.toFixed(1)}%)`;
+        
+        // Update best scores
+        if (level === 1) {
+            bestScores.level1 = { score: correctCount, total: totalWords, percentage: percentage };
+            level1Completed = true;
+            level2Button.disabled = false;
+            saveScore(1, correctCount, totalWords);
+        } else if (level === 2) {
+            bestScores.level2 = { score: correctCount, total: totalWords, percentage: percentage };
+            level2Completed = true;
+            level3Button.disabled = false;
+            saveScore(2, correctCount, totalWords);
+        } else if (level === 3) {
+            bestScores.level3 = { score: correctCount, total: totalWords, percentage: percentage };
+            saveScore(3, correctCount, totalWords);
+        }
+        
+        updateBestScores();
+        celebratePerfectScores();
+    }
+</script>
+{% endblock %}

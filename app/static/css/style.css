@@ -628,21 +628,66 @@ main {
 
 /* Profile Page */
 .profile-container {
-    max-width: 1000px;
-    margin: 8rem auto 4rem;
+    max-width: 800px;
+    margin: 2rem auto;
     padding: 2rem;
     background: var(--card-background);
     border-radius: 1.5rem;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .profile-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 3rem;
-    padding-bottom: 2rem;
-    border-bottom: 2px solid rgba(124, 58, 237, 0.1);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-header h1 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.game-history {
+    margin-top: 2rem;
+}
+
+.game-history h2 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.game-history-table {
+    overflow-x: auto;
+}
+
+.game-history-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.game-history-table th,
+.game-history-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+}
+
+.game-history-table th {
+    background: rgba(124, 58, 237, 0.05);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.game-history-table tr:hover {
+    background: rgba(124, 58, 237, 0.05);
+}
+
+.no-history {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 2rem;
+    background: rgba(124, 58, 237, 0.05);
+    border-radius: 0.75rem;
 }
 
 .profile-info h1 {

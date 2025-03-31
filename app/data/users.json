@@ -6,7 +6,48 @@
             "password": "$2b$12$US2kzfbrgXU7o3sInrYM0ug/Ujd58kledtpXZuEYGMGhBfGxgRT0u",
             "secret_question": "What was your first pet's name?",
             "secret_answer": "$2b$12$2elNq.kE94GBz/Q5WAF0hOir5E6lfLYFAt9UI62WAM8x5zGQccCFy",
-            "game_history": []
+            "game_history": [
+                {
+                    "game_type": "Typing Game - Level 1",
+                    "score": 100.0,
+                    "date": "2025-03-30 19:44:21"
+                },
+                {
+                    "game_type": "Typing Game - Level 1",
+                    "score": 100.0,
+                    "date": "2025-03-30 19:44:54"
+                },
+                {
+                    "game_type": "Typing Game - Level 2",
+                    "score": 100.0,
+                    "date": "2025-03-30 19:45:24"
+                },
+                {
+                    "game_type": "Typing Game - Level 3",
+                    "score": 100.0,
+                    "date": "2025-03-30 19:45:35"
+                },
+                {
+                    "game_type": "Dexterity Game",
+                    "score": 50.0,
+                    "date": "2025-03-30 19:51:52"
+                },
+                {
+                    "game_type": "Typing Game - Level 1",
+                    "score": 100.0,
+                    "date": "2025-03-30 19:52:20"
+                },
+                {
+                    "game_type": "Typing Game - Level 2",
+                    "score": 66.66666666666666,
+                    "date": "2025-03-30 19:52:51"
+                },
+                {
+                    "game_type": "Speed Game",
+                    "score": 96.42857142857143,
+                    "date": "2025-03-30 20:04:27"
+                }
+            ]
         },
         {
             "first_name": "Steve",

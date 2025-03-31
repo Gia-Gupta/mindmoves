@@ -254,3 +254,55 @@ def test_registration_errors(client):
     assert b'3000' in response.data  # Check for 3 second timeout
     assert b'opacity = \'0\'' in response.data  # Check for fade out
     assert b'transform = \'translateY(-100%)\'' in response.data  # Check for slide up 
+
+def test_game_history(client):
+    """Test game history functionality."""
+    # 1. Register and login a user
+    register_data = {
+        'first_name': 'Test',
+        'username': 'gameuser',
+        'password': 'TestPass123!',
+        'secret_question': 'What is your favorite color?',
+        'secret_answer': 'blue'
+    }
+    client.post('/register', data=register_data, follow_redirects=True)
+    
+    login_data = {
+        'username': 'gameuser',
+        'password': 'TestPass123!'
+    }
+    client.post('/login', data=login_data, follow_redirects=True)
+    
+    # 2. Check initial profile page (no games)
+    response = client.get('/profile')
+    assert response.status_code == 200
+    assert b'No games played yet' in response.data
+    
+    # 3. Save some game scores
+    from app.auth import save_game_score
+    save_game_score('gameuser', 'Speed Game', 100)
+    save_game_score('gameuser', 'Precision Game', 85)
+    save_game_score('gameuser', 'Typing Game', 120)
+    
+    # 4. Check profile page with game history
+    response = client.get('/profile')
+    assert response.status_code == 200
+    assert b'Recent Game History' in response.data
+    assert b'Speed Game' in response.data
+    assert b'Precision Game' in response.data
+    assert b'Typing Game' in response.data
+    assert b'100' in response.data
+    assert b'85' in response.data
+    assert b'120' in response.data
+    
+    # 5. Verify only last 10 games are shown
+    for i in range(12):
+        save_game_score('gameuser', f'Game {i}', i * 10)
+    
+    response = client.get('/profile')
+    assert response.status_code == 200
+    # Should only show games 2-11 (last 10)
+    assert b'Game 2' in response.data
+    assert b'Game 11' in response.data
+    assert b'Game 0' not in response.data
+    assert b'Game 1' not in response.data 

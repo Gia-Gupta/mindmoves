@@ -59,13 +59,13 @@ def login_user(username, password):
     user = next((user for user in users if user['username'] == username), None)
     
     if user and verify_password(password, user['password']):
-        session['user'] = username
+        session['username'] = username
         return True
     return False
 
 def logout_user():
     """Logout the current user"""
-    session.pop('user', None)
+    session.clear()
 
 def get_user(username):
     """Get user data by username"""
@@ -91,23 +91,48 @@ def verify_secret_answer(username, secret_answer):
         return True, "Secret answer verified"
     return False, "Invalid secret answer"
 
-def save_game_score(username, game_type, score_data):
+def save_game_score(username, game_type, score):
     """Save a game score for a user"""
     users = load_users()
     user = next((user for user in users if user['username'] == username), None)
     
     if user:
-        score_data['date'] = datetime.now().strftime("%Y-%m-%d")
-        user['game_history'].append(score_data)
+        if 'game_history' not in user:
+            user['game_history'] = []
+        
+        # Add new score with timestamp
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Add the new game
+        new_game = {
+            'game_type': game_type,
+            'score': score,
+            'date': current_time
+        }
+        
+        # Add the new game
+        user['game_history'].append(new_game)
+        
+        # Keep only the last 10 games
+        if len(user['game_history']) > 10:
+            user['game_history'] = user['game_history'][-10:]
+        
         save_users(users)
-        return True, "Score saved successfully"
-    
-    return False, "User not found"
+        return True
+    return False
+
+def get_user_game_history(username):
+    """Get the last 10 games for a user"""
+    user = get_user(username)
+    if user and 'game_history' in user:
+        # Return all games (up to 10) in chronological order
+        return user['game_history']
+    return []
 
 def login_required(f):
     """Decorator to require login for routes"""
     def decorated_function(*args, **kwargs):
-        if 'user' not in session:
+        if 'username' not in session:
             return redirect(url_for('main.login'))
         return f(*args, **kwargs)
     decorated_function.__name__ = f.__name__

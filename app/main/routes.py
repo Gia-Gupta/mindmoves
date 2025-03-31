@@ -1,21 +1,17 @@
-from flask import render_template, request, redirect, url_for, flash, session
+from flask import render_template, request, redirect, url_for, flash, session, jsonify
 from app.main import bp
-from app.auth import register_user, login_user, logout_user, verify_secret_answer, update_user_password, get_user, login_required
+from app.auth import register_user, login_user, logout_user, verify_secret_answer, update_user_password, get_user, login_required, get_user_game_history, verify_password, save_game_score
 
 @bp.route("/")
-def home():
+def index():
     user = None
-    if 'user' in session:
-        user = get_user(session['user'])
+    if 'username' in session:
+        user = get_user(session['username'])
     return render_template("index.html", user=user)
 
 @bp.route("/about")
 def about():
     return render_template("about.html")
-
-@bp.route("/gameView")
-def gameView():
-    return render_template("gameView.html")
 
 @bp.route("/typing")
 def typing():
@@ -31,7 +27,8 @@ def dexterity():
 
 @bp.route("/precision")
 def precision():
-    return render_template("precision.html")
+    username = session.get('username') if session.get('username') else None
+    return render_template("precision.html", username=username)
 
 @bp.route("/login", methods=['GET', 'POST'])
 def login():
@@ -41,7 +38,7 @@ def login():
         
         if login_user(username, password):
             flash('Successfully logged in!', 'success')
-            return redirect(url_for('main.home'))
+            return redirect(url_for('main.index'))
         else:
             flash('Invalid username or password', 'error')
     
@@ -87,7 +84,8 @@ def register():
 def logout():
     logout_user()
     flash('Successfully logged out!', 'success')
-    return redirect(url_for('main.home'))
+    session.clear()
+    return redirect(url_for('main.index'))
 
 @bp.route("/forgot-password", methods=['GET', 'POST'])
 def forgot_password():
@@ -143,8 +141,27 @@ def forgot_password():
 @bp.route("/profile")
 @login_required
 def profile():
-    username = session.get('user')
+    username = session.get('username')
     user = get_user(username)
-    if user:
-        return render_template('user/profile.html', user=user)
-    return redirect(url_for('main.login')) 
+    game_history = get_user_game_history(username)
+    return render_template('profile.html', user=user, game_history=game_history)
+
+@bp.route("/save_score", methods=['POST'])
+@login_required
+def save_score():
+    data = request.get_json()
+    username = session.get('username')
+    
+    if username and data:
+        game_type = data.get('game_type')
+        score = data.get('score')
+        total = data.get('total')
+        
+        if game_type and score is not None and total is not None:
+            # Calculate percentage for the score
+            percentage = (score / total) * 100
+            # Save the score with the percentage
+            save_game_score(username, game_type, percentage)
+            return jsonify({'status': 'success'})
+    
+    return jsonify({'status': 'error'}), 400 
