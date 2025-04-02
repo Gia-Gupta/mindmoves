@@ -21,7 +21,7 @@ mindmoves/
 └── run.py                # Application entry point
 ```
 
-## Setup
+## Setup for the site
 
 1. Create a virtual environment:
    ```bash
