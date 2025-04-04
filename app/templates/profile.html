@@ -12,32 +12,50 @@
         <div class="avatar-section">
             <h2>Choose Your Avatar</h2>
             <div class="avatar-grid">
-                <div class="avatar-item" data-avatar="wordNinja.jpg">
-                    <img src="{{ url_for('static', filename='avatars/wordNinja.jpg') }}" alt="Word Ninja" class="avatar-thumbnail">
-                </div>
-                <div class="avatar-item" data-avatar="StrategyNight.jpg">
-                    <img src="{{ url_for('static', filename='avatars/StrategyNight.jpg') }}" alt="Strategy Night" class="avatar-thumbnail">
+                <div class="avatar-item" data-avatar="BrainyWizard.jpg">
+                    <img src="{{ url_for('static', filename='avatars/BrainyWizard.jpg') }}" alt="Brainy Wizard" class="avatar-thumbnail">
                 </div>
                 <div class="avatar-item" data-avatar="CreativeThinker.jpg">
                     <img src="{{ url_for('static', filename='avatars/CreativeThinker.jpg') }}" alt="Creative Thinker" class="avatar-thumbnail">
                 </div>
+                <div class="avatar-item" data-avatar="CreateiveThinker.jpg">
+                    <img src="{{ url_for('static', filename='avatars/CreateiveThinker.jpg') }}" alt="Creative Thinker" class="avatar-thumbnail">
+                </div>
                 <div class="avatar-item" data-avatar="cuterobot.jpg">
                     <img src="{{ url_for('static', filename='avatars/cuterobot.jpg') }}" alt="Cute Robot" class="avatar-thumbnail">
                 </div>
-                <div class="avatar-item" data-avatar="SmartRobot.jpg">
-                    <img src="{{ url_for('static', filename='avatars/SmartRobot.jpg') }}" alt="Smart Robot" class="avatar-thumbnail">
+                <div class="avatar-item" data-avatar="dolphin.jpg">
+                    <img src="{{ url_for('static', filename='avatars/dolphin.jpg') }}" alt="Dolphin" class="avatar-thumbnail">
+                </div>
+                <div class="avatar-item" data-avatar="dragon.jpg">
+                    <img src="{{ url_for('static', filename='avatars/dragon.jpg') }}" alt="Dragon" class="avatar-thumbnail">
+                </div>
+                <div class="avatar-item" data-avatar="ElectricBunny.jpg">
+                    <img src="{{ url_for('static', filename='avatars/ElectricBunny.jpg') }}" alt="Electric Bunny" class="avatar-thumbnail">
+                </div>
+                <div class="avatar-item" data-avatar="image.jpg">
+                    <img src="{{ url_for('static', filename='avatars/image.jpg') }}" alt="Image" class="avatar-thumbnail">
+                </div>
+                <div class="avatar-item" data-avatar="lepricon.jpg">
+                    <img src="{{ url_for('static', filename='avatars/lepricon.jpg') }}" alt="Lepricon" class="avatar-thumbnail">
                 </div>
                 <div class="avatar-item" data-avatar="MemorySage.jpg">
                     <img src="{{ url_for('static', filename='avatars/MemorySage.jpg') }}" alt="Memory Sage" class="avatar-thumbnail">
                 </div>
-                <div class="avatar-item" data-avatar="SpeedyThinkerM.jpg">
-                    <img src="{{ url_for('static', filename='avatars/SpeedyThinkerM.jpg') }}" alt="Speedy Thinker" class="avatar-thumbnail">
-                </div>
                 <div class="avatar-item" data-avatar="PuzzleLady.jpg">
                     <img src="{{ url_for('static', filename='avatars/PuzzleLady.jpg') }}" alt="Puzzle Lady" class="avatar-thumbnail">
                 </div>
-                <div class="avatar-item" data-avatar="BrainyWizard.jpg">
-                    <img src="{{ url_for('static', filename='avatars/BrainyWizard.jpg') }}" alt="Brainy Wizard" class="avatar-thumbnail">
+                <div class="avatar-item" data-avatar="SmartRobot.jpg">
+                    <img src="{{ url_for('static', filename='avatars/SmartRobot.jpg') }}" alt="Smart Robot" class="avatar-thumbnail">
+                </div>
+                <div class="avatar-item" data-avatar="SpeedyThinkerM.jpg">
+                    <img src="{{ url_for('static', filename='avatars/SpeedyThinkerM.jpg') }}" alt="Speedy Thinker" class="avatar-thumbnail">
+                </div>
+                <div class="avatar-item" data-avatar="StrategyNight.jpg">
+                    <img src="{{ url_for('static', filename='avatars/StrategyNight.jpg') }}" alt="Strategy Night" class="avatar-thumbnail">
+                </div>
+                <div class="avatar-item" data-avatar="wordNinja.jpg">
+                    <img src="{{ url_for('static', filename='avatars/wordNinja.jpg') }}" alt="Word Ninja" class="avatar-thumbnail">
                 </div>
             </div>
         </div>
@@ -49,10 +67,10 @@
                 <div class="history-item">
                     <div class="game-info">
                         <span class="game-name">{{ score.game_type }}</span>
-                        <span class="game-date">{{ score.timestamp }}</span>
+                        <span class="game-date">{{ score.date or score.timestamp }}</span>
                     </div>
                     <div class="game-score">
-                        Score: {{ "%.2f"|format(score.score) }}
+                        Score: {{ score.score }}/{{ score.total if score.total else 100 }} ({{ "%.1f"|format((score.score/(score.total if score.total else 100))*100) }}%)
                     </div>
                 </div>
                 {% endfor %}

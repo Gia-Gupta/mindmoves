@@ -182,9 +182,15 @@ def profile():
                 # Add avatar information to the user object
                 user['avatar'] = user.get('avatar', 'wordNinja.jpg')  # Default to wordNinja if no avatar set
                 return render_template('profile.html', user=user, game_history=game_history)
+            else:
+                flash('User not found', 'error')
+                return redirect(url_for('main.index'))
     except FileNotFoundError:
         flash('Error loading user data', 'error')
-    return redirect(url_for('main.index'))
+        return redirect(url_for('main.index'))
+    except json.JSONDecodeError:
+        flash('Error reading user data', 'error')
+        return redirect(url_for('main.index'))
 
 @bp.route("/save_score", methods=['POST'])
 def save_score():
@@ -200,30 +206,32 @@ def save_score():
         return jsonify({'error': 'Missing required fields'}), 400
 
     try:
-        with open('users.json', 'r') as f:
-            users = json.load(f)
+        with open('app/data/users.json', 'r') as f:
+            data = json.load(f)
+            users = data['users']
     except FileNotFoundError:
         return jsonify({'error': 'Users file not found'}), 500
 
     username = session.get('username')
-    if username not in users:
+    user = next((user for user in users if user['username'] == username), None)
+    if not user:
         return jsonify({'error': 'User not found'}), 404
 
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     score_data = {
         'game_type': game_type,
         'score': score,
         'total': total,
-        'timestamp': timestamp
+        'date': current_time  # Using 'date' to be consistent with existing records
     }
 
-    if 'game_history' not in users[username]:
-        users[username]['game_history'] = []
-    users[username]['game_history'].append(score_data)
+    if 'game_history' not in user:
+        user['game_history'] = []
+    user['game_history'].append(score_data)
 
     try:
-        with open('users.json', 'w') as f:
-            json.dump(users, f, indent=4)
+        with open('app/data/users.json', 'w') as f:
+            json.dump({'users': users}, f, indent=4)
         return jsonify({'message': 'Score saved successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500

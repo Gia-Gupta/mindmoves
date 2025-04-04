@@ -3,118 +3,24 @@
         {
             "first_name": "Derek",
             "username": "derekstock",
-            "password": "$2b$12$US2kzfbrgXU7o3sInrYM0ug/Ujd58kledtpXZuEYGMGhBfGxgRT0u",
+            "password": "$2b$12$u5GQ5FpH1hDj1vlp8D2.v.CavapXXmtewXiE4M4ehV3MLNfMsf4Ae",
             "secret_question": "What was your first pet's name?",
-            "secret_answer": "$2b$12$2elNq.kE94GBz/Q5WAF0hOir5E6lfLYFAt9UI62WAM8x5zGQccCFy",
+            "secret_answer": "$2b$12$y/.sKlwNNG5zqr3aerkAWOdk9jRqgq/fcLMe66YSL.JRlXcVG4EFK",
             "game_history": [
                 {
-                    "game_type": "Typing Game - Level 3",
-                    "score": 100.0,
-                    "date": "2025-03-30 20:09:44"
+                    "game_type": "Typing Game - Level 1",
+                    "score": 3,
+                    "total": 3,
+                    "date": "2025-04-03 19:16:07"
                 },
                 {
                     "game_type": "Speed Game",
-                    "score": 100.0,
-                    "date": "2025-03-30 20:10:26"
-                },
-                {
-                    "game_type": "Dexterity Game",
-                    "score": 50.0,
-                    "date": "2025-03-30 20:11:17"
-                },
-                {
-                    "game_type": "Dexterity Game",
-                    "score": 100.0,
-                    "date": "2025-03-30 20:19:02"
-                },
-                {
-                    "game_type": "Dexterity Game",
-                    "score": 66.66666666666666,
-                    "date": "2025-03-30 20:19:48"
-                },
-                {
-                    "game_type": "Dexterity Game",
-                    "score": 85.71428571428571,
-                    "date": "2025-03-30 20:30:21"
-                },
-                {
-                    "game_type": "Typing Game - Level 1",
-                    "score": 66.66666666666666,
-                    "date": "2025-03-30 20:50:02"
-                },
-                {
-                    "game_type": "Dexterity Game",
-                    "score": 93.75,
-                    "date": "2025-03-30 21:04:09"
-                },
-                {
-                    "game_type": "Dexterity Game",
-                    "score": 77.77777777777779,
-                    "date": "2025-03-30 21:23:06"
-                },
-                {
-                    "game_type": "Dexterity Game",
-                    "score": 84.21052631578947,
-                    "date": "2025-03-30 21:34:44"
+                    "score": 25,
+                    "total": 28,
+                    "date": "2025-04-03 19:16:58"
                 }
             ],
-            "avatar": "CreativeThinker.jpg"
-        },
-        {
-            "first_name": "Steve",
-            "username": "stevetest",
-            "password": "$2b$12$Z0dDEJW0seiEaiCKldPIXu31L0SKw3pp/qRsArDwt80dedGbUk1xO",
-            "secret_question": "What city were you born in?",
-            "secret_answer": "$2b$12$gmN86Ewoz3jCpEtNePmbr.35wvx.c6CZEDzxJgjLkFGO3PMNLL2se",
-            "game_history": []
-        },
-        {
-            "first_name": "test",
-            "username": "test",
-            "password": "$2b$12$HLRoYbgdVIMPg8HOb2/8bum1lUW3bmxSet0uFMyf/MZUDtGmJ8Lwq",
-            "secret_question": "What was your first pet's name?",
-            "secret_answer": "$2b$12$TbgBWRAxx2YY3xPxmzroVOFMiq2hdZ2oDC/W4ZPc5qZiw47pW33sa",
-            "game_history": []
-        },
-        {
-            "first_name": "Billy",
-            "username": "testbilly",
-            "password": "$2b$12$aeN2zNS/kjr2gKmhG.thSO3KU6uQRAYCxGJI/nRGeg1KMZwBuTkOG",
-            "secret_question": "What was your first pet's name?",
-            "secret_answer": "$2b$12$KTTL87ss3BVK02qrZbeJSuarF/mRRmR3rCI2HYeb1I18M0tq/A/6q",
-            "game_history": []
-        },
-        {
-            "first_name": "mark",
-            "username": "marktest",
-            "password": "$2b$12$NjoSrQtGN3TAzXhOkW.J4eRKII8vIKi.7Ol7iHDb8WF.GWd1p2oNS",
-            "secret_question": "What was your first pet's name?",
-            "secret_answer": "$2b$12$zfumzrgPNeGk.ufJZAs5SOYfnmUMQrzK/FgAX8JHY2NMKAYBiRt8q",
-            "game_history": []
-        },
-        {
-            "first_name": "jeff",
-            "username": "jefftest",
-            "password": "$2b$12$kVyDr/.Ha3HpfTvRPd7e5OTx4xldafbKN3vhMhepJbUG6cJfu3GhG",
-            "secret_question": "What was your first pet's name?",
-            "secret_answer": "$2b$12$qjJKrYf7XvHVudxNpCxA2uinqrDprBfHpDDPS32UrwF.0KUlehdKG",
-            "game_history": []
-        },
-        {
-            "first_name": "jonny",
-            "username": "jonny",
-            "password": "$2b$12$jP9gj1UPlYzQz4n85aCXYezum79ExkBe6sJtMN3CW.26R6lCgYsyy",
-            "secret_question": "What was your first pet's name?",
-            "secret_answer": "$2b$12$aUSIwX.YJaWJYQLSIosgoOREVSSisuNmp1.tPGO/vz702QaKCxCdS",
-            "game_history": []
-        },
-        {
-            "first_name": "barny",
-            "username": "barnytest",
-            "password": "$2b$12$Gf8s2kaExh0pAWqsM6ZlguF0/rx94nqh5okq1Ati8.3rEYITuTl3a",
-            "secret_question": "What was your first pet's name?",
-            "secret_answer": "$2b$12$mAbXrvoCmLojIAU9dLq3wu9YQ.J3DGK/U/IkYUYWdxjGF.OqILxCG",
-            "game_history": []
+            "avatar": "SpeedyThinkerM.jpg"
         }
     ]
 }
