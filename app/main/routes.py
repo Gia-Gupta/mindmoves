@@ -7,8 +7,10 @@ from datetime import datetime
 @bp.route("/")
 def index():
     user = None
-    if 'username' in session:
+    if session.get('username'):
         user = get_user(session['username'])
+        if user:
+            user['avatar'] = user.get('avatar', 'wordNinja.jpg')
     return render_template("index.html", user=user)
 
 @bp.route("/about")
@@ -45,20 +47,39 @@ def history():
 
 @bp.route("/typing")
 def typing():
-    return render_template("typing.html")
+    user = None
+    if session.get('username'):
+        user = get_user(session['username'])
+        if user:
+            user['avatar'] = user.get('avatar', 'wordNinja.jpg')
+    return render_template("typing.html", user=user)
 
 @bp.route("/speed")
 def speed():
-    return render_template("speed.html")
+    user = None
+    if session.get('username'):
+        user = get_user(session['username'])
+        if user:
+            user['avatar'] = user.get('avatar', 'wordNinja.jpg')
+    return render_template("speed.html", user=user)
 
 @bp.route("/dexterity")
 def dexterity():
-    return render_template("dexterity.html")
+    user = None
+    if session.get('username'):
+        user = get_user(session['username'])
+        if user:
+            user['avatar'] = user.get('avatar', 'wordNinja.jpg')
+    return render_template("dexterity.html", user=user)
 
 @bp.route("/precision")
 def precision():
-    username = session.get('username') if session.get('username') else None
-    return render_template("precision.html", username=username)
+    user = None
+    if session.get('username'):
+        user = get_user(session['username'])
+        if user:
+            user['avatar'] = user.get('avatar', 'wordNinja.jpg')
+    return render_template("precision.html", user=user)
 
 @bp.route("/login", methods=['GET', 'POST'])
 def login():

@@ -18,9 +18,27 @@
                     "score": 25,
                     "total": 28,
                     "date": "2025-04-03 19:16:58"
+                },
+                {
+                    "game_type": "Dexterity Game",
+                    "score": 12,
+                    "total": 13,
+                    "date": "2025-04-03 20:26:15"
+                },
+                {
+                    "game_type": "Typing Game - Level 1",
+                    "score": 3,
+                    "total": 3,
+                    "date": "2025-04-03 20:27:03"
+                },
+                {
+                    "game_type": "Typing Game - Level 2",
+                    "score": 3,
+                    "total": 3,
+                    "date": "2025-04-03 20:27:54"
                 }
             ],
-            "avatar": "PuzzleLady.jpg"
+            "avatar": "SpeedyThinkerM.jpg"
         }
     ]
 }

@@ -47,6 +47,12 @@
     {% endwith %}
 
     <main class="container">
+        {% if session.get('username') and user and user.avatar %}
+            <div class="game-header">
+                <img src="{{ url_for('static', filename='avatars/' + user.avatar) }}" alt="Avatar" class="game-avatar">
+                <h1>{% block header_title %}{% endblock %}</h1>
+            </div>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
 
