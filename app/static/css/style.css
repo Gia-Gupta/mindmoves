@@ -53,6 +53,7 @@ body {
     align-items: center;
     gap: 1rem;
     text-decoration: none;
+    position: relative;
 }
 
 .logo-icon {
@@ -67,6 +68,20 @@ body {
     color: white;
     text-transform: uppercase;
     letter-spacing: 2px;
+}
+
+.header-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 4px;
+    object-fit: cover;
+    border: 2px solid var(--accent-color);
+    margin-left: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.header-avatar:hover {
+    transform: scale(1.1);
 }
 
 .nav-links {
@@ -95,6 +110,25 @@ body {
 
 .nav-links i {
     font-size: 1.1rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.nav-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+}
+
+.username {
+    color: white;
+    font-weight: 500;
 }
 
 /* Hero Section */

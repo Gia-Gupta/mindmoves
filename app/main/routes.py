@@ -1,6 +1,8 @@
 from flask import render_template, request, redirect, url_for, flash, session, jsonify
 from app.main import bp
 from app.auth import register_user, login_user, logout_user, verify_secret_answer, update_user_password, get_user, login_required, get_user_game_history, verify_password, save_game_score
+import json
+from datetime import datetime
 
 @bp.route("/")
 def index():
@@ -11,11 +13,35 @@ def index():
 
 @bp.route("/about")
 def about():
-    return render_template("about.html")
+    user = None
+    if session.get('username'):
+        try:
+            with open('app/data/users.json', 'r') as f:
+                data = json.load(f)
+                users = data['users']
+                user = next((user for user in users if user['username'] == session.get('username')), None)
+                if user:
+                    user['avatar'] = user.get('avatar', 'wordNinja.jpg')
+        except FileNotFoundError:
+            pass
+    return render_template('about.html', user=user)
 
 @bp.route("/history")
+@login_required
 def history():
-    return render_template('history.html')
+    username = session.get('username')
+    try:
+        with open('app/data/users.json', 'r') as f:
+            data = json.load(f)
+            users = data['users']
+            user = next((user for user in users if user['username'] == username), None)
+            if user:
+                game_history = user.get('game_history', [])
+                user['avatar'] = user.get('avatar', 'wordNinja.jpg')
+                return render_template('history.html', user=user, game_history=game_history)
+    except FileNotFoundError:
+        flash('Error loading user data', 'error')
+    return redirect(url_for('main.index'))
 
 @bp.route("/typing")
 def typing():
@@ -146,26 +172,96 @@ def forgot_password():
 @login_required
 def profile():
     username = session.get('username')
-    user = get_user(username)
-    game_history = get_user_game_history(username)
-    return render_template('profile.html', user=user, game_history=game_history)
+    try:
+        with open('app/data/users.json', 'r') as f:
+            data = json.load(f)
+            users = data['users']
+            user = next((user for user in users if user['username'] == username), None)
+            if user:
+                game_history = user.get('game_history', [])
+                # Add avatar information to the user object
+                user['avatar'] = user.get('avatar', 'wordNinja.jpg')  # Default to wordNinja if no avatar set
+                return render_template('profile.html', user=user, game_history=game_history)
+    except FileNotFoundError:
+        flash('Error loading user data', 'error')
+    return redirect(url_for('main.index'))
 
 @bp.route("/save_score", methods=['POST'])
-@login_required
 def save_score():
+    if not session.get('username'):
+        return jsonify({'error': 'User not logged in'}), 401
+
     data = request.get_json()
+    game_type = data.get('game_type')
+    score = data.get('score')
+    total = data.get('total')
+
+    if not all([game_type, score is not None, total is not None]):
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    try:
+        with open('users.json', 'r') as f:
+            users = json.load(f)
+    except FileNotFoundError:
+        return jsonify({'error': 'Users file not found'}), 500
+
     username = session.get('username')
+    if username not in users:
+        return jsonify({'error': 'User not found'}), 404
+
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    score_data = {
+        'game_type': game_type,
+        'score': score,
+        'total': total,
+        'timestamp': timestamp
+    }
+
+    if 'game_history' not in users[username]:
+        users[username]['game_history'] = []
+    users[username]['game_history'].append(score_data)
+
+    try:
+        with open('users.json', 'w') as f:
+            json.dump(users, f, indent=4)
+        return jsonify({'message': 'Score saved successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@bp.route("/update_avatar", methods=['POST'])
+def update_avatar():
+    if not session.get('username'):
+        return jsonify({'error': 'User not logged in'}), 401
+
+    data = request.get_json()
+    avatar_name = data.get('avatar_name')
+
+    if not avatar_name:
+        return jsonify({'error': 'Avatar name is required'}), 400
+
+    try:
+        with open('app/data/users.json', 'r') as f:
+            data = json.load(f)
+            users = data['users']
+    except FileNotFoundError:
+        return jsonify({'error': 'Users file not found'}), 500
+
+    username = session.get('username')
+    user_found = False
     
-    if username and data:
-        game_type = data.get('game_type')
-        score = data.get('score')
-        total = data.get('total')
-        
-        if game_type and score is not None and total is not None:
-            # Calculate percentage for the score
-            percentage = (score / total) * 100
-            # Save the score with the percentage
-            save_game_score(username, game_type, percentage)
-            return jsonify({'status': 'success'})
-    
-    return jsonify({'status': 'error'}), 400 
+    # Find and update the user in the array
+    for user in users:
+        if user['username'] == username:
+            user['avatar'] = avatar_name
+            user_found = True
+            break
+
+    if not user_found:
+        return jsonify({'error': 'User not found'}), 404
+
+    try:
+        with open('app/data/users.json', 'w') as f:
+            json.dump(data, f, indent=4)
+        return jsonify({'message': 'Avatar updated successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500 

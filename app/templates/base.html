@@ -16,6 +16,9 @@
                 <a href="{{ url_for('main.index') }}" class="logo">
                     <i class="fas fa-brain logo-icon"></i>
                     <span class="logo-text">MindMoves</span>
+                    {% if session.get('username') and user and user.avatar %}
+                        <img src="{{ url_for('static', filename='avatars/' + user.avatar) }}" alt="Avatar" class="header-avatar">
+                    {% endif %}
                 </a>
                 <div class="nav-links">
                     <a href="{{ url_for('main.index') }}"><i class="fas fa-home"></i> Home</a>
