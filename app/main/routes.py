@@ -13,6 +13,10 @@ def index():
 def about():
     return render_template("about.html")
 
+@bp.route("/history")
+def history():
+    return render_template('history.html')
+
 @bp.route("/typing")
 def typing():
     return render_template("typing.html")

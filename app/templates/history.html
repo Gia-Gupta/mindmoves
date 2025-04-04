@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="history-container">
+        <div class="founder-image">
+            <img src="{{ url_for('static', filename='images/founder-placeholder.jpg') }}" alt="Gia Gupta" class="founder-photo">
+        </div>
+        <div class="founder-bio">
+            <h1>Our Founder</h1>
+            <p>Gia Gupta, a high school senior, is the founder of mindmoves.io, a game website designed specifically for older Parkinson's patients. Recognizing that most existing games target younger audiences, Gia set out to develop a unique platform accessible on both mobile phones and the web, aimed at enhancing motor skills for those with Parkinson's.</p>
+            <p>With a passion for dance as a competitive dancer at her school, Gia is also exploring dance movement therapy as a potential benefit for Parkinson's patients. Alongside her interests in computer science and volunteer work, she has combined her skills and dedication to create this innovative resource for the Parkinson's community.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.history-container {
+    max-width: 800px;
+    margin: 8rem auto 4rem;
+    padding: 2rem;
+    background: var(--card-background);
+    border-radius: 1.5rem;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.founder-image {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.founder-photo {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--primary-color);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.founder-bio {
+    text-align: left;
+}
+
+.founder-bio h1 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.founder-bio p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+</style>
+{% endblock %} 
