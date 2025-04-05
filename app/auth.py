@@ -6,7 +6,7 @@ from functools import wraps
 from flask import session, redirect, url_for, flash
 
 # Path to users.json
-USERS_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'app', 'data', 'users.json')
+USERS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'users.json')
 
 def load_users():
     """Load users from JSON file"""

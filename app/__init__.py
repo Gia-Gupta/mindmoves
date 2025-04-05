@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_session import Session
 import os
+from datetime import timedelta
 
 def create_app():
     app = Flask(__name__)
@@ -10,6 +11,10 @@ def create_app():
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SESSION_FILE_DIR'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'flask_session')
     app.config['SESSION_FILE_THRESHOLD'] = 100
+    app.config['SESSION_COOKIE_NAME'] = 'mindmoves_session'
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+    app.config['SESSION_COOKIE_SECURE'] = False
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['USERS_FILE'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'app', 'data', 'users.json')
     app.config['DEBUG'] = False  # Add this line
 
