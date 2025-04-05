@@ -39,6 +39,22 @@
                 }
             ],
             "avatar": "cuterobot.jpg"
+        },
+        {
+            "first_name": "Derek",
+            "username": "testtest",
+            "password": "$2b$12$RGFgo9N4d8rbF/YL2CTExe558mj.qH52O9ckkJIcMWqhEfjeMQ63q",
+            "secret_question": "What was your first pet's name?",
+            "secret_answer": "$2b$12$9fEadVXwiqiErGewAJnA2OajLefiHLbsC5z1p96.v.oPvWAUMljv2",
+            "game_history": [
+                {
+                    "game_type": "Typing Game - Level 1",
+                    "score": 3,
+                    "total": 3,
+                    "date": "2025-04-04 20:29:28"
+                }
+            ],
+            "avatar": "dragon.jpg"
         }
     ]
 }

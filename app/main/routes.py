@@ -193,24 +193,13 @@ def forgot_password():
 @login_required
 def profile():
     username = session.get('username')
-    try:
-        with open('app/data/users.json', 'r') as f:
-            data = json.load(f)
-            users = data['users']
-            user = next((user for user in users if user['username'] == username), None)
-            if user:
-                game_history = user.get('game_history', [])
-                # Add avatar information to the user object
-                user['avatar'] = user.get('avatar', 'wordNinja.jpg')  # Default to wordNinja if no avatar set
-                return render_template('profile.html', user=user, game_history=game_history)
-            else:
-                flash('User not found', 'error')
-                return redirect(url_for('main.index'))
-    except FileNotFoundError:
-        flash('Error loading user data', 'error')
-        return redirect(url_for('main.index'))
-    except json.JSONDecodeError:
-        flash('Error reading user data', 'error')
+    user = get_user(username)
+    if user:
+        game_history = user.get('game_history', [])
+        user['avatar'] = user.get('avatar', 'wordNinja.jpg')  # Default to wordNinja if no avatar set
+        return render_template('profile.html', user=user, game_history=game_history)
+    else:
+        flash('User not found', 'error')
         return redirect(url_for('main.index'))
 
 @bp.route("/save_score", methods=['POST'])

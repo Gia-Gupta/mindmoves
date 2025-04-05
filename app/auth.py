@@ -6,7 +6,7 @@ from functools import wraps
 from flask import session, redirect, url_for, flash
 
 # Path to users.json
-USERS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'users.json')
+USERS_FILE = 'app/data/users.json'
 
 def load_users():
     """Load users from JSON file"""
@@ -91,7 +91,7 @@ def verify_secret_answer(username, secret_answer):
         return True, "Secret answer verified"
     return False, "Invalid secret answer"
 
-def save_game_score(username, game_type, score):
+def save_game_score(username, game_type, score, total=None):
     """Save a game score for a user"""
     users = load_users()
     user = next((user for user in users if user['username'] == username), None)
@@ -107,6 +107,7 @@ def save_game_score(username, game_type, score):
         new_game = {
             'game_type': game_type,
             'score': score,
+            'total': total if total is not None else 100,  # Default to 100 if total not provided
             'date': current_time
         }
         
