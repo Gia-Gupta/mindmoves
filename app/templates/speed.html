@@ -826,20 +826,80 @@
                 shape.style.background = `linear-gradient(135deg, ${colors.start}, ${colors.end})`;
             }
             
-            shape.style.left = `${Math.random() * (this.gameArea.clientWidth - size)}px`;
-            shape.style.top = `${Math.random() * (this.gameArea.clientHeight - size)}px`;
+            // Calculate position ensuring the shape is fully within the game area
+            const maxX = this.gameArea.clientWidth - size;
+            const maxY = this.gameArea.clientHeight - size;
+            const x = Math.random() * maxX;
+            const y = Math.random() * maxY;
+            
+            shape.style.left = `${x}px`;
+            shape.style.top = `${y}px`;
             
             // Add a data attribute to track if the shape has been clicked
             shape.dataset.clicked = 'false';
             
+            // Store the shape's position and size as data attributes for accurate click detection
+            shape.dataset.x = x;
+            shape.dataset.y = y;
+            shape.dataset.size = size;
+            shape.dataset.type = shapeType;
+            
             shape.addEventListener('click', (e) => {
                 e.stopPropagation();
+                
+                // Get the click position relative to the game area
+                const rect = this.gameArea.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const clickY = e.clientY - rect.top;
+                
+                // Get the shape's position and size
+                const shapeX = parseFloat(shape.dataset.x);
+                const shapeY = parseFloat(shape.dataset.y);
+                const shapeSize = parseFloat(shape.dataset.size);
+                const shapeType = shape.dataset.type;
+                
+                // Check if the click is within the shape's boundaries
+                let isClickInShape = false;
+                
                 if (shapeType === 'circle') {
-                    // Mark the shape as clicked before handling the hit
-                    shape.dataset.clicked = 'true';
-                    this.handleHit(shape);
+                    // For circles, check if the click is within the circle's radius
+                    const centerX = shapeX + shapeSize / 2;
+                    const centerY = shapeY + shapeSize / 2;
+                    const distance = Math.sqrt(
+                        Math.pow(clickX - centerX, 2) + 
+                        Math.pow(clickY - centerY, 2)
+                    );
+                    isClickInShape = distance <= shapeSize / 2;
+                } else if (shapeType === 'square' || shapeType === 'diamond') {
+                    // For squares and diamonds, check if the click is within the shape's boundaries
+                    isClickInShape = (
+                        clickX >= shapeX && 
+                        clickX <= shapeX + shapeSize && 
+                        clickY >= shapeY && 
+                        clickY <= shapeY + shapeSize
+                    );
+                } else if (shapeType === 'triangle') {
+                    // For triangles, approximate the click detection
+                    const centerX = shapeX;
+                    const centerY = shapeY;
+                    const distance = Math.sqrt(
+                        Math.pow(clickX - centerX, 2) + 
+                        Math.pow(clickY - centerY, 2)
+                    );
+                    isClickInShape = distance <= shapeSize / 2;
+                }
+                
+                if (isClickInShape) {
+                    if (shapeType === 'circle') {
+                        // Mark the shape as clicked before handling the hit
+                        shape.dataset.clicked = 'true';
+                        this.handleHit(shape);
+                    } else {
+                        this.handleShapeMiss(shape);
+                    }
                 } else {
-                    this.handleShapeMiss(shape);
+                    // Click was outside the shape, count as a miss
+                    this.handleMiss(e);
                 }
             });
             
