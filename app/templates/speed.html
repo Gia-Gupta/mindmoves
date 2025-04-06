@@ -753,11 +753,29 @@
         }
 
         getCurrentCircleLifetime() {
-            return this.baseCircleLifetime / this.calculateDifficulty();
+            // Base lifetime adjusted by difficulty
+            let lifetime = this.baseCircleLifetime / this.calculateDifficulty();
+            
+            // Apply slow-motion effect if active
+            if (this.activePowerUps['slow-motion']) {
+                // Make circles stay on screen 3x longer
+                lifetime *= 3;
+            }
+            
+            return lifetime;
         }
 
         getCurrentCircleSize() {
-            return Math.max(20, this.baseCircleSize / this.calculateDifficulty());
+            // Base size adjusted by difficulty
+            let size = Math.max(20, this.baseCircleSize / this.calculateDifficulty());
+            
+            // Apply size-boost effect if active
+            if (this.activePowerUps['size-boost']) {
+                // Make circles 2.5x bigger
+                size *= 2.5;
+            }
+            
+            return size;
         }
 
         getCurrentSpawnRate() {
@@ -1155,10 +1173,10 @@
                         countdown.className = 'level-transition';
                         countdown.textContent = i;
                         this.gameArea.appendChild(countdown);
-                        setTimeout(() => countdown.remove(), 900);
+                        setTimeout(() => countdown.remove(), 1500);
                     }, (3 - i) * 1000);
                 }
-                setTimeout(resolve, 3000);
+                setTimeout(resolve, 4000);
             });
         }
 
@@ -1188,7 +1206,7 @@
                     warning.className = 'level-transition warning';
                     warning.textContent = 'Watch out for more non-circle shapes!';
                     this.gameArea.appendChild(warning);
-                    setTimeout(() => warning.remove(), 1500);
+                    setTimeout(() => warning.remove(), 2500);
                 }, 1000);
             }
             
@@ -1199,7 +1217,7 @@
                 colorInfo.style.color = colors.start;
                 colorInfo.textContent = 'New circle colors!';
                 this.gameArea.appendChild(colorInfo);
-                setTimeout(() => colorInfo.remove(), 1500);
+                setTimeout(() => colorInfo.remove(), 2500);
             }, 2000);
             
             await this.showLevelTransition();
