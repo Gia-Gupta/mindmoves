@@ -52,9 +52,15 @@
                     "score": 3,
                     "total": 3,
                     "date": "2025-04-04 20:29:28"
+                },
+                {
+                    "game_type": "Speed Game",
+                    "score": 23,
+                    "total": 29,
+                    "date": "2025-04-05 19:48:18"
                 }
             ],
-            "avatar": "dragon.jpg"
+            "avatar": "Unicorn.jpg"
         }
     ]
 }

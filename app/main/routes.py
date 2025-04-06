@@ -10,7 +10,7 @@ def index():
     if session.get('username'):
         user = get_user(session['username'])
         if user:
-            user['avatar'] = user.get('avatar', 'wordNinja.jpg')
+            user['avatar'] = user.get('avatar', 'WordNinja.jpg')
     return render_template("index.html", user=user)
 
 @bp.route("/about")
@@ -23,7 +23,7 @@ def about():
                 users = data['users']
                 user = next((user for user in users if user['username'] == session.get('username')), None)
                 if user:
-                    user['avatar'] = user.get('avatar', 'wordNinja.jpg')
+                    user['avatar'] = user.get('avatar', 'WordNinja.jpg')
         except FileNotFoundError:
             pass
     return render_template('about.html', user=user)
@@ -196,7 +196,7 @@ def profile():
     user = get_user(username)
     if user:
         game_history = user.get('game_history', [])
-        user['avatar'] = user.get('avatar', 'wordNinja.jpg')  # Default to wordNinja if no avatar set
+        user['avatar'] = user.get('avatar', 'WordNinja.jpg')  # Default to WordNinja if no avatar set
         return render_template('profile.html', user=user, game_history=game_history)
     else:
         flash('User not found', 'error')

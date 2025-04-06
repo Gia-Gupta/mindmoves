@@ -3,14 +3,63 @@
 {% block content %}
 <section class="hero">
     <div class="container">
-        <div class="hero-content">
-            {% if user %}
-                <h1>Welcome back, {{ user.first_name }}!</h1>
-            {% else %}
-                <h1>Brain Training Games</h1>
-            {% endif %}
-            <h2>Train Your Brain, One Move at a Time</h2>
-            <p>Challenge your mind with our collection of engaging brain training games. Improve your cognitive skills, reaction time, and mental agility while having fun!</p>
+        <div class="hero-split">
+            <div class="hero-content">
+                {% if user %}
+                    <h1>Welcome back, {{ user.first_name }}!</h1>
+                {% else %}
+                    <h1>Brain Training Games</h1>
+                {% endif %}
+                <h2>Train Your Brain, One Move at a Time</h2>
+                <p>Challenge your mind with our collection of engaging brain training games. Improve your cognitive skills, reaction time, and mental agility while having fun!</p>
+            </div>
+            <div class="hero-leaderboard">
+                <div class="leaderboard-card">
+                    <h2>Game Champions</h2>
+                    <div class="leaderboard-list">
+                        <div class="leaderboard-item">
+                            <img src="{{ url_for('static', filename='avatars/WordNinja.jpg') }}" alt="Avatar" class="leaderboard-avatar">
+                            <div class="champion-info">
+                                <div class="game-details">
+                                    <div class="game-title">Typing Master</div>
+                                    <div class="player-name">WordNinja</div>
+                                </div>
+                                <div class="score">98%</div>
+                            </div>
+                        </div>
+                        <div class="leaderboard-item">
+                            <img src="{{ url_for('static', filename='avatars/SmartRobot.jpg') }}" alt="Avatar" class="leaderboard-avatar">
+                            <div class="champion-info">
+                                <div class="game-details">
+                                    <div class="game-title">Speed Champion</div>
+                                    <div class="player-name">SpeedKing</div>
+                                </div>
+                                <div class="score">95%</div>
+                            </div>
+                        </div>
+                        <div class="leaderboard-item">
+                            <img src="{{ url_for('static', filename='avatars/PuzzleLady.jpg') }}" alt="Avatar" class="leaderboard-avatar">
+                            <div class="champion-info">
+                                <div class="game-details">
+                                    <div class="game-title">Precision Leader</div>
+                                    <div class="player-name">PuzzleQueen</div>
+                                </div>
+                                <div class="score">92%</div>
+                            </div>
+                        </div>
+                        <div class="leaderboard-item">
+                            <img src="{{ url_for('static', filename='avatars/BrainyWizard.jpg') }}" alt="Avatar" class="leaderboard-avatar">
+                            <div class="champion-info">
+                                <div class="game-details">
+                                    <div class="game-title">Dexterity King</div>
+                                    <div class="player-name">MindWizard</div>
+                                </div>
+                                <div class="score">89%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
