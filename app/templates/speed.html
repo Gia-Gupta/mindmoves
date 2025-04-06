@@ -8,12 +8,27 @@
 <div class="game-container">
     <h1>Speed Game</h1>
     <p>Click the circles as quickly as you can before they disappear!</p>
+    <div class="instructions">
+        <h2>How to Play:</h2>
+        <ul>
+            <li>Click on <span style="color: var(--primary-color); font-weight: bold;">circles</span> to score points.</li>
+            <li>Circles change colors as you advance through levels.</li>
+            <li>As you advance in levels, other shapes (squares, triangles, diamonds) will appear.</li>
+            <li>Avoid clicking on non-circle shapes as they count as misses.</li>
+            <li>Build combos by clicking circles consecutively.</li>
+            <li>Avoid missing to maintain your combo.</li>
+            <li>Advance to the next level by achieving more hits than misses.</li>
+            <li>Use power-ups to gain advantages.</li>
+        </ul>
+    </div>
 
     <div class="game-info">
         <div class="level-display">Level: <span id="levelDisplay">1</span></div>
         <div class="timer" id="timer">Time: 30s</div>
         <div class="multiplier">Score Multiplier: <span id="multiplierDisplay">1.0</span>x</div>
         <div class="combo-display">Combo: <span id="comboDisplay">0</span>x</div>
+        <div class="power-up-status" id="powerUpStatus"></div>
+        <div class="high-score-display">High Score: <span id="highScoreDisplay">0</span></div>
     </div>
 
     <div class="game-area" id="gameArea"></div>
@@ -31,7 +46,14 @@
     </div>
 
     <button class="start-button" id="startButton">Start Game</button>
+    <button class="mute-button" id="muteButton">Mute</button>
+    <button class="pause-button" id="pauseButton" disabled>Pause</button>
 </div>
+
+<audio id="hitSound" src="/static/sounds/hit.mp3" preload="auto"></audio>
+<audio id="missSound" src="/static/sounds/miss.mp3" preload="auto"></audio>
+<audio id="levelUpSound" src="/static/sounds/level-up.mp3" preload="auto"></audio>
+<audio id="powerUpSound" src="/static/sounds/power-up.mp3" preload="auto"></audio>
 
 <style>
     .game-container {
@@ -86,15 +108,50 @@
         animation: spawn 0.3s ease-out;
     }
 
-    .circle.expire {
+    .square {
+        position: absolute;
+        border-radius: 10%;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        background: linear-gradient(135deg, #FF5722, #FF9800);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        animation: spawn 0.3s ease-out;
+    }
+
+    .triangle {
+        position: absolute;
+        width: 0;
+        height: 0;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        border-left: 30px solid transparent;
+        border-right: 30px solid transparent;
+        border-bottom: 52px solid #9C27B0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        animation: spawn 0.3s ease-out;
+    }
+
+    .diamond {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        background: linear-gradient(135deg, #00BCD4, #2196F3);
+        transform: rotate(45deg);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        animation: spawn 0.3s ease-out;
+    }
+
+    .circle.expire, .square.expire, .triangle.expire, .diamond.expire {
         animation: expire 0.5s ease-out forwards;
     }
 
-    .circle.pop {
+    .circle.pop, .square.pop, .triangle.pop, .diamond.pop {
         animation: pop 0.3s ease-out forwards;
     }
 
-    .circle.pulse {
+    .circle.pulse, .square.pulse, .triangle.pulse, .diamond.pulse {
         animation: pulse 1s ease-in-out infinite;
     }
 
@@ -109,6 +166,22 @@
         text-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
         animation: countdown 1s ease-out forwards;
         z-index: 10;
+    }
+
+    .level-transition.info {
+        top: 20%;
+        font-size: 2rem;
+    }
+
+    .level-transition.warning {
+        top: 25%;
+        font-size: 1.5rem;
+        color: #EF4444;
+    }
+
+    .level-transition.color-info {
+        top: 25%;
+        font-size: 1.5rem;
     }
 
     .circle:hover {
@@ -293,6 +366,321 @@
             opacity: 0;
         }
     }
+
+    .power-up {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.5rem;
+        color: white;
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        animation: spawn 0.3s ease-out, pulse 1.5s ease-in-out infinite;
+        z-index: 20;
+    }
+
+    .power-up.time-freeze {
+        background: linear-gradient(135deg, #3B82F6, #60A5FA);
+    }
+
+    .power-up.size-boost {
+        background: linear-gradient(135deg, #F59E0B, #FBBF24);
+    }
+
+    .power-up.slow-motion {
+        background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+    }
+
+    .power-up.double-points {
+        background: linear-gradient(135deg, #10B981, #34D399);
+    }
+
+    .power-up.activate {
+        animation: activate 0.5s ease-out forwards;
+    }
+
+    @keyframes activate {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(1.5);
+            opacity: 0.8;
+        }
+        100% {
+            transform: scale(2);
+            opacity: 0;
+        }
+    }
+
+    .power-up-effect {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 10;
+    }
+
+    .time-freeze-effect {
+        animation: timeFreezeEffect 5s ease-in-out;
+    }
+
+    .size-boost-effect {
+        animation: sizeBoostEffect 10s ease-in-out;
+    }
+
+    .slow-motion-effect {
+        animation: slowMotionEffect 8s ease-in-out;
+    }
+
+    .double-points-effect {
+        animation: doublePointsEffect 15s ease-in-out;
+    }
+
+    @keyframes timeFreezeEffect {
+        0% {
+            background: rgba(59, 130, 246, 0);
+        }
+        10% {
+            background: rgba(59, 130, 246, 0.3);
+        }
+        90% {
+            background: rgba(59, 130, 246, 0.3);
+        }
+        100% {
+            background: rgba(59, 130, 246, 0);
+        }
+    }
+
+    @keyframes sizeBoostEffect {
+        0% {
+            background: rgba(245, 158, 11, 0);
+        }
+        10% {
+            background: rgba(245, 158, 11, 0.3);
+        }
+        90% {
+            background: rgba(245, 158, 11, 0.3);
+        }
+        100% {
+            background: rgba(245, 158, 11, 0);
+        }
+    }
+
+    @keyframes slowMotionEffect {
+        0% {
+            background: rgba(139, 92, 246, 0);
+        }
+        10% {
+            background: rgba(139, 92, 246, 0.3);
+        }
+        90% {
+            background: rgba(139, 92, 246, 0.3);
+        }
+        100% {
+            background: rgba(139, 92, 246, 0);
+        }
+    }
+
+    @keyframes doublePointsEffect {
+        0% {
+            background: rgba(16, 185, 129, 0);
+        }
+        10% {
+            background: rgba(16, 185, 129, 0.3);
+        }
+        90% {
+            background: rgba(16, 185, 129, 0.3);
+        }
+        100% {
+            background: rgba(16, 185, 129, 0);
+        }
+    }
+
+    .power-up-status {
+        font-size: 1rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        text-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
+    }
+
+    .power-up-notification {
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2rem;
+        font-weight: bold;
+        color: white;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+        animation: power-up-notification 2s ease-out forwards;
+        z-index: 25;
+    }
+
+    @keyframes power-up-notification {
+        0% {
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 0;
+        }
+        20% {
+            transform: translate(-50%, -50%) scale(1.2);
+            opacity: 1;
+        }
+        80% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(0.8);
+            opacity: 0;
+        }
+    }
+
+    .mute-button {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 1rem 0;
+    }
+
+    .mute-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .high-score-display {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #FFD700;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    .high-score-celebration {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 3rem;
+        font-weight: bold;
+        color: #FFD700;
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+        animation: high-score-celebration 2s ease-out forwards;
+        z-index: 20;
+    }
+
+    @keyframes high-score-celebration {
+        0% {
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 0;
+        }
+        20% {
+            transform: translate(-50%, -50%) scale(1.2);
+            opacity: 1;
+        }
+        80% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(0.8);
+            opacity: 0;
+        }
+    }
+
+    .instructions {
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(244, 114, 182, 0.05));
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin: 1rem 0;
+        text-align: left;
+    }
+
+    .instructions h2 {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .instructions ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .instructions li {
+        margin: 0.5rem 0;
+        font-size: 1rem;
+        color: var(--text-color);
+    }
+
+    .pause-button {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 1rem 0;
+    }
+
+    .pause-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .pause-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 30;
+        color: white;
+        font-size: 2rem;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .pause-overlay p {
+        margin: 1rem 0;
+        font-size: 1.2rem;
+    }
+
+    .resume-button {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+    .resume-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
 </style>
 
 <script>
@@ -307,6 +695,16 @@
             this.levelDisplay = document.getElementById('levelDisplay');
             this.multiplierDisplay = document.getElementById('multiplierDisplay');
             this.comboDisplay = document.getElementById('comboDisplay');
+            this.powerUpStatus = document.getElementById('powerUpStatus');
+            this.muteButton = document.getElementById('muteButton');
+            this.pauseButton = document.getElementById('pauseButton');
+            this.hitSound = document.getElementById('hitSound');
+            this.missSound = document.getElementById('missSound');
+            this.levelUpSound = document.getElementById('levelUpSound');
+            this.powerUpSound = document.getElementById('powerUpSound');
+            this.highScoreDisplay = document.getElementById('highScoreDisplay');
+            this.isMuted = false;
+            this.isPaused = false;
 
             this.level = 1;
             this.hits = 0;
@@ -318,16 +716,36 @@
             this.circleInterval = null;
             this.combo = 0;
             this.maxCombo = 0;
+            this.activePowerUps = {};
+            this.powerUpInterval = null;
+            this.highScore = 0;
+            this.pauseOverlay = null;
             
             // Base configuration
             this.baseCircleLifetime = 2000; // 2 seconds
             this.baseCircleSize = 60; // pixels
             this.baseSpawnRate = 1000; // 1 second
             this.difficultyMultiplier = 1.05; // 5% harder each level
+            
+            // Color palettes for different levels
+            this.colorPalettes = [
+                { start: '#7C3AED', end: '#F472B6' }, // Level 1: Purple to Pink
+                { start: '#3B82F6', end: '#60A5FA' }, // Level 2: Blue
+                { start: '#10B981', end: '#34D399' }, // Level 3: Green
+                { start: '#F59E0B', end: '#FBBF24' }, // Level 4: Yellow
+                { start: '#EF4444', end: '#F87171' }, // Level 5: Red
+                { start: '#8B5CF6', end: '#A78BFA' }, // Level 6: Purple
+                { start: '#EC4899', end: '#F472B6' }, // Level 7: Pink
+                { start: '#06B6D4', end: '#22D3EE' }, // Level 8: Cyan
+                { start: '#84CC16', end: '#A3E635' }, // Level 9: Lime
+                { start: '#F97316', end: '#FB923C' }  // Level 10: Orange
+            ];
 
             // Bind event listeners
             this.startButton.addEventListener('click', () => this.startGame());
             this.gameArea.addEventListener('click', (e) => this.handleMiss(e));
+            this.muteButton.addEventListener('click', () => this.toggleMute());
+            this.pauseButton.addEventListener('click', () => this.togglePause());
         }
 
         calculateDifficulty() {
@@ -346,40 +764,80 @@
             return Math.max(400, this.baseSpawnRate / this.calculateDifficulty());
         }
 
+        getCurrentCircleColor() {
+            // Get the color palette for the current level
+            // If we've exceeded our defined palettes, cycle through them
+            const paletteIndex = (this.level - 1) % this.colorPalettes.length;
+            return this.colorPalettes[paletteIndex];
+        }
+
         createCircle() {
-            const circle = document.createElement('div');
-            circle.className = 'circle';
+            // Determine if we should create a non-circle shape based on level
+            // Higher levels have a higher chance of non-circle shapes
+            const nonCircleChance = Math.min(0.3, (this.level - 1) * 0.05); // 5% increase per level, max 30%
+            const shouldCreateNonCircle = Math.random() < nonCircleChance;
+            
+            // If we should create a non-circle, randomly select the type
+            const shapeTypes = ['circle', 'square', 'triangle', 'diamond'];
+            const shapeType = shouldCreateNonCircle ? 
+                shapeTypes[Math.floor(Math.random() * (shapeTypes.length - 1)) + 1] : // Skip 'circle' (index 0)
+                'circle';
+            
+            const shape = document.createElement('div');
+            shape.className = shapeType;
             
             const size = this.getCurrentCircleSize();
-            circle.style.width = `${size}px`;
-            circle.style.height = `${size}px`;
+            
+            // Set size based on shape type
+            if (shapeType === 'circle' || shapeType === 'square' || shapeType === 'diamond') {
+                shape.style.width = `${size}px`;
+                shape.style.height = `${size}px`;
+            } else if (shapeType === 'triangle') {
+                // For triangle, we need to set the border width based on size
+                const borderWidth = size / 2;
+                shape.style.borderLeft = `${borderWidth}px solid transparent`;
+                shape.style.borderRight = `${borderWidth}px solid transparent`;
+                shape.style.borderBottom = `${size}px solid #9C27B0`;
+                shape.style.width = '0';
+                shape.style.height = '0';
+            }
+            
+            // Set color for circle based on current level
+            if (shapeType === 'circle') {
+                const colors = this.getCurrentCircleColor();
+                shape.style.background = `linear-gradient(135deg, ${colors.start}, ${colors.end})`;
+            }
             
             const maxX = this.gameArea.clientWidth - size;
             const maxY = this.gameArea.clientHeight - size;
-            circle.style.left = `${Math.random() * maxX}px`;
-            circle.style.top = `${Math.random() * maxY}px`;
+            shape.style.left = `${Math.random() * maxX}px`;
+            shape.style.top = `${Math.random() * maxY}px`;
             
-            circle.addEventListener('click', (e) => {
+            shape.addEventListener('click', (e) => {
                 e.stopPropagation();
-                this.handleHit(circle);
+                if (shapeType === 'circle') {
+                    this.handleHit(shape);
+                } else {
+                    this.handleShapeMiss(shape);
+                }
             });
             
-            this.gameArea.appendChild(circle);
+            this.gameArea.appendChild(shape);
             
-            // Add pulse effect when circle is about to expire
+            // Add pulse effect when shape is about to expire
             setTimeout(() => {
-                if (circle.parentNode === this.gameArea) {
-                    circle.classList.add('pulse');
+                if (shape.parentNode === this.gameArea) {
+                    shape.classList.add('pulse');
                 }
             }, this.getCurrentCircleLifetime() - 1000);
             
-            // Remove circle after lifetime with fade animation
+            // Remove shape after lifetime with fade animation
             setTimeout(() => {
-                if (circle.parentNode === this.gameArea) {
-                    circle.classList.add('expire');
+                if (shape.parentNode === this.gameArea) {
+                    shape.classList.add('expire');
                     this.misses++;
                     this.missesDisplay.textContent = this.misses;
-                    setTimeout(() => circle.remove(), 500);
+                    setTimeout(() => shape.remove(), 500);
                 }
             }, this.getCurrentCircleLifetime());
         }
@@ -391,12 +849,17 @@
                 levelup: ['#FFD700', '#FFC107', '#FFB300']
             };
 
-            for (let i = 0; i < count; i++) {
+            // Increase count for more particles
+            const particleCount = type === 'hit' || type === 'miss' ? 20 : count;
+
+            for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.className = `particle ${type}-particle`;
                 
-                // Random size between 4 and 8 pixels
-                const size = Math.random() * 4 + 4;
+                // Increase size for hit and miss particles
+                const size = type === 'hit' || type === 'miss' ? 
+                    (Math.random() * 6 + 6) : // 6-12px for hit/miss
+                    (Math.random() * 4 + 4);  // 4-8px for levelup
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
                 
@@ -405,8 +868,11 @@
                 particle.style.top = `${y}px`;
                 
                 // Calculate random direction
-                const angle = (Math.PI * 2 * i) / count;
-                const velocity = Math.random() * 100 + 50;
+                const angle = (Math.PI * 2 * i) / particleCount;
+                // Increase velocity for hit and miss particles
+                const velocity = type === 'hit' || type === 'miss' ? 
+                    (Math.random() * 150 + 100) : // 100-250px for hit/miss
+                    (Math.random() * 100 + 50);   // 50-150px for levelup
                 const tx = Math.cos(angle) * velocity;
                 const ty = Math.sin(angle) * velocity;
                 
@@ -420,8 +886,9 @@
                 
                 this.gameArea.appendChild(particle);
                 
-                // Remove particle after animation
-                setTimeout(() => particle.remove(), 500);
+                // Increase animation duration for hit and miss particles
+                const duration = type === 'hit' || type === 'miss' ? 800 : 500;
+                setTimeout(() => particle.remove(), duration);
             }
         }
 
@@ -467,6 +934,31 @@
             const pointsEarned = Math.round(basePoints * comboMultiplier);
             this.score += pointsEarned;
             this.scoreDisplay.textContent = this.score;
+
+            this.playSound(this.hitSound);
+        }
+
+        handleShapeMiss(shape) {
+            if (!this.isGameRunning) return;
+            
+            const rect = shape.getBoundingClientRect();
+            const gameRect = this.gameArea.getBoundingClientRect();
+            const x = rect.left - gameRect.left + rect.width / 2;
+            const y = rect.top - gameRect.top + rect.height / 2;
+            
+            this.createParticles(x, y, 'miss', 8);
+            
+            shape.classList.add('pop');
+            setTimeout(() => shape.remove(), 300);
+            
+            this.misses++;
+            this.missesDisplay.textContent = this.misses;
+            
+            // Reset combo on miss
+            this.combo = 0;
+            this.comboDisplay.textContent = '0';
+
+            this.playSound(this.missSound);
         }
 
         handleMiss(e) {
@@ -484,6 +976,151 @@
             // Reset combo on miss
             this.combo = 0;
             this.comboDisplay.textContent = '0';
+
+            this.playSound(this.missSound);
+        }
+
+        createPowerUp() {
+            const powerUpTypes = [
+                { type: 'time-freeze', icon: '⏸', duration: 5000, effect: 'Time Freeze' },
+                { type: 'size-boost', icon: '⬆', duration: 10000, effect: 'Size Boost' },
+                { type: 'slow-motion', icon: '🐌', duration: 8000, effect: 'Slow Motion' },
+                { type: 'double-points', icon: '2️⃣', duration: 15000, effect: 'Double Points' }
+            ];
+            
+            const powerUp = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
+            const powerUpElement = document.createElement('div');
+            powerUpElement.className = `power-up ${powerUp.type}`;
+            powerUpElement.textContent = powerUp.icon;
+            
+            const maxX = this.gameArea.clientWidth - 50;
+            const maxY = this.gameArea.clientHeight - 50;
+            powerUpElement.style.left = `${Math.random() * maxX}px`;
+            powerUpElement.style.top = `${Math.random() * maxY}px`;
+            
+            powerUpElement.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.activatePowerUp(powerUp.type, powerUp.duration, powerUp.effect);
+                powerUpElement.classList.add('activate');
+                setTimeout(() => powerUpElement.remove(), 500);
+            });
+            
+            this.gameArea.appendChild(powerUpElement);
+            
+            setTimeout(() => {
+                if (powerUpElement.parentNode === this.gameArea) {
+                    powerUpElement.remove();
+                }
+            }, 5000);
+        }
+
+        activatePowerUp(type, duration, effectName) {
+            // Create visual effect overlay
+            const effectOverlay = document.createElement('div');
+            effectOverlay.className = `power-up-effect ${type}-effect`;
+            this.gameArea.appendChild(effectOverlay);
+            
+            // Create power-up notification
+            const notification = document.createElement('div');
+            notification.className = 'power-up-notification';
+            notification.textContent = `${effectName} ACTIVATED!`;
+            
+            // Set color based on power-up type
+            if (type === 'time-freeze') {
+                notification.style.color = '#3B82F6';
+            } else if (type === 'size-boost') {
+                notification.style.color = '#F59E0B';
+            } else if (type === 'slow-motion') {
+                notification.style.color = '#8B5CF6';
+            } else if (type === 'double-points') {
+                notification.style.color = '#10B981';
+            }
+            
+            this.gameArea.appendChild(notification);
+            
+            // Remove notification after animation
+            setTimeout(() => {
+                if (notification.parentNode === this.gameArea) {
+                    notification.remove();
+                }
+            }, 2000);
+            
+            // Remove effect overlay after duration
+            setTimeout(() => {
+                if (effectOverlay.parentNode === this.gameArea) {
+                    effectOverlay.remove();
+                }
+            }, duration);
+            
+            // Show power-up status
+            this.powerUpStatus.textContent = `${effectName.toUpperCase()} ACTIVE!`;
+            this.powerUpStatus.style.display = 'block';
+            
+            // Apply power-up effect
+            switch (type) {
+                case 'time-freeze':
+                    // Store original interval
+                    const originalInterval = this.gameInterval;
+                    // Clear the interval to freeze time
+                    clearInterval(this.gameInterval);
+                    // Set a new interval that doesn't decrease time
+                    this.gameInterval = setInterval(() => {
+                        if (!this.isPaused) {
+                            this.timerDisplay.textContent = `Time: ${this.timeLeft}s`;
+                        }
+                    }, 1000);
+                    // Restore original interval after duration
+                    setTimeout(() => {
+                        clearInterval(this.gameInterval);
+                        // Create a new interval that properly decrements time
+                        this.gameInterval = setInterval(() => {
+                            if (!this.isPaused) {
+                                this.timeLeft--;
+                                this.timerDisplay.textContent = `Time: ${this.timeLeft}s`;
+                                
+                                if (this.timeLeft <= 0) {
+                                    if (this.hits > this.misses * 2) { // Progress condition: hits > 2x misses
+                                        this.nextLevel();
+                                    } else {
+                                        this.endGame();
+                                    }
+                                }
+                            }
+                        }, 1000);
+                    }, duration);
+                    break;
+                    
+                case 'size-boost':
+                    // Increase circle size
+                    this.activePowerUps['size-boost'] = true;
+                    setTimeout(() => {
+                        delete this.activePowerUps['size-boost'];
+                    }, duration);
+                    break;
+                    
+                case 'slow-motion':
+                    // Slow down circle appearance and disappearance
+                    this.activePowerUps['slow-motion'] = true;
+                    setTimeout(() => {
+                        delete this.activePowerUps['slow-motion'];
+                    }, duration);
+                    break;
+                    
+                case 'double-points':
+                    // Double points for hits
+                    this.activePowerUps['double-points'] = true;
+                    setTimeout(() => {
+                        delete this.activePowerUps['double-points'];
+                    }, duration);
+                    break;
+            }
+            
+            // Hide power-up status after duration
+            setTimeout(() => {
+                this.powerUpStatus.style.display = 'none';
+            }, duration);
+            
+            this.playSound(this.powerUpSound);
         }
 
         startLevel() {
@@ -496,6 +1133,12 @@
                     this.createCircle();
                 }
             }, this.getCurrentSpawnRate());
+
+            this.powerUpInterval = setInterval(() => {
+                if (this.isGameRunning && Math.random() < 0.1) {
+                    this.createPowerUp();
+                }
+            }, 5000);
         }
 
         async showLevelTransition() {
@@ -523,8 +1166,40 @@
             const centerY = this.gameArea.clientHeight / 2;
             this.createParticles(centerX, centerY, 'levelup', 24);
             
+            // Show level transition with information about new challenges
+            const levelInfo = document.createElement('div');
+            levelInfo.className = 'level-transition info';
+            levelInfo.textContent = `Level ${this.level}`;
+            this.gameArea.appendChild(levelInfo);
+            
+            // Get the new color palette for this level
+            const colors = this.getCurrentCircleColor();
+            
+            // If this level introduces more non-circle shapes, show a warning
+            if (this.level > 1 && this.level % 3 === 0) {
+                setTimeout(() => {
+                    const warning = document.createElement('div');
+                    warning.className = 'level-transition warning';
+                    warning.textContent = 'Watch out for more non-circle shapes!';
+                    this.gameArea.appendChild(warning);
+                    setTimeout(() => warning.remove(), 1500);
+                }, 1000);
+            }
+            
+            // Show color change notification
+            setTimeout(() => {
+                const colorInfo = document.createElement('div');
+                colorInfo.className = 'level-transition color-info';
+                colorInfo.style.color = colors.start;
+                colorInfo.textContent = 'New circle colors!';
+                this.gameArea.appendChild(colorInfo);
+                setTimeout(() => colorInfo.remove(), 1500);
+            }, 2000);
+            
             await this.showLevelTransition();
             this.startLevel();
+
+            this.playSound(this.levelUpSound);
         }
 
         startGame() {
@@ -541,7 +1216,9 @@
             this.maxCombo = 0;
             this.comboDisplay.textContent = '0';
             this.startButton.disabled = true;
+            this.pauseButton.disabled = false;
             this.isGameRunning = true;
+            this.isPaused = false;
             
             // Clear game area
             this.gameArea.innerHTML = '';
@@ -550,24 +1227,46 @@
             
             // Start timer
             this.gameInterval = setInterval(() => {
-                this.timeLeft--;
-                this.timerDisplay.textContent = `Time: ${this.timeLeft}s`;
-                
-                if (this.timeLeft <= 0) {
-                    if (this.hits > this.misses * 2) { // Progress condition: hits > 2x misses
-                        this.nextLevel();
-                    } else {
-                        this.endGame();
+                if (!this.isPaused) {
+                    this.timeLeft--;
+                    this.timerDisplay.textContent = `Time: ${this.timeLeft}s`;
+                    
+                    if (this.timeLeft <= 0) {
+                        if (this.hits > this.misses * 2) { // Progress condition: hits > 2x misses
+                            this.nextLevel();
+                        } else {
+                            this.endGame();
+                        }
                     }
                 }
             }, 1000);
+
+            this.muteButton.addEventListener('click', () => this.toggleMute());
+        }
+
+        showHighScoreCelebration() {
+            const celebration = document.createElement('div');
+            celebration.className = 'high-score-celebration';
+            celebration.textContent = 'NEW HIGH SCORE!';
+            this.gameArea.appendChild(celebration);
+            setTimeout(() => celebration.remove(), 2000);
+        }
+
+        updateHighScore() {
+            if (this.score > this.highScore) {
+                this.highScore = this.score;
+                this.highScoreDisplay.textContent = this.highScore;
+                this.showHighScoreCelebration();
+            }
         }
 
         endGame() {
             this.isGameRunning = false;
             clearInterval(this.gameInterval);
             clearInterval(this.circleInterval);
+            clearInterval(this.powerUpInterval);
             this.startButton.disabled = false;
+            this.pauseButton.disabled = true;
             
             // Clear game area
             this.gameArea.innerHTML = '';
@@ -590,12 +1289,96 @@
                     })
                 });
             }
+
+            this.updateHighScore();
+        }
+
+        toggleMute() {
+            this.isMuted = !this.isMuted;
+            this.muteButton.textContent = this.isMuted ? 'Unmute' : 'Mute';
+            this.hitSound.muted = this.isMuted;
+            this.missSound.muted = this.isMuted;
+            this.levelUpSound.muted = this.isMuted;
+            this.powerUpSound.muted = this.isMuted;
+        }
+
+        togglePause() {
+            if (!this.isGameRunning) return;
+            
+            this.isPaused = !this.isPaused;
+            
+            if (this.isPaused) {
+                // Create pause overlay
+                this.pauseOverlay = document.createElement('div');
+                this.pauseOverlay.className = 'pause-overlay';
+                this.pauseOverlay.innerHTML = `
+                    <h2>GAME PAUSED</h2>
+                    <p>Level: ${this.level} | Score: ${this.score}</p>
+                    <button class="resume-button" id="resumeButton">Resume</button>
+                `;
+                this.gameArea.appendChild(this.pauseOverlay);
+                
+                // Add event listener to resume button
+                document.getElementById('resumeButton').addEventListener('click', () => {
+                    this.resumeGame();
+                });
+                
+                this.pauseButton.textContent = 'Resume';
+            } else {
+                this.resumeGame();
+            }
+        }
+        
+        resumeGame() {
+            if (this.pauseOverlay) {
+                this.pauseOverlay.remove();
+                this.pauseOverlay = null;
+            }
+            
+            this.isPaused = false;
+            this.pauseButton.textContent = 'Pause';
+        }
+
+        playSound(sound) {
+            if (!this.isMuted) {
+                sound.currentTime = 0;
+                sound.play();
+            }
         }
     }
 
     // Initialize game when document is loaded
     document.addEventListener('DOMContentLoaded', () => {
-        new SpeedGame();
+        const game = new SpeedGame();
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Space bar to start/pause
+            if (e.code === 'Space') {
+                e.preventDefault(); // Prevent page scrolling
+                if (!game.isGameRunning) {
+                    game.startGame();
+                } else {
+                    game.togglePause();
+                }
+            }
+            
+            // M key to toggle mute
+            if (e.code === 'KeyM') {
+                game.toggleMute();
+            }
+            
+            // R key to restart
+            if (e.code === 'KeyR' && game.isGameRunning) {
+                game.endGame();
+                game.startGame();
+            }
+            
+            // Escape key to pause
+            if (e.code === 'Escape' && game.isGameRunning && !game.isPaused) {
+                game.togglePause();
+            }
+        });
     });
 </script>
 {% endblock %}
