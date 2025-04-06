@@ -808,14 +808,17 @@
                 shape.style.background = `linear-gradient(135deg, ${colors.start}, ${colors.end})`;
             }
             
-            const maxX = this.gameArea.clientWidth - size;
-            const maxY = this.gameArea.clientHeight - size;
-            shape.style.left = `${Math.random() * maxX}px`;
-            shape.style.top = `${Math.random() * maxY}px`;
+            shape.style.left = `${Math.random() * (this.gameArea.clientWidth - size)}px`;
+            shape.style.top = `${Math.random() * (this.gameArea.clientHeight - size)}px`;
+            
+            // Add a data attribute to track if the shape has been clicked
+            shape.dataset.clicked = 'false';
             
             shape.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (shapeType === 'circle') {
+                    // Mark the shape as clicked before handling the hit
+                    shape.dataset.clicked = 'true';
                     this.handleHit(shape);
                 } else {
                     this.handleShapeMiss(shape);
@@ -834,9 +837,12 @@
             // Remove shape after lifetime with fade animation
             setTimeout(() => {
                 if (shape.parentNode === this.gameArea) {
-                    shape.classList.add('expire');
-                    this.misses++;
-                    this.missesDisplay.textContent = this.misses;
+                    // Only count as a miss if the shape hasn't been clicked AND it's a circle
+                    if (shape.dataset.clicked !== 'true' && shapeType === 'circle') {
+                        shape.classList.add('expire');
+                        this.misses++;
+                        this.missesDisplay.textContent = this.misses;
+                    }
                     setTimeout(() => shape.remove(), 500);
                 }
             }, this.getCurrentCircleLifetime());
