@@ -14,6 +14,7 @@
     </div>
     <div class="game-info">
         <div id="score">Score: 0</div>
+        <div id="timer">Time: 20s</div>
         <div id="status"></div>
     </div>
     <button id="startButton">Start Game</button>
@@ -34,7 +35,7 @@
     width: 600px;
     height: 400px;
     margin: 20px auto;
-    background: white;
+    background: #f8f5ff;  /* Light purple tint */
     border: 2px solid #333;
     border-radius: 10px;
     position: relative;
@@ -95,6 +96,12 @@
     color: #4CAF50;
 }
 
+#timer {
+    color: #2196F3;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
 #status {
     color: #f44336;
 }
@@ -126,6 +133,42 @@
     z-index: 10;
     display: none;
 }
+
+.floating-score {
+    position: absolute;
+    color: #4CAF50;
+    font-weight: bold;
+    font-size: 1.2rem;
+    pointer-events: none;
+    animation: floatUp 1s ease-out;
+    opacity: 0;
+}
+
+.streak-multiplier {
+    position: absolute;
+    color: #2196F3;
+    font-weight: bold;
+    font-size: 1rem;
+    pointer-events: none;
+    animation: pulse 0.5s ease-out;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
 </style>
 
 <script>
@@ -137,6 +180,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const ctx = canvas.getContext('2d');
     const scoreElement = document.getElementById('score');
     const statusElement = document.getElementById('status');
+    const timerElement = document.getElementById('timer');
+    let timeLeft = 20;
+    let timerInterval;
+    let currentScore = 0;
+    let streakMultiplier = 1;
+    let lastCheckTime = 0;
+    let smoothMovementPoints = 0;
+    const SMOOTH_CHECK_INTERVAL = 100; // Check every 100ms
 
     // Set canvas size to match game area
     function resizeCanvas() {
@@ -219,6 +270,33 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.fillText('FINISH', lastPoint.x, lastPoint.y - 30);
     }
 
+    function showFloatingScore(points, x, y, color = '#4CAF50') {
+        const floatingScore = document.createElement('div');
+        floatingScore.className = 'floating-score';
+        floatingScore.style.left = x + 'px';
+        floatingScore.style.top = y + 'px';
+        floatingScore.style.color = color;
+        
+        // Show + sign for positive points
+        floatingScore.textContent = points >= 0 ? `+${points}` : points;
+        
+        gameArea.appendChild(floatingScore);
+        
+        // Remove the element after animation
+        setTimeout(() => {
+            floatingScore.remove();
+        }, 1000);
+    }
+    
+    function updateScore(points, x, y, color) {
+        currentScore += points;
+        scoreElement.textContent = `Score: ${currentScore}`;
+        
+        if (points !== 0) {
+            showFloatingScore(points, x, y, color);
+        }
+    }
+
     function checkBallPosition() {
         if (!isGameActive) return;
         
@@ -231,7 +309,6 @@ document.addEventListener('DOMContentLoaded', function() {
         let closestPoint = null;
         let minDistance = Infinity;
         
-        // Find the closest point on the line to the ball
         for (const point of linePoints) {
             const distance = Math.sqrt(
                 Math.pow(ballX - point.x, 2) + 
@@ -244,8 +321,36 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
+        const now = Date.now();
+        if (now - lastCheckTime >= SMOOTH_CHECK_INTERVAL) {
+            // Check if movement is smooth (close to the line)
+            if (minDistance <= lineThickness / 3) { // Very close to the line
+                smoothMovementPoints++;
+                if (smoothMovementPoints % 5 === 0) { // Every 5 smooth movements
+                    streakMultiplier = Math.min(streakMultiplier + 0.1, 3.0);
+                    const bonus = Math.round(2 * streakMultiplier);
+                    updateScore(bonus, ballX, ballY - 20, '#2196F3');
+                    
+                    // Show multiplier
+                    const multiplierDiv = document.createElement('div');
+                    multiplierDiv.className = 'streak-multiplier';
+                    multiplierDiv.textContent = `${streakMultiplier.toFixed(1)}x`;
+                    multiplierDiv.style.left = (ballX + 20) + 'px';
+                    multiplierDiv.style.top = (ballY - 20) + 'px';
+                    gameArea.appendChild(multiplierDiv);
+                    setTimeout(() => multiplierDiv.remove(), 500);
+                }
+            } else {
+                // Reset streak if not moving smoothly
+                streakMultiplier = Math.max(1, streakMultiplier - 0.2);
+                smoothMovementPoints = 0;
+            }
+            
+            lastCheckTime = now;
+        }
+        
         // Make collision detection more forgiving at higher levels
-        const toleranceIncrease = Math.min(10, (currentLevel - 1) * 2); // Up to 10px more tolerance
+        const toleranceIncrease = Math.min(10, (currentLevel - 1) * 2);
         const tolerance = (lineThickness / 2) + toleranceIncrease;
         
         // Check if ball is within the adjusted tolerance
@@ -263,10 +368,28 @@ document.addEventListener('DOMContentLoaded', function() {
             Math.pow(ballY - lastPoint.y, 2)
         );
         
-        // Check if ball reached the finish line - must be close to the actual end point
+        // Check if ball reached the finish line
         if (distanceToFinish <= tolerance && !hasReachedFinish) {
             hasReachedFinish = true;
-            success("You reached the finish line! Score: " + (currentLevel * 100));
+            const finalMultiplier = Math.round(streakMultiplier * 10) / 10;
+            const levelBonus = Math.round(currentLevel * 100 * finalMultiplier);
+            const timeBonus = Math.round(timeLeft * 5 * finalMultiplier);
+            
+            success(`Level ${currentLevel} Complete!\nLevel Bonus: ${levelBonus}\nTime Bonus: ${timeBonus}\nStreak Multiplier: ${finalMultiplier}x`);
+        }
+    }
+
+    function updateTimer() {
+        timeLeft--;
+        timerElement.textContent = `Time: ${timeLeft}s`;
+        
+        if (timeLeft <= 5) {
+            timerElement.style.color = '#f44336'; // Red color for last 5 seconds
+        }
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            gameOver("Time's up!");
         }
     }
 
@@ -275,6 +398,9 @@ document.addEventListener('DOMContentLoaded', function() {
         isDragging = false;
         statusElement.textContent = message;
         statusElement.style.display = 'block';
+        
+        // Stop the timer
+        clearInterval(timerInterval);
         
         // Create game over message
         const gameOverDiv = document.createElement('div');
@@ -286,17 +412,44 @@ document.addEventListener('DOMContentLoaded', function() {
         // Save score
         saveScore(0);
     }
-    
+
+    function calculateTimeBonus() {
+        // Give bonus points for remaining time
+        // More time left = more bonus points
+        const timeBonus = timeLeft * 5; // 5 points per second remaining
+        return timeBonus;
+    }
+
     function success(message) {
         isGameActive = false;
         isDragging = false;
-        statusElement.textContent = "Success! Score: " + (currentLevel * 100);
+        
+        // Calculate level completion bonus
+        const levelBonus = currentLevel * 100;
+        
+        // Calculate time bonus
+        const timeBonus = calculateTimeBonus();
+        
+        // Update total score
+        const totalBonus = levelBonus + timeBonus;
+        updateScore(totalBonus, 0, 0, '#4CAF50');
+        
+        // Display success message with score breakdown
+        const scoreMessage = `Level ${currentLevel} Complete!\n` +
+                           `Level Bonus: ${levelBonus}\n` +
+                           `Time Bonus: ${timeBonus}\n` +
+                           `Total Score: ${currentScore}`;
+        
+        statusElement.textContent = scoreMessage;
         statusElement.style.display = 'block';
+        
+        // Stop the timer
+        clearInterval(timerInterval);
         
         // Create success message
         const successDiv = document.createElement('div');
         successDiv.className = 'success';
-        successDiv.textContent = message;
+        successDiv.innerHTML = scoreMessage.replace(/\n/g, '<br>');
         gameArea.appendChild(successDiv);
         successDiv.style.display = 'block';
         
@@ -305,7 +458,7 @@ document.addEventListener('DOMContentLoaded', function() {
         startButton.textContent = `Level ${currentLevel}`;
         
         // Save score
-        saveScore(100);
+        saveScore(totalBonus);
     }
     
     function saveScore(score) {
@@ -457,9 +610,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reset game state
         isGameActive = true;
         hasReachedFinish = false;
-        scoreElement.textContent = "Score: 0";
         statusElement.textContent = "";
         statusElement.style.display = 'none';
+        
+        // Update button text to show current level
+        startButton.textContent = `Level ${currentLevel}`;
+        
+        // Reset and start timer
+        clearInterval(timerInterval);
+        timeLeft = 20;
+        timerElement.textContent = `Time: ${timeLeft}s`;
+        timerElement.style.color = '#2196F3'; // Reset color
+        timerInterval = setInterval(updateTimer, 1000);
         
         // Generate and draw the line
         generateWavePath();
@@ -477,6 +639,12 @@ document.addEventListener('DOMContentLoaded', function() {
             lastX = pos.x - gameRect.left;
             lastY = pos.y - gameRect.top;
         }
+        
+        // Initialize score
+        streakMultiplier = 1;
+        smoothMovementPoints = 0;
+        lastCheckTime = Date.now();
+        updateScore(0, 0, 0, '#4CAF50');
     }
 
     // Initialize the game
@@ -492,8 +660,8 @@ document.addEventListener('DOMContentLoaded', function() {
     lastX = pos.x - gameRect.left;
     lastY = pos.y - gameRect.top;
 
-    // Set initial button text
-    startButton.textContent = 'Level 1';
+    // Set initial button text to "Start Game"
+    startButton.textContent = 'Start Game';
 
     startButton.addEventListener('click', startGame);
 
