@@ -200,11 +200,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         ctx.strokeStyle = '#333';
         ctx.lineWidth = lineThickness;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
         ctx.stroke();
         
-        // Draw finish point (red circle)
+        // Draw finish point (red circle) at the exact end of the line
+        const lastPoint = linePoints[linePoints.length - 1];
         ctx.beginPath();
-        ctx.arc(lineEndX, lineY, 12, 0, Math.PI * 2);
+        ctx.arc(lastPoint.x, lastPoint.y, 12, 0, Math.PI * 2);
         ctx.fillStyle = '#f44336';
         ctx.fill();
         
@@ -213,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.fillStyle = '#333';
         ctx.textAlign = 'center';
         ctx.fillText('START', lineStartX, lineY - 30);
-        ctx.fillText('FINISH', lineEndX, lineY - 30);
+        ctx.fillText('FINISH', lastPoint.x, lastPoint.y - 30);
     }
 
     function checkBallPosition() {
@@ -224,17 +227,37 @@ document.addEventListener('DOMContentLoaded', function() {
         const ballX = pos.x - gameRect.left;
         const ballY = pos.y - gameRect.top;
         
-        // Check if ball is within the line thickness
-        const distanceFromLine = Math.abs(ballY - lineY);
-        if (distanceFromLine > lineThickness / 2) {
+        // Find the closest point on the path
+        let closestPoint = null;
+        let minDistance = Infinity;
+        
+        // Find the closest point on the line to the ball
+        for (const point of linePoints) {
+            const distance = Math.sqrt(
+                Math.pow(ballX - point.x, 2) + 
+                Math.pow(ballY - point.y, 2)
+            );
+            
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestPoint = point;
+            }
+        }
+        
+        // Make collision detection more forgiving at higher levels
+        const toleranceIncrease = Math.min(10, (currentLevel - 1) * 2); // Up to 10px more tolerance
+        const tolerance = (lineThickness / 2) + toleranceIncrease;
+        
+        // Check if ball is within the adjusted tolerance
+        if (minDistance > tolerance) {
             gameOver("You went off the line!");
             return;
         }
         
         // Check if ball reached the finish line
-        if (ballX >= lineEndX && !hasReachedFinish) {
+        if (ballX >= lineEndX - 20 && !hasReachedFinish) {
             hasReachedFinish = true;
-            success("You reached the finish line! Score: 100");
+            success("You reached the finish line! Score: " + (currentLevel * 100));
         }
     }
 
@@ -258,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function success(message) {
         isGameActive = false;
         isDragging = false;
-        statusElement.textContent = "Success! Score: 100";
+        statusElement.textContent = "Success! Score: " + (currentLevel * 100);
         statusElement.style.display = 'block';
         
         // Create success message
@@ -267,6 +290,10 @@ document.addEventListener('DOMContentLoaded', function() {
         successDiv.textContent = message;
         gameArea.appendChild(successDiv);
         successDiv.style.display = 'block';
+        
+        // Update the start button for next level
+        currentLevel++;
+        startButton.textContent = `Level ${currentLevel}`;
         
         // Save score
         saveScore(100);
@@ -301,42 +328,105 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Start with a straight line for level 1
         if (currentLevel === 1) {
-            linePoints.push({x: lineStartX, y: lineY});
-            linePoints.push({x: lineEndX, y: lineY});
+            // Generate points along the straight line for smooth collision detection
+            for (let x = lineStartX; x <= lineEndX; x += 2) {
+                linePoints.push({x, y: lineY});
+            }
             linePath = linePoints;
             return;
         }
         
         // Calculate the path based on the current level
-        const amplitude = 10 + (currentLevel * 5); // Amplitude increases with level
-        const frequency = 0.01 + (currentLevel * 0.005); // Frequency increases with level
+        let amplitude, frequency;
         
-        // Generate points along the path
-        for (let x = lineStartX; x <= lineEndX; x += 2) {
-            // Base sine wave
-            let y = lineY + Math.sin(x * frequency) * amplitude;
-            
-            // Add complexity based on level
-            if (currentLevel >= 2) {
-                // Add a second wave with different frequency
-                y += Math.sin(x * frequency * 2) * (amplitude / 2);
-            }
-            
-            if (currentLevel >= 3) {
-                // Add a third wave with different frequency
-                y += Math.sin(x * frequency * 3) * (amplitude / 3);
-            }
-            
-            if (currentLevel >= 4) {
-                // Add some random variation
-                y += (Math.random() - 0.5) * 5;
-            }
-            
-            linePoints.push({x, y});
+        if (currentLevel === 2) {
+            // Gentle wave for level 2
+            amplitude = 20;
+            frequency = 0.005;
+        } else {
+            // More complex waves for higher levels
+            amplitude = 20 + ((currentLevel - 2) * 10);
+            frequency = 0.005 + ((currentLevel - 2) * 0.002);
         }
         
-        // Create a smooth path through the points
-        linePath = linePoints;
+        // Generate control points for smooth curve
+        const points = [];
+        const numPoints = Math.max(100, 50 + currentLevel * 10); // More points for higher levels
+        const step = (lineEndX - lineStartX) / (numPoints - 1);
+        
+        for (let i = 0; i < numPoints; i++) {
+            const x = lineStartX + (step * i);
+            let y = lineY;
+            
+            if (currentLevel === 2) {
+                // Simple sine wave for level 2
+                y += Math.sin((x - lineStartX) * frequency) * amplitude;
+            } else if (currentLevel >= 3) {
+                // Composite wave pattern
+                y += Math.sin((x - lineStartX) * frequency) * amplitude;
+                y += Math.sin((x - lineStartX) * frequency * 1.5) * (amplitude * 0.5);
+            }
+            
+            points.push({x, y});
+        }
+        
+        // Ensure last point is exactly at lineEndX
+        points[points.length - 1] = {
+            x: lineEndX,
+            y: points[points.length - 1].y
+        };
+        
+        // Generate smooth curve through points
+        linePath = [];
+        linePoints = [];
+        
+        // Start with the first point
+        linePath.push(points[0]);
+        linePoints.push(points[0]);
+        
+        // Generate bezier curves through points with more interpolation points
+        for (let i = 1; i < points.length - 2; i++) {
+            const p0 = points[i - 1];
+            const p1 = points[i];
+            const p2 = points[i + 1];
+            const p3 = points[i + 2];
+            
+            // Generate more points along the curve for better collision detection
+            for (let t = 0; t <= 1; t += 0.05) { // Increased point density
+                const tt = t * t;
+                const ttt = tt * t;
+                
+                const x = 0.5 * (
+                    2 * p1.x +
+                    (-p0.x + p2.x) * t +
+                    (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * tt +
+                    (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * ttt
+                );
+                
+                const y = 0.5 * (
+                    2 * p1.y +
+                    (-p0.y + p2.y) * t +
+                    (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * tt +
+                    (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * ttt
+                );
+                
+                linePoints.push({x, y});
+            }
+            
+            // Add control points for drawing
+            linePath.push({
+                x: p2.x,
+                y: p2.y,
+                cp1x: (p1.x + p2.x) / 2,
+                cp1y: p1.y,
+                cp2x: (p1.x + p2.x) / 2,
+                cp2y: p2.y
+            });
+        }
+        
+        // Add the final point
+        linePath.push(points[points.length - 1]);
+        linePoints.push(points[points.length - 1]);
     }
 
     function startGame() {
@@ -359,14 +449,17 @@ document.addEventListener('DOMContentLoaded', function() {
         drawWaveLine();
         
         // Position the ball exactly on the start of the line
-        ball.style.left = '10%';
-        ball.style.top = '50%';
-        
-        // Get initial ball position for line drawing
-        const pos = getBallPosition();
-        const gameRect = gameArea.getBoundingClientRect();
-        lastX = pos.x - gameRect.left;
-        lastY = pos.y - gameRect.top;
+        if (linePoints.length > 0) {
+            const startPoint = linePoints[0];
+            ball.style.left = startPoint.x + 'px';
+            ball.style.top = startPoint.y + 'px';
+            
+            // Get initial ball position for line drawing
+            const pos = getBallPosition();
+            const gameRect = gameArea.getBoundingClientRect();
+            lastX = pos.x - gameRect.left;
+            lastY = pos.y - gameRect.top;
+        }
     }
 
     // Initialize the game
@@ -381,6 +474,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const gameRect = gameArea.getBoundingClientRect();
     lastX = pos.x - gameRect.left;
     lastY = pos.y - gameRect.top;
+
+    // Set initial button text
+    startButton.textContent = 'Level 1';
 
     startButton.addEventListener('click', startGame);
 
