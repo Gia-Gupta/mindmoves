@@ -97,12 +97,12 @@
             <h2>Your Game History</h2>
             <div class="history-list">
                 {% for score in game_history %}
-                <div class="history-item">
-                    <div class="game-info">
-                        <span class="game-name">{{ score.game_type }}</span>
-                        <span class="game-date">{{ score.date or score.timestamp }}</span>
+                <div class="score-card">
+                    <div class="score-info">
+                        <h3>{{ score.game_type }}</h3>
+                        <p>{{ score.timestamp.strftime('%Y-%m-%d %H:%M:%S') if score.timestamp else score.date }}</p>
                     </div>
-                    <div class="game-score">
+                    <div class="score-value">
                         Score: {{ score.score }}/{{ score.total if score.total else 100 }} ({{ "%.1f"|format((score.score/(score.total if score.total else 100))*100) }}%)
                     </div>
                 </div>
@@ -264,7 +264,7 @@
     gap: 1rem;
 }
 
-.history-item {
+.score-card {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -274,27 +274,27 @@
     transition: transform 0.2s ease;
 }
 
-.history-item:hover {
+.score-card:hover {
     transform: translateX(5px);
 }
 
-.game-info {
+.score-info {
     display: flex;
     flex-direction: column;
 }
 
-.game-name {
+.score-info h3 {
     font-weight: bold;
     color: var(--primary-color);
 }
 
-.game-date {
+.score-info p {
     font-size: 0.9rem;
     color: var(--text-color);
     opacity: 0.8;
 }
 
-.game-score {
+.score-value {
     font-weight: bold;
     color: var(--primary-color);
 }

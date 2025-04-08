@@ -89,16 +89,16 @@
     justify-content: space-between;
     margin: 1rem 0;
     font-size: 1.2rem;
-    font-weight: bold;
-}
-
-#score {
-    color: #4CAF50;
 }
 
 #timer {
     color: #2196F3;
     font-size: 1.2rem;
+    font-weight: bold;
+}
+
+#score {
+    color: #4CAF50;
     font-weight: bold;
 }
 
@@ -162,12 +162,6 @@
         transform: translateY(-50px);
         opacity: 0;
     }
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
 }
 </style>
 
@@ -469,7 +463,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                game_type: 'balance',
+                game_type: 'Line Balance Master',
                 score: score,
                 total: 100
             }),
@@ -620,7 +614,7 @@ document.addEventListener('DOMContentLoaded', function() {
         clearInterval(timerInterval);
         timeLeft = 20;
         timerElement.textContent = `Time: ${timeLeft}s`;
-        timerElement.style.color = '#2196F3'; // Reset color
+        timerElement.style.color = '#2196F3';
         timerInterval = setInterval(updateTimer, 1000);
         
         // Generate and draw the line
