@@ -97,20 +97,82 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2rem;
+    font-size: 4rem;
     font-weight: bold;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .memory-card-front {
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-    color: white;
+    background: white;
+    color: var(--primary-color);
+    transform: rotateY(0deg);
 }
 
 .memory-card-back {
-    background: white;
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    color: white;
     transform: rotateY(180deg);
-    color: var(--primary-color);
+}
+
+/* Shape styles */
+.shape {
+    width: 60px;
+    height: 60px;
+}
+
+.shape.circle {
+    background: var(--primary-color);
+    border-radius: 50%;
+}
+
+.shape.square {
+    background: var(--primary-color);
+    border-radius: 8px;
+}
+
+.shape.triangle {
+    width: 0;
+    height: 0;
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-bottom: 52px solid var(--primary-color);
+}
+
+.shape.star {
+    position: relative;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-right: 30px solid transparent;
+    border-bottom: 21px solid var(--primary-color);
+    border-left: 30px solid transparent;
+    transform: rotate(35deg);
+}
+.shape.star:before {
+    border-bottom: 24px solid var(--primary-color);
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    position: absolute;
+    height: 0;
+    width: 0;
+    top: -13px;
+    left: -21px;
+    display: block;
+    content: '';
+    transform: rotate(-35deg);
+}
+.shape.star:after {
+    position: absolute;
+    display: block;
+    top: 0px;
+    left: -31px;
+    width: 0px;
+    height: 0px;
+    border-right: 30px solid transparent;
+    border-bottom: 21px solid var(--primary-color);
+    border-left: 30px solid transparent;
+    transform: rotate(-70deg);
+    content: '';
 }
 
 .game-controls {
@@ -176,9 +238,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const card = document.createElement('div');
         card.className = 'memory-card';
         
+        // Create front side with shape
         const front = document.createElement('div');
         front.className = 'memory-card-front';
         
+        const shapeDiv = document.createElement('div');
+        const shapes = ['circle', 'square', 'triangle', 'star'];
+        const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+        shapeDiv.className = `shape ${randomShape}`;
+        front.appendChild(shapeDiv);
+        
+        // Create back side with number
         const back = document.createElement('div');
         back.className = 'memory-card-back';
         const number = Math.floor(Math.random() * 100);
