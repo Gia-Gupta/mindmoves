@@ -254,8 +254,17 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Check if ball reached the finish line
-        if (ballX >= lineEndX - 20 && !hasReachedFinish) {
+        // Get the last point of the line
+        const lastPoint = linePoints[linePoints.length - 1];
+        
+        // Calculate distance to finish point
+        const distanceToFinish = Math.sqrt(
+            Math.pow(ballX - lastPoint.x, 2) + 
+            Math.pow(ballY - lastPoint.y, 2)
+        );
+        
+        // Check if ball reached the finish line - must be close to the actual end point
+        if (distanceToFinish <= tolerance && !hasReachedFinish) {
             hasReachedFinish = true;
             success("You reached the finish line! Score: " + (currentLevel * 100));
         }
@@ -322,9 +331,12 @@ document.addEventListener('DOMContentLoaded', function() {
         linePath = [];
         
         // Set up the line boundaries
-        lineStartX = gameArea.offsetWidth * 0.1; // 10% from the left
-        lineEndX = gameArea.offsetWidth * 0.9;   // 90% from the left
-        lineY = gameArea.offsetHeight * 0.5;     // Middle of the field
+        lineStartX = gameArea.offsetWidth * 0.1;  // 10% from the left
+        lineEndX = gameArea.offsetWidth * 0.9;    // 90% from the left
+        lineY = gameArea.offsetHeight * 0.5;      // Middle of the field
+        
+        // Calculate maximum safe amplitude based on game area height
+        const maxAmplitude = (gameArea.offsetHeight * 0.35); // Use 35% of height as max amplitude
         
         // Start with a straight line for level 1
         if (currentLevel === 1) {
@@ -341,12 +353,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (currentLevel === 2) {
             // Gentle wave for level 2
-            amplitude = 20;
+            amplitude = Math.min(20, maxAmplitude * 0.3);
             frequency = 0.005;
         } else {
             // More complex waves for higher levels
-            amplitude = 20 + ((currentLevel - 2) * 10);
-            frequency = 0.005 + ((currentLevel - 2) * 0.002);
+            // Scale amplitude with level but cap it at maxAmplitude
+            const baseAmplitude = 20 + ((currentLevel - 2) * 8);
+            amplitude = Math.min(baseAmplitude, maxAmplitude);
+            
+            // Increase frequency more with level to make waves tighter
+            frequency = 0.005 + ((currentLevel - 2) * 0.003);
         }
         
         // Generate control points for smooth curve
@@ -362,9 +378,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Simple sine wave for level 2
                 y += Math.sin((x - lineStartX) * frequency) * amplitude;
             } else if (currentLevel >= 3) {
-                // Composite wave pattern
+                // Composite wave pattern with tighter waves
                 y += Math.sin((x - lineStartX) * frequency) * amplitude;
-                y += Math.sin((x - lineStartX) * frequency * 1.5) * (amplitude * 0.5);
+                // Add a second wave component with higher frequency
+                y += Math.sin((x - lineStartX) * frequency * 2) * (amplitude * 0.3);
             }
             
             points.push({x, y});
@@ -392,7 +409,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const p3 = points[i + 2];
             
             // Generate more points along the curve for better collision detection
-            for (let t = 0; t <= 1; t += 0.05) { // Increased point density
+            for (let t = 0; t <= 1; t += 0.05) {
                 const tt = t * t;
                 const ttt = tt * t;
                 
