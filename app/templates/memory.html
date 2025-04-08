@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="game-container">
+        <div class="game-header">
+            <h1>Memory Master</h1>
+            <div class="game-stats">
+                <div id="score">Score: 0</div>
+                <div id="timer">Time: 0s</div>
+                <div id="level">Level: 1</div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div id="memory-grid">
+                <!-- Memory cards will be dynamically added here -->
+            </div>
+            <div id="countdown-overlay">0</div>
+        </div>
+
+        <div class="game-controls">
+            <button id="start-button" class="play-button">Start Game</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.game-container {
+    max-width: 800px;
+    margin: 8rem auto 4rem;
+    padding: 2rem;
+    background: var(--card-background);
+    border-radius: 1.5rem;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.game-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.game-area {
+    background: #f8f5ff;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin: 2rem 0;
+    min-height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+#memory-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin: 0 auto;
+    max-width: 400px;
+}
+
+.memory-card {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transform: scale(1);
+    transition: transform 0.5s;
+}
+
+.memory-card:hover {
+    transform: scale(1.05);
+}
+
+.memory-card.flipped {
+    transform: rotateY(180deg);
+}
+
+.memory-card-front,
+.memory-card-back {
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    position: absolute;
+    border-radius: 15px;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.memory-card-front {
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    color: white;
+}
+
+.memory-card-back {
+    background: white;
+    transform: rotateY(180deg);
+    color: var(--primary-color);
+}
+
+.game-controls {
+    text-align: center;
+}
+
+.play-button {
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.play-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#countdown-overlay {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 6rem;
+    font-weight: bold;
+    color: #FFD700;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.1); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const startButton = document.getElementById('start-button');
+    const scoreElement = document.getElementById('score');
+    const timerElement = document.getElementById('timer');
+    const levelElement = document.getElementById('level');
+    const memoryGrid = document.getElementById('memory-grid');
+    const countdownOverlay = document.getElementById('countdown-overlay');
+    
+    let isGameActive = false;
+    let currentLevel = 1;
+    let currentScore = 0;
+    let highestNumber = 0;
+    let canSelect = false;
+    
+    startButton.addEventListener('click', startGame);
+    
+    function createCard() {
+        const card = document.createElement('div');
+        card.className = 'memory-card';
+        
+        const front = document.createElement('div');
+        front.className = 'memory-card-front';
+        
+        const back = document.createElement('div');
+        back.className = 'memory-card-back';
+        const number = Math.floor(Math.random() * 100);
+        back.textContent = number;
+        
+        if (number > highestNumber) {
+            highestNumber = number;
+        }
+        
+        card.appendChild(front);
+        card.appendChild(back);
+        
+        card.addEventListener('click', () => {
+            if (!canSelect) return;
+            
+            card.classList.add('flipped');
+            
+            if (parseInt(back.textContent) === highestNumber) {
+                currentScore += 100;
+                scoreElement.textContent = `Score: ${currentScore}`;
+                countdownOverlay.textContent = 'Correct!';
+                countdownOverlay.style.color = '#4CAF50';
+                countdownOverlay.style.display = 'block';
+                canSelect = false;
+                
+                setTimeout(() => {
+                    countdownOverlay.style.display = 'none';
+                    currentLevel++;
+                    startButton.disabled = false;
+                    startButton.textContent = `Start Level ${currentLevel}`;
+                }, 1500);
+            } else {
+                countdownOverlay.textContent = 'Wrong!';
+                countdownOverlay.style.color = '#f44336';
+                countdownOverlay.style.display = 'block';
+                canSelect = false;
+                
+                setTimeout(() => {
+                    countdownOverlay.style.display = 'none';
+                    currentLevel = 1;
+                    currentScore = 0;
+                    scoreElement.textContent = `Score: ${currentScore}`;
+                    startButton.disabled = false;
+                    startButton.textContent = 'Try Again';
+                }, 1500);
+            }
+            
+            // Show all cards after selection
+            const cards = memoryGrid.querySelectorAll('.memory-card');
+            cards.forEach(c => c.classList.add('flipped'));
+        });
+        
+        return card;
+    }
+    
+    function startGame() {
+        isGameActive = true;
+        canSelect = false;
+        highestNumber = 0;
+        startButton.disabled = true;
+        
+        if (startButton.textContent === 'Try Again') {
+            currentScore = 0;
+            currentLevel = 1;
+            scoreElement.textContent = `Score: ${currentScore}`;
+        }
+        
+        levelElement.textContent = `Level: ${currentLevel}`;
+        initializeGrid();
+        
+        // Start countdown
+        let countdown = 3;
+        countdownOverlay.textContent = countdown;
+        countdownOverlay.style.display = 'block';
+        
+        const countdownInterval = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+                countdownOverlay.textContent = countdown;
+            } else {
+                clearInterval(countdownInterval);
+                countdownOverlay.style.display = 'none';
+                levelElement.textContent = `Level: ${currentLevel}`;
+                
+                // Show numbers
+                const cards = memoryGrid.querySelectorAll('.memory-card');
+                cards.forEach(card => card.classList.add('flipped'));
+                
+                // After 3 seconds, hide numbers and enable selection
+                setTimeout(() => {
+                    cards.forEach(card => card.classList.remove('flipped'));
+                    canSelect = true;
+                }, 3000);
+            }
+        }, 1000);
+    }
+    
+    function initializeGrid() {
+        memoryGrid.innerHTML = '';
+        
+        // Create 4 cards
+        for (let i = 0; i < 4; i++) {
+            const card = createCard();
+            memoryGrid.appendChild(card);
+        }
+    }
+    
+    // Initialize the grid on page load
+    initializeGrid();
+});
+</script>
+{% endblock %} 

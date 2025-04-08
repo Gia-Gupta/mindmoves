@@ -291,4 +291,13 @@ def update_avatar():
             json.dump(data, f, indent=4)
         return jsonify({'message': 'Avatar updated successfully'}), 200
     except Exception as e:
-        return jsonify({'error': str(e)}), 500 
+        return jsonify({'error': str(e)}), 500
+
+@bp.route("/memory")
+def memory():
+    user = None
+    if session.get('username'):
+        user = get_user(session['username'])
+        if user:
+            user['avatar'] = user.get('avatar', 'wordNinja.jpg')
+    return render_template("memory.html", user=user) 
