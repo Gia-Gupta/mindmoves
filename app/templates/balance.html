@@ -31,12 +31,13 @@
 }
 
 .game-area {
-    width: 100%;
+    width: 600px;
     height: 400px;
-    background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(244, 114, 182, 0.05));
-    border-radius: 1rem;
+    margin: 20px auto;
+    background: white;
+    border: 2px solid #333;
+    border-radius: 10px;
     position: relative;
-    margin: 2rem 0;
     overflow: hidden;
 }
 
@@ -50,23 +51,21 @@
 }
 
 .ball {
-    width: 30px;
-    height: 30px;
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    width: 24px;
+    height: 24px;
+    background: #4CAF50;
     border-radius: 50%;
     position: absolute;
-    top: 50%;
-    left: 10%;
     transform: translate(-50%, -50%);
     cursor: grab;
     z-index: 2;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    transition: box-shadow 0.2s;
+    box-shadow: none;
+    left: 10%;
+    top: 50%;
 }
 
 .ball:active {
     cursor: grabbing;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
 #startButton {
@@ -157,6 +156,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let lineStartX;
     let lineEndX;
     let lineThickness = 15;
+    let linePath = [];
+    let linePoints = [];
+    let currentLevel = 1;
 
     function getBallPosition() {
         const rect = ball.getBoundingClientRect();
@@ -175,28 +177,29 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.stroke();
     }
 
-    function drawStartingLine() {
-        // Draw a thick line across the playing field
-        lineStartX = gameArea.offsetWidth * 0.1; // 10% from the left
-        lineEndX = gameArea.offsetWidth * 0.9;   // 90% from the left
-        lineY = gameArea.offsetHeight * 0.5;     // Middle of the field
+    function drawWaveLine() {
+        if (linePath.length < 2) return;
         
-        // Draw the main line
-        drawLine(lineStartX, lineY, lineEndX, lineY, '#333', lineThickness);
-        
-        // Draw a thicker line at the start position
-        drawLine(lineStartX, lineY - 15, lineStartX, lineY + 15, '#333', 20);
-        
-        // Draw a thicker line at the finish position
-        drawLine(lineEndX, lineY - 15, lineEndX, lineY + 15, '#333', 20);
-        
-        // Draw start point (green circle)
+        // Draw the main path
         ctx.beginPath();
-        ctx.arc(lineStartX, lineY, 12, 0, Math.PI * 2);
-        ctx.fillStyle = '#4CAF50';
-        ctx.fill();
+        ctx.moveTo(linePath[0].x, linePath[0].y);
+        
+        for (let i = 1; i < linePath.length; i++) {
+            const point = linePath[i];
+            
+            if (point.cp1x !== undefined) {
+                ctx.bezierCurveTo(
+                    point.cp1x, point.cp1y,
+                    point.cp2x, point.cp2y,
+                    point.x, point.y
+                );
+            } else {
+                ctx.lineTo(point.x, point.y);
+            }
+        }
+        
         ctx.strokeStyle = '#333';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = lineThickness;
         ctx.stroke();
         
         // Draw finish point (red circle)
@@ -204,9 +207,6 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.arc(lineEndX, lineY, 12, 0, Math.PI * 2);
         ctx.fillStyle = '#f44336';
         ctx.fill();
-        ctx.strokeStyle = '#333';
-        ctx.lineWidth = 2;
-        ctx.stroke();
         
         // Add text labels
         ctx.font = '16px Arial';
@@ -290,6 +290,55 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => console.error('Error saving score:', error));
     }
 
+    function generateWavePath() {
+        linePoints = [];
+        linePath = [];
+        
+        // Set up the line boundaries
+        lineStartX = gameArea.offsetWidth * 0.1; // 10% from the left
+        lineEndX = gameArea.offsetWidth * 0.9;   // 90% from the left
+        lineY = gameArea.offsetHeight * 0.5;     // Middle of the field
+        
+        // Start with a straight line for level 1
+        if (currentLevel === 1) {
+            linePoints.push({x: lineStartX, y: lineY});
+            linePoints.push({x: lineEndX, y: lineY});
+            linePath = linePoints;
+            return;
+        }
+        
+        // Calculate the path based on the current level
+        const amplitude = 10 + (currentLevel * 5); // Amplitude increases with level
+        const frequency = 0.01 + (currentLevel * 0.005); // Frequency increases with level
+        
+        // Generate points along the path
+        for (let x = lineStartX; x <= lineEndX; x += 2) {
+            // Base sine wave
+            let y = lineY + Math.sin(x * frequency) * amplitude;
+            
+            // Add complexity based on level
+            if (currentLevel >= 2) {
+                // Add a second wave with different frequency
+                y += Math.sin(x * frequency * 2) * (amplitude / 2);
+            }
+            
+            if (currentLevel >= 3) {
+                // Add a third wave with different frequency
+                y += Math.sin(x * frequency * 3) * (amplitude / 3);
+            }
+            
+            if (currentLevel >= 4) {
+                // Add some random variation
+                y += (Math.random() - 0.5) * 5;
+            }
+            
+            linePoints.push({x, y});
+        }
+        
+        // Create a smooth path through the points
+        linePath = linePoints;
+    }
+
     function startGame() {
         // Clear the canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -305,21 +354,33 @@ document.addEventListener('DOMContentLoaded', function() {
         statusElement.textContent = "";
         statusElement.style.display = 'none';
         
-        // Draw the starting line
-        drawStartingLine();
+        // Generate and draw the line
+        generateWavePath();
+        drawWaveLine();
         
-        // Reset ball position to the start of the line
+        // Position the ball exactly on the start of the line
         ball.style.left = '10%';
         ball.style.top = '50%';
         
         // Get initial ball position for line drawing
         const pos = getBallPosition();
-        lastX = pos.x - gameArea.getBoundingClientRect().left;
-        lastY = pos.y - gameArea.getBoundingClientRect().top;
+        const gameRect = gameArea.getBoundingClientRect();
+        lastX = pos.x - gameRect.left;
+        lastY = pos.y - gameRect.top;
     }
 
-    // Draw the starting line when the page loads
-    drawStartingLine();
+    // Initialize the game
+    generateWavePath();
+    drawWaveLine();
+    
+    // Position the ball on the line initially
+    ball.style.left = '10%';
+    ball.style.top = '50%';
+    
+    const pos = getBallPosition();
+    const gameRect = gameArea.getBoundingClientRect();
+    lastX = pos.x - gameRect.left;
+    lastY = pos.y - gameRect.top;
 
     startButton.addEventListener('click', startGame);
 
