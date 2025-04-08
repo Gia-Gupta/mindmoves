@@ -81,6 +81,15 @@ def precision():
             user['avatar'] = user.get('avatar', 'wordNinja.jpg')
     return render_template("precision.html", user=user)
 
+@bp.route("/balance")
+def balance():
+    user = None
+    if session.get('username'):
+        user = get_user(session['username'])
+        if user:
+            user['avatar'] = user.get('avatar', 'wordNinja.jpg')
+    return render_template("balance.html", user=user)
+
 @bp.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':

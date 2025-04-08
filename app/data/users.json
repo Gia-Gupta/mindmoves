@@ -190,6 +190,18 @@
                     "score": 33825,
                     "total": 210,
                     "date": "2025-04-05 22:01:18"
+                },
+                {
+                    "game_type": "balance",
+                    "score": 100,
+                    "total": 100,
+                    "date": "2025-04-07 17:47:28"
+                },
+                {
+                    "game_type": "balance",
+                    "score": 0,
+                    "total": 100,
+                    "date": "2025-04-07 17:47:34"
                 }
             ],
             "avatar": "Unicorn.jpg"

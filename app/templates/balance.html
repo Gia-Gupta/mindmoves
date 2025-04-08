@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+
+{% block title %}Line Balance{% endblock %}
+
+{% block header_title %}Line Balance{% endblock %}
+
+{% block content %}
+<div class="game-container">
+    <h1>Line Balance</h1>
+    <p>Drag the ball along the line!</p>
+    <div class="game-area">
+        <canvas id="trailCanvas"></canvas>
+        <div class="ball"></div>
+    </div>
+    <div class="game-info">
+        <div id="score">Score: 0</div>
+        <div id="status"></div>
+    </div>
+    <button id="startButton">Start Game</button>
+</div>
+
+<style>
+.game-container {
+    max-width: 800px;
+    margin: 8rem auto 4rem;
+    padding: 2rem;
+    background: var(--card-background);
+    border-radius: 1.5rem;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.game-area {
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(244, 114, 182, 0.05));
+    border-radius: 1rem;
+    position: relative;
+    margin: 2rem 0;
+    overflow: hidden;
+}
+
+#trailCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.ball {
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    transform: translate(-50%, -50%);
+    cursor: grab;
+    z-index: 2;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: box-shadow 0.2s;
+}
+
+.ball:active {
+    cursor: grabbing;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+#startButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#startButton:hover {
+    background: #45a049;
+}
+
+.game-info {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+#score {
+    color: #4CAF50;
+}
+
+#status {
+    color: #f44336;
+}
+
+.game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    font-size: 1.5rem;
+    z-index: 10;
+    display: none;
+}
+
+.success {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(76, 175, 80, 0.8);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    font-size: 1.5rem;
+    z-index: 10;
+    display: none;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const gameArea = document.querySelector('.game-area');
+    const ball = document.querySelector('.ball');
+    const startButton = document.getElementById('startButton');
+    const canvas = document.getElementById('trailCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreElement = document.getElementById('score');
+    const statusElement = document.getElementById('status');
+
+    // Set canvas size to match game area
+    function resizeCanvas() {
+        canvas.width = gameArea.offsetWidth;
+        canvas.height = gameArea.offsetHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    let isDragging = false;
+    let startX, startY;
+    let ballStartX, ballStartY;
+    let lastX, lastY;
+    let isGameActive = false;
+    let hasReachedFinish = false;
+    let lineY;
+    let lineStartX;
+    let lineEndX;
+    let lineThickness = 15;
+
+    function getBallPosition() {
+        const rect = ball.getBoundingClientRect();
+        return {
+            x: rect.left + rect.width / 2,
+            y: rect.top + rect.height / 2
+        };
+    }
+
+    function drawLine(startX, startY, endX, endY, color = '#4CAF50', width = 3) {
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(endX, endY);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.stroke();
+    }
+
+    function drawStartingLine() {
+        // Draw a thick line across the playing field
+        lineStartX = gameArea.offsetWidth * 0.1; // 10% from the left
+        lineEndX = gameArea.offsetWidth * 0.9;   // 90% from the left
+        lineY = gameArea.offsetHeight * 0.5;     // Middle of the field
+        
+        // Draw the main line
+        drawLine(lineStartX, lineY, lineEndX, lineY, '#333', lineThickness);
+        
+        // Draw a thicker line at the start position
+        drawLine(lineStartX, lineY - 15, lineStartX, lineY + 15, '#333', 20);
+        
+        // Draw a thicker line at the finish position
+        drawLine(lineEndX, lineY - 15, lineEndX, lineY + 15, '#333', 20);
+        
+        // Draw start point (green circle)
+        ctx.beginPath();
+        ctx.arc(lineStartX, lineY, 12, 0, Math.PI * 2);
+        ctx.fillStyle = '#4CAF50';
+        ctx.fill();
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Draw finish point (red circle)
+        ctx.beginPath();
+        ctx.arc(lineEndX, lineY, 12, 0, Math.PI * 2);
+        ctx.fillStyle = '#f44336';
+        ctx.fill();
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Add text labels
+        ctx.font = '16px Arial';
+        ctx.fillStyle = '#333';
+        ctx.textAlign = 'center';
+        ctx.fillText('START', lineStartX, lineY - 30);
+        ctx.fillText('FINISH', lineEndX, lineY - 30);
+    }
+
+    function checkBallPosition() {
+        if (!isGameActive) return;
+        
+        const pos = getBallPosition();
+        const gameRect = gameArea.getBoundingClientRect();
+        const ballX = pos.x - gameRect.left;
+        const ballY = pos.y - gameRect.top;
+        
+        // Check if ball is within the line thickness
+        const distanceFromLine = Math.abs(ballY - lineY);
+        if (distanceFromLine > lineThickness / 2) {
+            gameOver("You went off the line!");
+            return;
+        }
+        
+        // Check if ball reached the finish line
+        if (ballX >= lineEndX && !hasReachedFinish) {
+            hasReachedFinish = true;
+            success("You reached the finish line! Score: 100");
+        }
+    }
+
+    function gameOver(message) {
+        isGameActive = false;
+        isDragging = false;
+        statusElement.textContent = message;
+        statusElement.style.display = 'block';
+        
+        // Create game over message
+        const gameOverDiv = document.createElement('div');
+        gameOverDiv.className = 'game-over';
+        gameOverDiv.textContent = message;
+        gameArea.appendChild(gameOverDiv);
+        gameOverDiv.style.display = 'block';
+        
+        // Save score
+        saveScore(0);
+    }
+    
+    function success(message) {
+        isGameActive = false;
+        isDragging = false;
+        statusElement.textContent = "Success! Score: 100";
+        statusElement.style.display = 'block';
+        
+        // Create success message
+        const successDiv = document.createElement('div');
+        successDiv.className = 'success';
+        successDiv.textContent = message;
+        gameArea.appendChild(successDiv);
+        successDiv.style.display = 'block';
+        
+        // Save score
+        saveScore(100);
+    }
+    
+    function saveScore(score) {
+        // Send score to server
+        fetch('/save_score', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                game_type: 'balance',
+                score: score,
+                total: 100
+            }),
+        })
+        .then(response => response.json())
+        .then(data => console.log('Score saved:', data))
+        .catch(error => console.error('Error saving score:', error));
+    }
+
+    function startGame() {
+        // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Remove any existing messages
+        const existingMessages = document.querySelectorAll('.game-over, .success');
+        existingMessages.forEach(msg => msg.remove());
+        
+        // Reset game state
+        isGameActive = true;
+        hasReachedFinish = false;
+        scoreElement.textContent = "Score: 0";
+        statusElement.textContent = "";
+        statusElement.style.display = 'none';
+        
+        // Draw the starting line
+        drawStartingLine();
+        
+        // Reset ball position to the start of the line
+        ball.style.left = '10%';
+        ball.style.top = '50%';
+        
+        // Get initial ball position for line drawing
+        const pos = getBallPosition();
+        lastX = pos.x - gameArea.getBoundingClientRect().left;
+        lastY = pos.y - gameArea.getBoundingClientRect().top;
+    }
+
+    // Draw the starting line when the page loads
+    drawStartingLine();
+
+    startButton.addEventListener('click', startGame);
+
+    ball.addEventListener('mousedown', function(e) {
+        if (!isGameActive) return;
+        
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        ballStartX = ball.offsetLeft;
+        ballStartY = ball.offsetTop;
+        
+        // Get initial ball position for line drawing
+        const pos = getBallPosition();
+        lastX = pos.x - gameArea.getBoundingClientRect().left;
+        lastY = pos.y - gameArea.getBoundingClientRect().top;
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging || !isGameActive) return;
+
+        const gameRect = gameArea.getBoundingClientRect();
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        // Calculate new position
+        let newX = ballStartX + dx;
+        let newY = ballStartY + dy;
+
+        // Keep ball within game area bounds
+        newX = Math.max(0, Math.min(newX, gameArea.offsetWidth - ball.offsetWidth));
+        newY = Math.max(0, Math.min(newY, gameArea.offsetHeight - ball.offsetHeight));
+
+        // Update ball position
+        ball.style.left = newX + 'px';
+        ball.style.top = newY + 'px';
+
+        // Draw line from last position to current position
+        const pos = getBallPosition();
+        const currentX = pos.x - gameRect.left;
+        const currentY = pos.y - gameRect.top;
+        drawLine(lastX, lastY, currentX, currentY);
+        lastX = currentX;
+        lastY = currentY;
+        
+        // Check if ball is still on the line
+        checkBallPosition();
+    });
+
+    document.addEventListener('mouseup', function() {
+        isDragging = false;
+    });
+});
+</script>
+{% endblock %} 
