@@ -826,9 +826,45 @@
                     "score": 1,
                     "total": 1,
                     "date": "2025-04-07 20:09:58"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 125,
+                    "total": 100,
+                    "date": "2025-04-08 20:39:02"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 260,
+                    "total": 100,
+                    "date": "2025-04-08 20:39:12"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 355,
+                    "total": 100,
+                    "date": "2025-04-08 20:39:23"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 460,
+                    "total": 100,
+                    "date": "2025-04-08 20:39:35"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 0,
+                    "total": 100,
+                    "date": "2025-04-08 20:40:57"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 0,
+                    "total": 100,
+                    "date": "2025-04-08 20:41:19"
                 }
             ],
-            "avatar": "Unicorn.jpg"
+            "avatar": "CreativeThinker.jpg"
         }
     ]
 }

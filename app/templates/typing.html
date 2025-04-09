@@ -6,19 +6,19 @@
 
 {% block content %}
 <div class="typing-container">
-    <h1>Typing Game</h1>
+        <h1>Typing Game</h1>
     <p>Challenge yourself to type faster and more accurately! Choose a level to begin.</p>
 
-    <div class="word-box" id="wordDisplay">Press a button to start a level</div>
-    
+        <div class="word-box" id="wordDisplay">Press a button to start a level</div>
+        
     <div class="scroll-box" id="scrollBox" style="display: none;">
-        <span class="moving-word" id="movingWord"></span>
-    </div>
+            <span class="moving-word" id="movingWord"></span>
+        </div>
 
     <input type="text" id="wordInput" placeholder="Type here and press Enter..." disabled>
-    <div class="score" id="scoreDisplay"></div>
+        <div class="score" id="scoreDisplay"></div>
 
-    <div class="button-container">
+        <div class="button-container">
         <button class="btn" id="startLevel1Button">
             <i class="fas fa-1"></i> Level 1
         </button>
@@ -156,33 +156,33 @@
     }
 </style>
 
-<script>
-    const level1Words = ["javascript", "keyboard", "syntax"];
-    const level2Sentences = [
-        "JavaScript is a powerful language.",
-        "Debugging helps improve problem-solving.",
-        "Always test your code for errors."
-    ];
-    const level3Words = ["loop", "event", "callback"];
+    <script>
+        const level1Words = ["javascript", "keyboard", "syntax"];
+        const level2Sentences = [
+            "JavaScript is a powerful language.",
+            "Debugging helps improve problem-solving.",
+            "Always test your code for errors."
+        ];
+        const level3Words = ["loop", "event", "callback"];
 
-    const wordInput = document.getElementById("wordInput");
-    const wordDisplay = document.getElementById("wordDisplay");
-    const scoreDisplay = document.getElementById("scoreDisplay");
-    const scrollBox = document.getElementById("scrollBox");
-    const movingWord = document.getElementById("movingWord");
+        const wordInput = document.getElementById("wordInput");
+        const wordDisplay = document.getElementById("wordDisplay");
+        const scoreDisplay = document.getElementById("scoreDisplay");
+        const scrollBox = document.getElementById("scrollBox");
+        const movingWord = document.getElementById("movingWord");
     const level2Button = document.getElementById("startLevel2Button");
     const level3Button = document.getElementById("startLevel3Button");
     const level1ScoreDisplay = document.getElementById("level1Score");
     const level2ScoreDisplay = document.getElementById("level2Score");
     const level3ScoreDisplay = document.getElementById("level3Score");
 
-    let words = [];
-    let currentWordIndex = 0;
-    let correctCount = 0;
-    let totalWords = 0;
-    let level = 1;
-    let animationInterval;
-    let lastXPosition = -1;
+        let words = [];
+        let currentWordIndex = 0;
+        let correctCount = 0;
+        let totalWords = 0;
+        let level = 1;
+        let animationInterval;
+        let lastXPosition = -1;
     let level1Completed = false;
     let level2Completed = false;
     let bestScores = {
@@ -200,14 +200,14 @@
         celebratePerfectScores();
     }
 
-    function resetGame() {
-        correctCount = 0;
-        wordInput.value = "";
-        wordInput.disabled = true;
-        wordDisplay.textContent = "Press a button to start a level";
-        scrollBox.style.display = "none";
-        clearInterval(animationInterval);
-    }
+        function resetGame() {
+            correctCount = 0;
+            wordInput.value = "";
+            wordInput.disabled = true;
+            wordDisplay.textContent = "Press a button to start a level";
+            scrollBox.style.display = "none";
+            clearInterval(animationInterval);
+        }
 
     function updateButtonStates() {
         level2Button.disabled = !level1Completed;
@@ -230,25 +230,25 @@
         }
     }
 
-    function startLevel(levelNumber) {
+        function startLevel(levelNumber) {
         if (levelNumber === 2 && !level1Completed) return;
         if (levelNumber === 3 && !level2Completed) return;
         
         scoreDisplay.textContent = "";
         
-        level = levelNumber;
-        words = level === 1 ? level1Words : level === 2 ? level2Sentences : level3Words;
-        totalWords = words.length;
-        correctCount = 0;
-        wordInput.value = "";
-        wordInput.disabled = false;
-        wordInput.focus();
-        currentWordIndex = 0;
-        showNextWord();
-    }
+            level = levelNumber;
+            words = level === 1 ? level1Words : level === 2 ? level2Sentences : level3Words;
+            totalWords = words.length;
+            correctCount = 0;
+            wordInput.value = "";
+            wordInput.disabled = false;
+            wordInput.focus();
+            currentWordIndex = 0;
+            showNextWord();
+        }
 
-    function showNextWord() {
-        if (currentWordIndex >= totalWords) {
+        function showNextWord() {
+            if (currentWordIndex >= totalWords) {
             const accuracy = (correctCount / totalWords * 100).toFixed(2);
             
             if (level === 1) {
@@ -349,44 +349,44 @@
             clearInterval(animationInterval);
             
             return;
-        }
+            }
 
-        if (level === 3) {
-            animateWord();
-        } else {
+            if (level === 3) {
+                animateWord();
+            } else {
             wordDisplay.textContent = words[currentWordIndex];
         }
-    }
+        }
 
-    function animateWord() {
-        clearInterval(animationInterval);
-        scrollBox.style.display = "block";
-        
-        let currentWord = words[currentWordIndex];
-        movingWord.textContent = currentWord;
+        function animateWord() {
+            clearInterval(animationInterval);
+            scrollBox.style.display = "block";
+            
+            let currentWord = words[currentWordIndex];
+            movingWord.textContent = currentWord;
         wordDisplay.textContent = currentWord;
         
         // Make the word larger and more visible
         movingWord.style.fontSize = "2rem";
         movingWord.style.fontWeight = "bold";
         movingWord.style.color = "#7C3AED"; // Purple color for better visibility
-        
-        let randomX;
-        do {
+            
+            let randomX;
+            do {
             randomX = Math.random() * (scrollBox.clientWidth - 100); // Give more space for the word
         } while (Math.abs(randomX - lastXPosition) < 100); 
-        
-        lastXPosition = randomX;
-        movingWord.style.left = randomX + "px";
-        movingWord.style.top = "0px";
-        
-        let position = 0;
-        animationInterval = setInterval(() => {
-            position += 1;
-            movingWord.style.top = position + "px";
             
-            if (position > scrollBox.clientHeight) {
-                clearInterval(animationInterval);
+            lastXPosition = randomX;
+            movingWord.style.left = randomX + "px";
+            movingWord.style.top = "0px";
+            
+            let position = 0;
+            animationInterval = setInterval(() => {
+            position += 1;
+                movingWord.style.top = position + "px";
+            
+                if (position > scrollBox.clientHeight) {
+                    clearInterval(animationInterval);
                 const accuracy = (correctCount / totalWords * 100).toFixed(2);
                 
                 // Update best scores for Level 3
@@ -421,10 +421,10 @@
                 return;
             }
         }, 50);
-    }
+        }
 
-    wordInput.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
+        wordInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
             const userInput = wordInput.value.trim();
             const currentWord = words[currentWordIndex];
             
@@ -444,15 +444,15 @@
                     wordInput.value = "";
                     showNextWord();
                 }
+                }
             }
-        }
-    });
+        });
 
-    document.getElementById("startLevel1Button").addEventListener("click", () => startLevel(1));
-    document.getElementById("startLevel2Button").addEventListener("click", () => startLevel(2));
-    document.getElementById("startLevel3Button").addEventListener("click", () => startLevel(3));
+        document.getElementById("startLevel1Button").addEventListener("click", () => startLevel(1));
+        document.getElementById("startLevel2Button").addEventListener("click", () => startLevel(2));
+        document.getElementById("startLevel3Button").addEventListener("click", () => startLevel(3));
 
-    resetGame();
+        resetGame();
     updateButtonStates();
 
     function createFirework(x, y) {
@@ -554,5 +554,5 @@
         updateBestScores();
         celebratePerfectScores();
     }
-</script>
+    </script>
 {% endblock %}

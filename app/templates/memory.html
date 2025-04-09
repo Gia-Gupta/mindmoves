@@ -60,12 +60,27 @@
     position: relative;
 }
 
-#memory-grid {
+.memory-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin: 0 auto;
-    max-width: 400px;
+    gap: 20px;
+    margin: 20px auto;
+    max-width: 600px;
+    justify-content: center;
+}
+
+.grid-2x2 {
+    grid-template-columns: repeat(2, 120px);
+    grid-template-rows: repeat(2, 120px);
+}
+
+.grid-2x3 {
+    grid-template-columns: repeat(3, 120px);
+    grid-template-rows: repeat(2, 120px);
+}
+
+.grid-3x3 {
+    grid-template-columns: repeat(3, 120px);
+    grid-template-rows: repeat(3, 120px);
 }
 
 .memory-card {
@@ -234,6 +249,149 @@ document.addEventListener('DOMContentLoaded', function() {
     
     startButton.addEventListener('click', startGame);
     
+    function getGridConfig(level) {
+        console.log('Current level:', level);
+        if (level <= 3) {
+            return {
+                cards: 4,
+                gridClass: 'grid-2x2',
+                viewTime: 1000,
+                isSequential: true,
+                sequentialDelay: 500,
+                groupSize: 1 // Single card flip
+            };
+        } else if (level <= 6) {
+            return {
+                cards: 6,
+                gridClass: 'grid-2x3',
+                viewTime: 1000,
+                isSequential: true,
+                sequentialDelay: 500,
+                groupSize: 1 // Single card flip
+            };
+        } else if (level <= 10) {
+            return {
+                cards: 9,
+                gridClass: 'grid-3x3',
+                viewTime: 1000,
+                isSequential: true,
+                sequentialDelay: 500,
+                groupSize: 1 // Single card flip
+            };
+        } else if (level <= 14) {
+            return {
+                cards: 9,
+                gridClass: 'grid-3x3',
+                viewTime: 2000,
+                isSequential: true,
+                sequentialDelay: 500,
+                groupSize: 3 // Three cards at a time
+            };
+        } else if (level <= 24) {
+            return {
+                cards: 9,
+                gridClass: 'grid-3x3',
+                viewTime: 2000,
+                isSequential: false // All cards at once
+            };
+        } else {
+            return {
+                cards: 9,
+                gridClass: 'grid-3x3',
+                viewTime: 1000,
+                isSequential: false // All cards at once
+            };
+        }
+    }
+
+    function initializeGrid() {
+        memoryGrid.innerHTML = '';
+        highestNumber = 0;
+        
+        const config = getGridConfig(currentLevel);
+        console.log('Initializing grid with config:', config);
+        
+        // Remove all existing classes and add new ones
+        memoryGrid.className = '';
+        memoryGrid.classList.add('memory-grid', config.gridClass);
+        
+        // Create cards based on current level
+        for (let i = 0; i < config.cards; i++) {
+            const card = createCard();
+            memoryGrid.appendChild(card);
+        }
+    }
+
+    function startGame() {
+        isGameActive = true;
+        canSelect = false;
+        startButton.disabled = true;
+        
+        if (startButton.textContent === 'Try Again') {
+            currentScore = 0;
+            currentLevel = 1;
+            scoreElement.textContent = `Score: ${currentScore}`;
+        }
+        
+        levelElement.textContent = `Level: ${currentLevel}`;
+        initializeGrid();
+        
+        // Start countdown
+        let countdown = 3;
+        countdownOverlay.textContent = countdown;
+        countdownOverlay.style.display = 'block';
+        
+        const countdownInterval = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+                countdownOverlay.textContent = countdown;
+            } else {
+                clearInterval(countdownInterval);
+                countdownOverlay.style.display = 'none';
+                
+                const config = getGridConfig(currentLevel);
+                const cards = Array.from(memoryGrid.querySelectorAll('.memory-card'));
+                
+                if (config.isSequential) {
+                    // Sequential card flipping (single or group)
+                    let cardIndex = 0;
+                    let flippedCards = 0;
+                    
+                    const flipInterval = setInterval(() => {
+                        if (cardIndex < cards.length) {
+                            // Flip a group of cards
+                            for (let i = 0; i < config.groupSize && cardIndex + i < cards.length; i++) {
+                                const card = cards[cardIndex + i];
+                                card.classList.add('flipped');
+                                
+                                // Set timer to flip this card back
+                                setTimeout(() => {
+                                    card.classList.remove('flipped');
+                                    flippedCards++;
+                                    
+                                    // Enable selection only after all cards have been shown and flipped back
+                                    if (flippedCards === cards.length) {
+                                        canSelect = true;
+                                    }
+                                }, config.viewTime);
+                            }
+                            cardIndex += config.groupSize;
+                        } else {
+                            clearInterval(flipInterval);
+                        }
+                    }, config.sequentialDelay);
+                } else {
+                    // Show all cards at once
+                    cards.forEach(card => card.classList.add('flipped'));
+                    setTimeout(() => {
+                        cards.forEach(card => card.classList.remove('flipped'));
+                        canSelect = true;
+                    }, config.viewTime);
+                }
+            }
+        }, 1000);
+    }
+
     function createCard() {
         const card = document.createElement('div');
         card.className = 'memory-card';
@@ -277,6 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     countdownOverlay.style.display = 'none';
                     currentLevel++;
+                    console.log('Level increased to:', currentLevel);
                     startButton.disabled = false;
                     startButton.textContent = `Start Level ${currentLevel}`;
                 }, 1500);
@@ -303,59 +462,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         return card;
     }
-    
-    function startGame() {
-        isGameActive = true;
-        canSelect = false;
-        highestNumber = 0;
-        startButton.disabled = true;
-        
-        if (startButton.textContent === 'Try Again') {
-            currentScore = 0;
-            currentLevel = 1;
-            scoreElement.textContent = `Score: ${currentScore}`;
+
+    // Add a helper function to shuffle the cards array
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
         }
-        
-        levelElement.textContent = `Level: ${currentLevel}`;
-        initializeGrid();
-        
-        // Start countdown
-        let countdown = 3;
-        countdownOverlay.textContent = countdown;
-        countdownOverlay.style.display = 'block';
-        
-        const countdownInterval = setInterval(() => {
-            countdown--;
-            if (countdown > 0) {
-                countdownOverlay.textContent = countdown;
-            } else {
-                clearInterval(countdownInterval);
-                countdownOverlay.style.display = 'none';
-                levelElement.textContent = `Level: ${currentLevel}`;
-                
-                // Show numbers
-                const cards = memoryGrid.querySelectorAll('.memory-card');
-                cards.forEach(card => card.classList.add('flipped'));
-                
-                // After 3 seconds, hide numbers and enable selection
-                setTimeout(() => {
-                    cards.forEach(card => card.classList.remove('flipped'));
-                    canSelect = true;
-                }, 3000);
-            }
-        }, 1000);
+        return array;
     }
-    
-    function initializeGrid() {
-        memoryGrid.innerHTML = '';
-        
-        // Create 4 cards
-        for (let i = 0; i < 4; i++) {
-            const card = createCard();
-            memoryGrid.appendChild(card);
-        }
-    }
-    
+
     // Initialize the grid on page load
     initializeGrid();
 });
