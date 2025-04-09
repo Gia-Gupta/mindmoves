@@ -36,6 +36,60 @@
                     "score": 3,
                     "total": 3,
                     "date": "2025-04-03 20:27:54"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 100,
+                    "total": 100,
+                    "date": "2025-04-09 11:34:19"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 200,
+                    "total": 200,
+                    "date": "2025-04-09 11:34:28"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 300,
+                    "total": 300,
+                    "date": "2025-04-09 11:34:38"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 400,
+                    "total": 400,
+                    "date": "2025-04-09 11:34:48"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 500,
+                    "total": 500,
+                    "date": "2025-04-09 11:34:58"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 600,
+                    "total": 600,
+                    "date": "2025-04-09 11:35:09"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 700,
+                    "total": 700,
+                    "date": "2025-04-09 11:35:22"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 800,
+                    "total": 800,
+                    "date": "2025-04-09 11:35:33"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 0,
+                    "total": 100,
+                    "date": "2025-04-09 11:35:46"
                 }
             ],
             "avatar": "cuterobot.jpg"
@@ -865,6 +919,135 @@
                 }
             ],
             "avatar": "CreativeThinker.jpg"
+        },
+        {
+            "first_name": "Test",
+            "username": "testuser",
+            "password": "$2b$12$9P7bsJgYktPt77jnzcO7lOAO2LHXqO0vH8N4rpsXs/NbbiWPEGSqu",
+            "secret_question": "Test question?",
+            "secret_answer": "$2b$12$23hjqVJhgAyn1Ze9BVRgmOmZc4FQh6sh8RwZAQwvtDyFIn7R891jW",
+            "game_history": [
+                {
+                    "game_type": "Test Game 25",
+                    "score": 25,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.793733"
+                },
+                {
+                    "game_type": "Test Game 24",
+                    "score": 24,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.787052"
+                },
+                {
+                    "game_type": "Test Game 23",
+                    "score": 23,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.780393"
+                },
+                {
+                    "game_type": "Test Game 22",
+                    "score": 22,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.773397"
+                },
+                {
+                    "game_type": "Test Game 21",
+                    "score": 21,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.766731"
+                },
+                {
+                    "game_type": "Test Game 20",
+                    "score": 20,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.759709"
+                },
+                {
+                    "game_type": "Test Game 19",
+                    "score": 19,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.752488"
+                },
+                {
+                    "game_type": "Test Game 18",
+                    "score": 18,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.746083"
+                },
+                {
+                    "game_type": "Test Game 17",
+                    "score": 17,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.739029"
+                },
+                {
+                    "game_type": "Test Game 16",
+                    "score": 16,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.732327"
+                },
+                {
+                    "game_type": "Test Game 15",
+                    "score": 15,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.725604"
+                },
+                {
+                    "game_type": "Test Game 14",
+                    "score": 14,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.718622"
+                },
+                {
+                    "game_type": "Test Game 13",
+                    "score": 13,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.712012"
+                },
+                {
+                    "game_type": "Test Game 12",
+                    "score": 12,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.705021"
+                },
+                {
+                    "game_type": "Test Game 11",
+                    "score": 11,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.698215"
+                },
+                {
+                    "game_type": "Test Game 10",
+                    "score": 10,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.691069"
+                },
+                {
+                    "game_type": "Test Game 9",
+                    "score": 9,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.683721"
+                },
+                {
+                    "game_type": "Test Game 8",
+                    "score": 8,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.676282"
+                },
+                {
+                    "game_type": "Test Game 7",
+                    "score": 7,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.668592"
+                },
+                {
+                    "game_type": "Test Game 6",
+                    "score": 6,
+                    "total": 100,
+                    "date": "2025-04-09 11:11:04.660424"
+                }
+            ]
         }
     ]
 }

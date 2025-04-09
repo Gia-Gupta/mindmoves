@@ -432,10 +432,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 countdownOverlay.style.display = 'block';
                 canSelect = false;
                 
+                // Save score for successful level completion
+                if (document.body.classList.contains('logged-in')) {
+                    fetch('/save_score', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            game_type: 'Memory Master',
+                            score: currentScore,
+                            total: currentLevel * 100
+                        })
+                    });
+                }
+                
                 setTimeout(() => {
                     countdownOverlay.style.display = 'none';
                     currentLevel++;
-                    console.log('Level increased to:', currentLevel);
                     startButton.disabled = false;
                     startButton.textContent = `Start Level ${currentLevel}`;
                 }, 1500);
@@ -444,6 +458,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 countdownOverlay.style.color = '#f44336';
                 countdownOverlay.style.display = 'block';
                 canSelect = false;
+                
+                // Save score for game over
+                if (document.body.classList.contains('logged-in')) {
+                    fetch('/save_score', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            game_type: 'Memory Master',
+                            score: 0,
+                            total: 100
+                        })
+                    });
+                }
                 
                 setTimeout(() => {
                     countdownOverlay.style.display = 'none';
@@ -461,15 +490,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         return card;
-    }
-
-    // Add a helper function to shuffle the cards array
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
     }
 
     // Initialize the grid on page load
