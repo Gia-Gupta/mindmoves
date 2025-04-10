@@ -20,6 +20,14 @@
                         <img src="{{ url_for('static', filename='avatars/' + user.avatar) }}" alt="Avatar" class="header-avatar">
                     {% endif %}
                 </a>
+                
+                <!-- Hamburger Menu Button -->
+                <button class="hamburger-menu" aria-label="Toggle Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
                 <div class="nav-links">
                     <a href="{{ url_for('main.index') }}"><i class="fas fa-home"></i> Home</a>
                     <a href="{{ url_for('main.about') }}" class="nav-link">About</a>
@@ -63,8 +71,25 @@
     </footer>
 
     <script>
-        // Hide flash messages after 3 seconds
+        // Mobile Menu Toggle
         document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.querySelector('.hamburger-menu');
+            const navLinks = document.querySelector('.nav-links');
+            
+            hamburger.addEventListener('click', function() {
+                this.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!hamburger.contains(event.target) && !navLinks.contains(event.target)) {
+                    hamburger.classList.remove('active');
+                    navLinks.classList.remove('active');
+                }
+            });
+
+            // Hide flash messages after 3 seconds
             const flashMessages = document.querySelectorAll('.flash-message');
             flashMessages.forEach(function(message) {
                 setTimeout(function() {
