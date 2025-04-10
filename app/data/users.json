@@ -90,6 +90,78 @@
                     "score": 0,
                     "total": 100,
                     "date": "2025-04-09 11:35:46"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 100,
+                    "total": 100,
+                    "date": "2025-04-09 20:43:09"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 100,
+                    "total": 100,
+                    "date": "2025-04-09 20:45:48"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 200,
+                    "total": 200,
+                    "date": "2025-04-09 20:45:59"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 300,
+                    "total": 300,
+                    "date": "2025-04-09 20:46:10"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 400,
+                    "total": 400,
+                    "date": "2025-04-09 20:46:24"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 500,
+                    "total": 500,
+                    "date": "2025-04-09 20:46:36"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 600,
+                    "total": 600,
+                    "date": "2025-04-09 20:46:49"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 700,
+                    "total": 700,
+                    "date": "2025-04-09 20:47:04"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 800,
+                    "total": 800,
+                    "date": "2025-04-09 20:47:19"
+                },
+                {
+                    "game_type": "Typing Game - Level 1",
+                    "score": 3,
+                    "total": 3,
+                    "date": "2025-04-09 20:49:03"
+                },
+                {
+                    "game_type": "Typing Game - Level 2",
+                    "score": 3,
+                    "total": 3,
+                    "date": "2025-04-09 20:49:54"
+                },
+                {
+                    "game_type": "Typing Game - Level 3",
+                    "score": 3,
+                    "total": 3,
+                    "date": "2025-04-09 20:50:09"
                 }
             ],
             "avatar": "cuterobot.jpg"
