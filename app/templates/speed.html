@@ -48,6 +48,18 @@
     <button class="start-button" id="startButton">Start Game</button>
     <button class="mute-button" id="muteButton">Mute</button>
     <button class="pause-button" id="pauseButton" disabled>Pause</button>
+
+    <div class="mobile-controls">
+        <button id="mobileStartButton" aria-label="Start Game">
+            <i class="fas fa-play"></i>
+        </button>
+        <button id="mobileMuteButton" aria-label="Toggle Sound">
+            <i class="fas fa-volume-up"></i>
+        </button>
+        <button id="mobilePauseButton" aria-label="Pause Game" disabled>
+            <i class="fas fa-pause"></i>
+        </button>
+    </div>
 </div>
 
 <audio id="hitSound" src="/static/sounds/hit.mp3" preload="auto"></audio>
@@ -63,17 +75,24 @@
         background: var(--card-background);
         border-radius: 1.5rem;
         box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-            text-align: center;
+        text-align: center;
     }
 
     .game-info {
         display: flex;
         justify-content: space-around;
         align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
         margin: 1rem 0;
         padding: 1rem;
         background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(244, 114, 182, 0.05));
         border-radius: 0.75rem;
+    }
+
+    .game-info > div {
+        flex: 1 1 auto;
+        min-width: 150px;
     }
 
     .level-display {
@@ -382,6 +401,7 @@
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         animation: spawn 0.3s ease-out, pulse 1.5s ease-in-out infinite;
         z-index: 20;
+        touch-action: manipulation;
     }
 
     .power-up.time-freeze {
@@ -681,6 +701,195 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
         }
+
+    /* Mobile Styles */
+    @media (max-width: 768px) {
+        .game-container {
+            margin: 6rem auto 2rem;
+            padding: 1rem;
+        }
+
+        .game-info {
+            padding: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .game-info > div {
+            min-width: 120px;
+            padding: 0.5rem;
+        }
+
+        .level-display, .multiplier {
+            font-size: 1rem;
+        }
+
+        .game-area {
+            height: 300px;
+            margin: 1rem 0;
+        }
+
+        .circle, .square, .triangle, .diamond {
+            transform-origin: center;
+            touch-action: manipulation;
+        }
+
+        .circle:hover {
+            transform: none;
+        }
+
+        .circle:active {
+            transform: scale(1.1);
+        }
+
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-item {
+            flex: 1 1 auto;
+            min-width: 100px;
+            font-size: 0.9rem;
+            padding: 0.5rem;
+        }
+
+        .start-button, .mute-button, .pause-button {
+            padding: 0.75rem 1.5rem;
+            margin: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .instructions {
+            font-size: 0.9rem;
+            padding: 0.75rem;
+        }
+
+        .instructions ul {
+            padding-left: 1.25rem;
+        }
+
+        .instructions li {
+            margin: 0.5rem 0;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .game-container {
+            margin: 5rem auto 1rem;
+            padding: 0.75rem;
+        }
+
+        .game-info > div {
+            min-width: 100px;
+            font-size: 0.85rem;
+        }
+
+        .game-area {
+            height: 250px;
+        }
+
+        .circle, .square, .triangle, .diamond {
+            min-width: 40px;
+            min-height: 40px;
+        }
+
+        .stats {
+            gap: 0.5rem;
+        }
+
+        .stat-item {
+            min-width: 80px;
+            font-size: 0.85rem;
+        }
+
+        .start-button, .mute-button, .pause-button {
+            padding: 0.6rem 1.25rem;
+            font-size: 0.85rem;
+        }
+    }
+
+    /* Mobile optimizations for power-ups */
+    @media (max-width: 768px) {
+        .power-up {
+            width: 60px;
+            height: 60px;
+            font-size: 1.75rem;
+        }
+
+        .power-up-notification {
+            font-size: 1.2rem;
+            padding: 0.75rem 1.5rem;
+        }
+
+        .power-up-status {
+            font-size: 0.9rem;
+            padding: 0.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .power-up {
+            width: 55px;
+            height: 55px;
+            font-size: 1.5rem;
+        }
+
+        .power-up-notification {
+            font-size: 1rem;
+            padding: 0.6rem 1.25rem;
+        }
+    }
+
+    /* Game controls for mobile */
+    .mobile-controls {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .mobile-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .mobile-controls button {
+            padding: 1rem;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .mobile-controls button:active {
+            transform: scale(0.95);
+        }
+
+        .mobile-controls button[disabled] {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    /* Prevent text selection during gameplay on mobile */
+    @media (max-width: 768px) {
+        .game-container {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .game-area {
+            touch-action: none;
+        }
+    }
     </style>
 
 <script>
@@ -703,6 +912,12 @@
             this.levelUpSound = document.getElementById('levelUpSound');
             this.powerUpSound = document.getElementById('powerUpSound');
             this.highScoreDisplay = document.getElementById('highScoreDisplay');
+
+            // Mobile controls
+            this.mobileStartButton = document.getElementById('mobileStartButton');
+            this.mobileMuteButton = document.getElementById('mobileMuteButton');
+            this.mobilePauseButton = document.getElementById('mobilePauseButton');
+
             this.isMuted = false;
             this.isPaused = false;
 
@@ -746,6 +961,17 @@
             this.gameArea.addEventListener('click', (e) => this.handleMiss(e));
             this.muteButton.addEventListener('click', () => this.toggleMute());
             this.pauseButton.addEventListener('click', () => this.togglePause());
+
+            // Bind mobile control event listeners
+            if (this.mobileStartButton) {
+                this.mobileStartButton.addEventListener('click', () => this.startGame());
+            }
+            if (this.mobileMuteButton) {
+                this.mobileMuteButton.addEventListener('click', () => this.toggleMute());
+            }
+            if (this.mobilePauseButton) {
+                this.mobilePauseButton.addEventListener('click', () => this.togglePause());
+            }
         }
 
         calculateDifficulty() {
@@ -791,27 +1017,25 @@
 
         createCircle() {
             // Determine if we should create a non-circle shape based on level
-            // Higher levels have a higher chance of non-circle shapes
-            const nonCircleChance = Math.min(0.3, (this.level - 1) * 0.05); // 5% increase per level, max 30%
+            const nonCircleChance = Math.min(0.3, (this.level - 1) * 0.05);
             const shouldCreateNonCircle = Math.random() < nonCircleChance;
             
-            // If we should create a non-circle, randomly select the type
             const shapeTypes = ['circle', 'square', 'triangle', 'diamond'];
             const shapeType = shouldCreateNonCircle ? 
-                shapeTypes[Math.floor(Math.random() * (shapeTypes.length - 1)) + 1] : // Skip 'circle' (index 0)
+                shapeTypes[Math.floor(Math.random() * (shapeTypes.length - 1)) + 1] :
                 'circle';
             
             const shape = document.createElement('div');
             shape.className = shapeType;
             
-            const size = this.getCurrentCircleSize();
+            // Adjust minimum size for touch devices
+            const baseSize = window.innerWidth <= 768 ? 45 : this.baseCircleSize;
+            const size = Math.max(40, baseSize - (this.level * 2));
             
-            // Set size based on shape type
             if (shapeType === 'circle' || shapeType === 'square' || shapeType === 'diamond') {
                 shape.style.width = `${size}px`;
                 shape.style.height = `${size}px`;
             } else if (shapeType === 'triangle') {
-                // For triangle, we need to set the border width based on size
                 const borderWidth = size / 2;
                 shape.style.borderLeft = `${borderWidth}px solid transparent`;
                 shape.style.borderRight = `${borderWidth}px solid transparent`;
@@ -820,88 +1044,80 @@
                 shape.style.height = '0';
             }
             
-            // Set color for circle based on current level
             if (shapeType === 'circle') {
                 const colors = this.getCurrentCircleColor();
                 shape.style.background = `linear-gradient(135deg, ${colors.start}, ${colors.end})`;
             }
             
             // Calculate position ensuring the shape is fully within the game area
-            const maxX = this.gameArea.clientWidth - size;
-            const maxY = this.gameArea.clientHeight - size;
-            const x = Math.random() * maxX;
-            const y = Math.random() * maxY;
+            // Add padding for easier touch on edges
+            const padding = window.innerWidth <= 768 ? 20 : 0;
+            const maxX = this.gameArea.clientWidth - size - padding * 2;
+            const maxY = this.gameArea.clientHeight - size - padding * 2;
+            const x = Math.random() * maxX + padding;
+            const y = Math.random() * maxY + padding;
             
             shape.style.left = `${x}px`;
             shape.style.top = `${y}px`;
             
-            // Add a data attribute to track if the shape has been clicked
             shape.dataset.clicked = 'false';
-            
-            // Store the shape's position and size as data attributes for accurate click detection
             shape.dataset.x = x;
             shape.dataset.y = y;
             shape.dataset.size = size;
             shape.dataset.type = shapeType;
             
-            shape.addEventListener('click', (e) => {
+            // Add touch event listeners for mobile
+            const handleInteraction = (e) => {
+                e.preventDefault(); // Prevent scrolling while playing
                 e.stopPropagation();
                 
-                // Get the click position relative to the game area
                 const rect = this.gameArea.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const clickY = e.clientY - rect.top;
+                const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                const clickX = clientX - rect.left;
+                const clickY = clientY - rect.top;
                 
-                // Get the shape's position and size
                 const shapeX = parseFloat(shape.dataset.x);
                 const shapeY = parseFloat(shape.dataset.y);
                 const shapeSize = parseFloat(shape.dataset.size);
                 const shapeType = shape.dataset.type;
                 
-                // Check if the click is within the shape's boundaries
                 let isClickInShape = false;
                 
                 if (shapeType === 'circle') {
-                    // For circles, check if the click is within the circle's radius
                     const centerX = shapeX + shapeSize / 2;
                     const centerY = shapeY + shapeSize / 2;
                     const distance = Math.sqrt(
                         Math.pow(clickX - centerX, 2) + 
                         Math.pow(clickY - centerY, 2)
                     );
-                    isClickInShape = distance <= shapeSize / 2;
-                } else if (shapeType === 'square' || shapeType === 'diamond') {
-                    // For squares and diamonds, check if the click is within the shape's boundaries
+                    // Increase hit area slightly for touch devices
+                    const hitRadius = window.innerWidth <= 768 ? (shapeSize / 2) + 5 : shapeSize / 2;
+                    isClickInShape = distance <= hitRadius;
+                } else {
+                    // Similar adjustments for other shapes
+                    const padding = window.innerWidth <= 768 ? 5 : 0;
                     isClickInShape = (
-                        clickX >= shapeX && 
-                        clickX <= shapeX + shapeSize && 
-                        clickY >= shapeY && 
-                        clickY <= shapeY + shapeSize
+                        clickX >= shapeX - padding && 
+                        clickX <= shapeX + shapeSize + padding && 
+                        clickY >= shapeY - padding && 
+                        clickY <= shapeY + shapeSize + padding
                     );
-                } else if (shapeType === 'triangle') {
-                    // For triangles, approximate the click detection
-                    const centerX = shapeX;
-                    const centerY = shapeY;
-                    const distance = Math.sqrt(
-                        Math.pow(clickX - centerX, 2) + 
-                        Math.pow(clickY - centerY, 2)
-                    );
-                    isClickInShape = distance <= shapeSize / 2;
                 }
                 
                 if (isClickInShape) {
                     if (shapeType === 'circle') {
-                        // Mark the shape as clicked before handling the hit
                         shape.dataset.clicked = 'true';
                         this.handleHit(shape);
                     } else {
                         this.handleShapeMiss(shape);
                     }
-                } else {
-                    // Click was outside the shape, count as a miss
-                    this.handleMiss(e);
                 }
-            });
+            };
+
+            // Add both mouse and touch event listeners
+            shape.addEventListener('mousedown', handleInteraction);
+            shape.addEventListener('touchstart', handleInteraction, { passive: false });
             
             this.gameArea.appendChild(shape);
             
@@ -912,10 +1128,9 @@
                 }
             }, this.getCurrentCircleLifetime() - 1000);
             
-            // Remove shape after lifetime with fade animation
+            // Remove shape after lifetime
             setTimeout(() => {
                 if (shape.parentNode === this.gameArea) {
-                    // Only count as a miss if the shape hasn't been clicked AND it's a circle
                     if (shape.dataset.clicked !== 'true' && shapeType === 'circle') {
                         shape.classList.add('expire');
                         this.misses++;
@@ -1301,6 +1516,8 @@
             this.comboDisplay.textContent = '0';
             this.startButton.disabled = true;
             this.pauseButton.disabled = false;
+            if (this.mobileStartButton) this.mobileStartButton.disabled = true;
+            if (this.mobilePauseButton) this.mobilePauseButton.disabled = false;
             this.isGameRunning = true;
             this.isPaused = false;
             
@@ -1316,7 +1533,7 @@
                     this.timerDisplay.textContent = `Time: ${this.timeLeft}s`;
                     
                     if (this.timeLeft <= 0) {
-                        if (this.hits > this.misses * 2) { // Progress condition: hits > 2x misses
+                        if (this.hits > this.misses * 2) {
                             this.nextLevel();
                         } else {
                             this.endGame();
@@ -1324,8 +1541,6 @@
                     }
                 }
             }, 1000);
-
-            this.muteButton.addEventListener('click', () => this.toggleMute());
         }
 
         showHighScoreCelebration() {
@@ -1351,6 +1566,8 @@
             clearInterval(this.powerUpInterval);
             this.startButton.disabled = false;
             this.pauseButton.disabled = true;
+            if (this.mobileStartButton) this.mobileStartButton.disabled = false;
+            if (this.mobilePauseButton) this.mobilePauseButton.disabled = true;
             
             // Clear game area
             this.gameArea.innerHTML = '';
@@ -1380,6 +1597,11 @@
         toggleMute() {
             this.isMuted = !this.isMuted;
             this.muteButton.textContent = this.isMuted ? 'Unmute' : 'Mute';
+            if (this.mobileMuteButton) {
+                this.mobileMuteButton.innerHTML = this.isMuted ? 
+                    '<i class="fas fa-volume-mute"></i>' : 
+                    '<i class="fas fa-volume-up"></i>';
+            }
             this.hitSound.muted = this.isMuted;
             this.missSound.muted = this.isMuted;
             this.levelUpSound.muted = this.isMuted;
@@ -1390,27 +1612,37 @@
             if (!this.isGameRunning) return;
             
             this.isPaused = !this.isPaused;
+            this.pauseButton.textContent = this.isPaused ? 'Resume' : 'Pause';
+            if (this.mobilePauseButton) {
+                this.mobilePauseButton.innerHTML = this.isPaused ? 
+                    '<i class="fas fa-play"></i>' : 
+                    '<i class="fas fa-pause"></i>';
+            }
             
             if (this.isPaused) {
-                // Create pause overlay
-                this.pauseOverlay = document.createElement('div');
-                this.pauseOverlay.className = 'pause-overlay';
-                this.pauseOverlay.innerHTML = `
-                    <h2>GAME PAUSED</h2>
-                    <p>Level: ${this.level} | Score: ${this.score}</p>
-                    <button class="resume-button" id="resumeButton">Resume</button>
-                `;
-                this.gameArea.appendChild(this.pauseOverlay);
-                
-                // Add event listener to resume button
-                document.getElementById('resumeButton').addEventListener('click', () => {
-                    this.resumeGame();
-                });
-                
-                this.pauseButton.textContent = 'Resume';
+                this.showPauseOverlay();
             } else {
-                this.resumeGame();
+                if (this.pauseOverlay) {
+                    this.pauseOverlay.remove();
+                    this.pauseOverlay = null;
+                }
             }
+        }
+        
+        showPauseOverlay() {
+            this.pauseOverlay = document.createElement('div');
+            this.pauseOverlay.className = 'pause-overlay';
+            this.pauseOverlay.innerHTML = `
+                <h2>GAME PAUSED</h2>
+                <p>Level: ${this.level} | Score: ${this.score}</p>
+                <button class="resume-button" id="resumeButton">Resume</button>
+            `;
+            this.gameArea.appendChild(this.pauseOverlay);
+            
+            // Add event listener to resume button
+            document.getElementById('resumeButton').addEventListener('click', () => {
+                this.resumeGame();
+            });
         }
         
         resumeGame() {
