@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="300" version="1.1" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+    <rect width="300" height="300" fill="#f5f5f5"/>
+    <g fill="#999">
+        <circle cx="150" cy="100" r="50"/>
+        <path d="M150 160 C 80 160, 40 230, 40 300 L 260 300 C 260 230, 220 160, 150 160Z"/>
+    </g>
+    <text x="150" y="270" text-anchor="middle" font-family="Arial" font-size="14" fill="#666">Founder Placeholder</text>
+</svg> 

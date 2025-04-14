@@ -186,6 +186,138 @@
                     "score": 300,
                     "total": 300,
                     "date": "2025-04-13 18:59:31"
+                },
+                {
+                    "game_type": "Line Balance",
+                    "score": 0,
+                    "total": 0,
+                    "date": "2025-04-13 20:43:39"
+                },
+                {
+                    "game_type": "Line Balance",
+                    "score": 119,
+                    "total": 0,
+                    "date": "2025-04-13 20:45:54"
+                },
+                {
+                    "game_type": "Line Balance",
+                    "score": 127,
+                    "total": 0,
+                    "date": "2025-04-13 20:47:01"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 0,
+                    "total": 100,
+                    "date": "2025-04-13 20:51:16"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 0,
+                    "total": 100,
+                    "date": "2025-04-13 20:55:10"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 0,
+                    "total": 100,
+                    "date": "2025-04-13 20:56:09"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 0,
+                    "total": 100,
+                    "date": "2025-04-13 20:56:15"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 0,
+                    "total": 100,
+                    "date": "2025-04-13 21:02:15"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 0,
+                    "total": 100,
+                    "date": "2025-04-13 21:02:21"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 165,
+                    "total": 100,
+                    "date": "2025-04-13 21:05:16"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 165,
+                    "total": 100,
+                    "date": "2025-04-13 21:06:37"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 0,
+                    "total": 100,
+                    "date": "2025-04-13 21:06:59"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 170,
+                    "total": 100,
+                    "date": "2025-04-13 21:10:28"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 280,
+                    "total": 100,
+                    "date": "2025-04-13 21:10:36"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 380,
+                    "total": 100,
+                    "date": "2025-04-13 21:10:42"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 0,
+                    "total": 100,
+                    "date": "2025-04-13 21:10:47"
+                },
+                {
+                    "game_type": "Typing Game - Level 1",
+                    "score": 18,
+                    "total": 20,
+                    "date": "2025-04-13 21:18:25"
+                },
+                {
+                    "game_type": "Typing Game - Level 2",
+                    "score": 9,
+                    "total": 10,
+                    "date": "2025-04-13 21:20:37"
+                },
+                {
+                    "game_type": "Typing Game - Level 3",
+                    "score": 20,
+                    "total": 20,
+                    "date": "2025-04-13 21:21:37"
+                },
+                {
+                    "game_type": "Typing Game - Level 1",
+                    "score": 3,
+                    "total": 3,
+                    "date": "2025-04-13 21:25:06"
+                },
+                {
+                    "game_type": "Typing Game - Level 1",
+                    "score": 20,
+                    "total": 20,
+                    "date": "2025-04-13 21:28:12"
+                },
+                {
+                    "game_type": "Typing Game - Level 2",
+                    "score": 6,
+                    "total": 10,
+                    "date": "2025-04-13 21:30:17"
                 }
             ],
             "avatar": "cuterobot.jpg"

@@ -92,6 +92,7 @@
         position: relative;
         margin: 2rem 0;
         overflow: hidden;
+        padding: 0 1rem;
     }
 
     .moving-word {
@@ -100,6 +101,8 @@
         font-weight: bold;
         color: var(--primary-color);
         transition: top 0.05s linear;
+        max-width: calc(100% - 2rem);
+        word-break: break-word;
     }
 
     #wordInput {
@@ -154,16 +157,45 @@
         border-radius: 1rem;
         margin-top: 2rem;
     }
+
+    @media (max-width: 768px) {
+        .scroll-box {
+            height: 180px;
+            padding: 0 0.75rem;
+        }
+
+        .moving-word {
+            font-size: 1.5rem;
+            max-width: calc(100% - 1.5rem);
+        }
+    }
 </style>
 
     <script>
-        const level1Words = ["javascript", "keyboard", "syntax"];
+        const level1Words = [
+            "javascript", "keyboard", "syntax", "function", "variable", 
+            "algorithm", "database", "interface", "programming", "developer",
+            "framework", "debugging", "component", "iteration", "validation",
+            "responsive", "template", "protocol", "security", "deployment"
+        ];
         const level2Sentences = [
             "JavaScript is a powerful language.",
             "Debugging helps improve problem-solving.",
-            "Always test your code for errors."
+            "Always test your code for errors.",
+            "Clean code is easier to maintain.",
+            "Practice makes perfect in coding.",
+            "Version control saves your progress.",
+            "Documentation helps other developers.",
+            "User experience matters in design.",
+            "Security should never be ignored.",
+            "Regular testing prevents bugs."
         ];
-        const level3Words = ["loop", "event", "callback"];
+        const level3Words = [
+            "loop", "event", "callback", "array", "object", 
+            "string", "number", "boolean", "promise", "async",
+            "module", "import", "export", "class", "method",
+            "render", "state", "props", "route", "style"
+        ];
 
         const wordInput = document.getElementById("wordInput");
         const wordDisplay = document.getElementById("wordDisplay");
@@ -364,17 +396,17 @@
             
             let currentWord = words[currentWordIndex];
             movingWord.textContent = currentWord;
-        wordDisplay.textContent = currentWord;
-        
-        // Make the word larger and more visible
-        movingWord.style.fontSize = "2rem";
-        movingWord.style.fontWeight = "bold";
-        movingWord.style.color = "#7C3AED"; // Purple color for better visibility
+            wordDisplay.textContent = currentWord;
+            
+            // Calculate available width for word placement
+            const containerWidth = scrollBox.clientWidth;
+            const wordWidth = movingWord.offsetWidth;
+            const maxX = containerWidth - wordWidth - 40; // Add extra padding
             
             let randomX;
             do {
-            randomX = Math.random() * (scrollBox.clientWidth - 100); // Give more space for the word
-        } while (Math.abs(randomX - lastXPosition) < 100); 
+                randomX = Math.max(20, Math.min(maxX, Math.random() * (containerWidth - wordWidth - 40)));
+            } while (Math.abs(randomX - lastXPosition) < 100);
             
             lastXPosition = randomX;
             movingWord.style.left = randomX + "px";
@@ -382,45 +414,46 @@
             
             let position = 0;
             animationInterval = setInterval(() => {
-            position += 1;
+                position += 1;
                 movingWord.style.top = position + "px";
-            
-                if (position > scrollBox.clientHeight) {
+                
+                const maxPosition = scrollBox.clientHeight - movingWord.offsetHeight - 10;
+                if (position > maxPosition) {
                     clearInterval(animationInterval);
-                const accuracy = (correctCount / totalWords * 100).toFixed(2);
-                
-                // Update best scores for Level 3
-                bestScores.level3 = {
-                    score: correctCount,
-                    total: totalWords,
-                    percentage: accuracy
-                };
-                
-                scoreDisplay.innerHTML = `
-                    <div style="font-size: 1.5rem; margin-bottom: 1rem;">
-                        Game Over!
-                    </div>
-                    <div style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">
-                        Your Score: ${correctCount}/${totalWords} (${accuracy}%)
-                    </div>
-                    <div style="color: #f44336; font-size: 1.2rem; margin-top: 1rem;">
-                        The word went below the box! Try again!
-                    </div>
-                `;
-                
-                // Update the accumulative scores
-                updateBestScores();
-                
-                // Reset the game display but keep the score
-                wordDisplay.textContent = "Press a button to start a level";
-                wordInput.value = "";
-                wordInput.disabled = true;
-                scrollBox.style.display = "none";
-                clearInterval(animationInterval);
-                
-                return;
-            }
-        }, 50);
+                    const accuracy = (correctCount / totalWords * 100).toFixed(2);
+                    
+                    // Update best scores for Level 3
+                    bestScores.level3 = {
+                        score: correctCount,
+                        total: totalWords,
+                        percentage: accuracy
+                    };
+                    
+                    scoreDisplay.innerHTML = `
+                        <div style="font-size: 1.5rem; margin-bottom: 1rem;">
+                            Game Over!
+                        </div>
+                        <div style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">
+                            Your Score: ${correctCount}/${totalWords} (${accuracy}%)
+                        </div>
+                        <div style="color: #f44336; font-size: 1.2rem; margin-top: 1rem;">
+                            The word went below the box! Try again!
+                        </div>
+                    `;
+                    
+                    // Update the accumulative scores
+                    updateBestScores();
+                    
+                    // Reset the game display but keep the score
+                    wordDisplay.textContent = "Press a button to start a level";
+                    wordInput.value = "";
+                    wordInput.disabled = true;
+                    scrollBox.style.display = "none";
+                    clearInterval(animationInterval);
+                    
+                    return;
+                }
+            }, 50);
         }
 
         wordInput.addEventListener("keydown", (event) => {

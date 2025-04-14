@@ -23,8 +23,8 @@
 <style>
 .game-container {
     max-width: 800px;
-    margin: 8rem auto 4rem;
-    padding: 2rem;
+    margin: 6rem auto 2rem;
+    padding: 1rem;
     background: var(--card-background);
     border-radius: 1.5rem;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
@@ -32,12 +32,12 @@
 }
 
 .game-area {
-    width: 600px;
-    height: 400px;
-    margin: 20px auto;
-    background: #f8f5ff;  /* Light purple tint */
+    width: 100%;
+    padding-bottom: 66.67%; /* 3:2 aspect ratio */
+    margin: 1rem auto;
+    background: #f8f5ff;
     border: 2px solid #333;
-    border-radius: 10px;
+    border-radius: 1rem;
     position: relative;
     overflow: hidden;
 }
@@ -60,40 +60,47 @@
     transform: translate(-50%, -50%);
     cursor: grab;
     z-index: 2;
-    box-shadow: none;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
     left: 10%;
     top: 50%;
 }
 
 .ball:active {
     cursor: grabbing;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.8);
 }
 
 #startButton {
-    padding: 10px 20px;
-    font-size: 16px;
-    background: #4CAF50;
+    padding: 12px 24px;
+    font-size: 18px;
+    background: linear-gradient(135deg, #8B5CF6, #EC4899);
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 25px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: 80%;
+    max-width: 300px;
+    margin: 1rem auto;
+    display: block;
 }
 
 #startButton:hover {
-    background: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
 }
 
 .game-info {
     display: flex;
-    justify-content: space-between;
-    margin: 1rem 0;
+    justify-content: space-around;
+    margin: 1rem auto;
     font-size: 1.2rem;
+    max-width: 400px;
+    padding: 0 1rem;
 }
 
 #timer {
     color: #2196F3;
-    font-size: 1.2rem;
     font-weight: bold;
 }
 
@@ -111,13 +118,18 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(244, 67, 54, 0.9);
     color: white;
-    padding: 1rem 2rem;
-    border-radius: 0.5rem;
-    font-size: 1.5rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    font-size: 1.2rem;
     z-index: 10;
     display: none;
+    text-align: center;
+    min-width: 200px;
+    max-width: 80%;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .success {
@@ -125,13 +137,19 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(76, 175, 80, 0.8);
+    background: rgba(76, 175, 80, 0.9);
     color: white;
-    padding: 1rem 2rem;
-    border-radius: 0.5rem;
-    font-size: 1.5rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    font-size: 1.2rem;
     z-index: 10;
     display: none;
+    text-align: center;
+    min-width: 200px;
+    max-width: 80%;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    line-height: 1.5;
 }
 
 .floating-score {
@@ -163,6 +181,62 @@
         opacity: 0;
     }
 }
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    .game-container {
+        margin: 5rem auto 1rem;
+        padding: 0.5rem;
+    }
+    
+    .game-area {
+        padding-bottom: 75%; /* Slightly taller on mobile */
+    }
+    
+    .ball {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .game-info {
+        font-size: 1rem;
+    }
+    
+    .success, .game-over {
+        font-size: 1rem;
+        padding: 0.8rem;
+        min-width: 180px;
+        max-width: 90%;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-container {
+        margin: 4rem auto 1rem;
+    }
+    
+    .game-area {
+        padding-bottom: 80%; /* Even taller on small mobile */
+    }
+    
+    .ball {
+        width: 18px;
+        height: 18px;
+    }
+    
+    #startButton {
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+    
+    .success, .game-over {
+        font-size: 0.9rem;
+        padding: 0.7rem;
+        min-width: 160px;
+        max-width: 95%;
+        line-height: 1.4;
+    }
+}
 </style>
 
 <script>
@@ -184,12 +258,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const SMOOTH_CHECK_INTERVAL = 100; // Check every 100ms
 
     // Set canvas size to match game area
-    function resizeCanvas() {
-        canvas.width = gameArea.offsetWidth;
-        canvas.height = gameArea.offsetHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    canvas.width = gameArea.offsetWidth;
+    canvas.height = gameArea.offsetHeight;
 
     let isDragging = false;
     let startX, startY;
@@ -200,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let lineY;
     let lineStartX;
     let lineEndX;
-    let lineThickness = 15;
+    let lineThickness = 24;
     let linePath = [];
     let linePoints = [];
     let currentLevel = 1;
@@ -252,16 +322,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Draw finish point (red circle) at the exact end of the line
         const lastPoint = linePoints[linePoints.length - 1];
         ctx.beginPath();
-        ctx.arc(lastPoint.x, lastPoint.y, 12, 0, Math.PI * 2);
+        ctx.arc(lastPoint.x, lastPoint.y, lineThickness * 0.75, 0, Math.PI * 2); // Scale finish point with line thickness
         ctx.fillStyle = '#f44336';
         ctx.fill();
         
-        // Add text labels
-        ctx.font = '16px Arial';
+        // Add text labels with adjusted positioning
+        ctx.font = 'bold 16px Arial';
         ctx.fillStyle = '#333';
         ctx.textAlign = 'center';
-        ctx.fillText('START', lineStartX, lineY - 30);
-        ctx.fillText('FINISH', lastPoint.x, lastPoint.y - 30);
+        ctx.fillText('START', linePoints[0].x, linePoints[0].y - lineThickness * 1.5);
+        ctx.fillText('FINISH', lastPoint.x, lastPoint.y - lineThickness * 1.5);
     }
 
     function showFloatingScore(points, x, y, color = '#4CAF50') {
@@ -318,9 +388,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const now = Date.now();
         if (now - lastCheckTime >= SMOOTH_CHECK_INTERVAL) {
             // Check if movement is smooth (close to the line)
-            if (minDistance <= lineThickness / 3) { // Very close to the line
+            if (minDistance <= lineThickness * 0.5) { // Increased tolerance for smooth movement
                 smoothMovementPoints++;
-                if (smoothMovementPoints % 5 === 0) { // Every 5 smooth movements
+                if (smoothMovementPoints % 5 === 0) {
                     streakMultiplier = Math.min(streakMultiplier + 0.1, 3.0);
                     const bonus = Math.round(2 * streakMultiplier);
                     updateScore(bonus, ballX, ballY - 20, '#2196F3');
@@ -344,8 +414,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Make collision detection more forgiving at higher levels
-        const toleranceIncrease = Math.min(10, (currentLevel - 1) * 2);
-        const tolerance = (lineThickness / 2) + toleranceIncrease;
+        const toleranceIncrease = Math.min(15, (currentLevel - 1) * 3); // Increased base tolerance and level scaling
+        const tolerance = (lineThickness * 0.75) + toleranceIncrease; // Increased base tolerance multiplier
         
         // Check if ball is within the adjusted tolerance
         if (minDistance > tolerance) {
@@ -428,22 +498,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const totalBonus = levelBonus + timeBonus;
         updateScore(totalBonus, 0, 0, '#4CAF50');
         
-        // Display success message with score breakdown
-        const scoreMessage = `Level ${currentLevel} Complete!\n` +
-                           `Level Bonus: ${levelBonus}\n` +
-                           `Time Bonus: ${timeBonus}\n` +
-                           `Total Score: ${currentScore}`;
-        
-        statusElement.textContent = scoreMessage;
-        statusElement.style.display = 'block';
-        
-        // Stop the timer
-        clearInterval(timerInterval);
-        
-        // Create success message
+        // Create success message with more concise formatting
         const successDiv = document.createElement('div');
         successDiv.className = 'success';
-        successDiv.innerHTML = scoreMessage.replace(/\n/g, '<br>');
+        
+        // Format the message with line breaks and spans for styling
+        const formattedMessage = `
+            <strong>Complete!</strong><br>
+            Level Bonus: ${levelBonus}<br>
+            Time Bonus: ${timeBonus}<br>
+            Total Score: ${currentScore}
+        `;
+        
+        successDiv.innerHTML = formattedMessage;
         gameArea.appendChild(successDiv);
         successDiv.style.display = 'block';
         
@@ -478,9 +545,9 @@ document.addEventListener('DOMContentLoaded', function() {
         linePath = [];
         
         // Set up the line boundaries
-        lineStartX = gameArea.offsetWidth * 0.1;  // 10% from the left
-        lineEndX = gameArea.offsetWidth * 0.9;    // 90% from the left
-        lineY = gameArea.offsetHeight * 0.5;      // Middle of the field
+        const lineStartX = gameArea.offsetWidth * 0.1;  // 10% from the left
+        const lineEndX = gameArea.offsetWidth * 0.9;    // 90% from the left
+        const lineY = gameArea.offsetHeight * 0.5;      // Middle of the field
         
         // Calculate maximum safe amplitude based on game area height
         const maxAmplitude = (gameArea.offsetHeight * 0.35); // Use 35% of height as max amplitude
@@ -504,17 +571,14 @@ document.addEventListener('DOMContentLoaded', function() {
             frequency = 0.005;
         } else {
             // More complex waves for higher levels
-            // Scale amplitude with level but cap it at maxAmplitude
             const baseAmplitude = 20 + ((currentLevel - 2) * 8);
             amplitude = Math.min(baseAmplitude, maxAmplitude);
-            
-            // Increase frequency more with level to make waves tighter
             frequency = 0.005 + ((currentLevel - 2) * 0.003);
         }
         
         // Generate control points for smooth curve
         const points = [];
-        const numPoints = Math.max(100, 50 + currentLevel * 10); // More points for higher levels
+        const numPoints = Math.max(100, 50 + currentLevel * 10);
         const step = (lineEndX - lineStartX) / (numPoints - 1);
         
         for (let i = 0; i < numPoints; i++) {
@@ -525,9 +589,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Simple sine wave for level 2
                 y += Math.sin((x - lineStartX) * frequency) * amplitude;
             } else if (currentLevel >= 3) {
-                // Composite wave pattern with tighter waves
+                // Composite wave pattern
                 y += Math.sin((x - lineStartX) * frequency) * amplitude;
-                // Add a second wave component with higher frequency
                 y += Math.sin((x - lineStartX) * frequency * 2) * (amplitude * 0.3);
             }
             
@@ -548,7 +611,7 @@ document.addEventListener('DOMContentLoaded', function() {
         linePath.push(points[0]);
         linePoints.push(points[0]);
         
-        // Generate bezier curves through points with more interpolation points
+        // Generate bezier curves through points
         for (let i = 1; i < points.length - 2; i++) {
             const p0 = points[i - 1];
             const p1 = points[i];
@@ -659,40 +722,57 @@ document.addEventListener('DOMContentLoaded', function() {
 
     startButton.addEventListener('click', startGame);
 
-    ball.addEventListener('mousedown', function(e) {
+    // Add touch event handlers
+    ball.addEventListener('touchstart', handleTouchStart, false);
+    document.addEventListener('touchmove', handleTouchMove, false);
+    document.addEventListener('touchend', handleTouchEnd, false);
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    function handleTouchStart(e) {
         if (!isGameActive) return;
+        e.preventDefault();
         
         isDragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        ballStartX = ball.offsetLeft;
-        ballStartY = ball.offsetTop;
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        
+        // Get the ball's current position relative to the game area
+        const ballRect = ball.getBoundingClientRect();
+        const gameRect = gameArea.getBoundingClientRect();
+        ballStartX = ballRect.left - gameRect.left;
+        ballStartY = ballRect.top - gameRect.top;
         
         // Get initial ball position for line drawing
         const pos = getBallPosition();
         lastX = pos.x - gameArea.getBoundingClientRect().left;
         lastY = pos.y - gameArea.getBoundingClientRect().top;
-    });
+    }
 
-    document.addEventListener('mousemove', function(e) {
+    function handleTouchMove(e) {
         if (!isDragging || !isGameActive) return;
-
+        e.preventDefault();
+        
+        const touch = e.touches[0];
         const gameRect = gameArea.getBoundingClientRect();
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-
+        const dx = touch.clientX - touchStartX;
+        const dy = touch.clientY - touchStartY;
+        
         // Calculate new position
         let newX = ballStartX + dx;
         let newY = ballStartY + dy;
-
+        
         // Keep ball within game area bounds
-        newX = Math.max(0, Math.min(newX, gameArea.offsetWidth - ball.offsetWidth));
-        newY = Math.max(0, Math.min(newY, gameArea.offsetHeight - ball.offsetHeight));
-
+        const ballSize = ball.offsetWidth;
+        newX = Math.max(ballSize/2, Math.min(newX, gameArea.offsetWidth - ballSize/2));
+        newY = Math.max(ballSize/2, Math.min(newY, gameArea.offsetHeight - ballSize/2));
+        
         // Update ball position
-        ball.style.left = newX + 'px';
-        ball.style.top = newY + 'px';
-
+        ball.style.left = (newX * 100 / gameArea.offsetWidth) + '%';
+        ball.style.top = (newY * 100 / gameArea.offsetHeight) + '%';
+        
         // Draw line from last position to current position
         const pos = getBallPosition();
         const currentX = pos.x - gameRect.left;
@@ -703,10 +783,77 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Check if ball is still on the line
         checkBallPosition();
-    });
+    }
 
-    document.addEventListener('mouseup', function() {
+    function handleTouchEnd() {
         isDragging = false;
+    }
+
+    // Mouse event handlers
+    ball.addEventListener('mousedown', handleMouseStart, false);
+    document.addEventListener('mousemove', handleMouseMove, false);
+    document.addEventListener('mouseup', handleMouseEnd, false);
+
+    function handleMouseStart(e) {
+        if (!isGameActive) return;
+        
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        
+        // Get the ball's current position relative to the game area
+        const ballRect = ball.getBoundingClientRect();
+        const gameRect = gameArea.getBoundingClientRect();
+        ballStartX = ballRect.left - gameRect.left;
+        ballStartY = ballRect.top - gameRect.top;
+        
+        // Get initial ball position for line drawing
+        const pos = getBallPosition();
+        lastX = pos.x - gameArea.getBoundingClientRect().left;
+        lastY = pos.y - gameArea.getBoundingClientRect().top;
+    }
+
+    function handleMouseMove(e) {
+        if (!isDragging || !isGameActive) return;
+        
+        const gameRect = gameArea.getBoundingClientRect();
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        
+        // Calculate new position
+        let newX = ballStartX + dx;
+        let newY = ballStartY + dy;
+        
+        // Keep ball within game area bounds
+        const ballSize = ball.offsetWidth;
+        newX = Math.max(ballSize/2, Math.min(newX, gameArea.offsetWidth - ballSize/2));
+        newY = Math.max(ballSize/2, Math.min(newY, gameArea.offsetHeight - ballSize/2));
+        
+        // Update ball position
+        ball.style.left = (newX * 100 / gameArea.offsetWidth) + '%';
+        ball.style.top = (newY * 100 / gameArea.offsetHeight) + '%';
+        
+        // Draw line from last position to current position
+        const pos = getBallPosition();
+        const currentX = pos.x - gameRect.left;
+        const currentY = pos.y - gameRect.top;
+        drawLine(lastX, lastY, currentX, currentY);
+        lastX = currentX;
+        lastY = currentY;
+        
+        // Check if ball is still on the line
+        checkBallPosition();
+    }
+
+    function handleMouseEnd() {
+        isDragging = false;
+    }
+
+    // Update canvas size when window resizes
+    window.addEventListener('resize', function() {
+        canvas.width = gameArea.offsetWidth;
+        canvas.height = gameArea.offsetHeight;
+        drawWaveLine();
     });
 });
 </script>
