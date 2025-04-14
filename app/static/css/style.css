@@ -669,18 +669,67 @@ main {
 /* Responsive Design */
 @media (max-width: 768px) {
     .nav-content {
-        flex-direction: column;
-        gap: 1rem;
+        position: relative;
+        padding-right: 50px; /* Make room for hamburger menu */
+    }
+
+    .logo {
+        margin-right: auto;
+        padding-right: 1rem;
+    }
+
+    .logo-text {
+        font-size: 1.5rem; /* Slightly smaller text on mobile */
+    }
+
+    .hamburger-menu {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
     }
 
     .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
+        position: absolute;
+        top: 100%;
+        right: -2rem; /* Align with container padding */
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        padding: 1rem;
+        border-radius: 0 0 1rem 1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        display: none;
+        width: 100vw;
     }
 
-    .auth-container {
-        margin: 6rem 1rem 2rem;
-        padding: 1.5rem;
+    .nav-links.active {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .nav-links a {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-text {
+        font-size: 1.25rem; /* Even smaller text on very small screens */
+    }
+
+    .logo-icon {
+        font-size: 1.5rem;
+    }
+
+    .header-avatar {
+        width: 48px;
+        height: 48px;
+    }
+
+    .nav-content {
+        padding-right: 40px; /* Slightly less padding on very small screens */
     }
 }
 
