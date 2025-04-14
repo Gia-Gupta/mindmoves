@@ -7,15 +7,10 @@
         <h1>Movement Exercise</h1>
         <p class="movement-description">Follow along with this guided exercise video to improve your movement and coordination.</p>
         <div class="video-container">
-            <iframe 
-                width="100%" 
-                height="100%" 
-                src="https://www.youtube.com/embed/nUbtjygADEA" 
-                title="Movement Exercise" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen>
-            </iframe>
+            <div id="player"></div>
+            <button id="custom-play-button" class="play-button-overlay">
+                <i class="fas fa-play"></i>
+            </button>
         </div>
     </div>
 </div>
@@ -45,9 +40,10 @@
     overflow: hidden;
     border-radius: 1rem;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    background: #000;
 }
 
-.video-container iframe {
+#player {
     position: absolute;
     top: 0;
     left: 0;
@@ -55,5 +51,161 @@
     height: 100%;
     border-radius: 1rem;
 }
+
+.play-button-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(124, 58, 237, 0.9);
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.play-button-overlay i {
+    color: white;
+    font-size: 2rem;
+    margin-left: 5px;
+}
+
+.play-button-overlay:hover {
+    background: rgba(124, 58, 237, 1);
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .movement-container {
+        margin: 6rem auto 2rem;
+        padding: 1.5rem;
+        border-radius: 1rem;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .movement-description {
+        font-size: 1rem;
+        margin: 1rem 0 1.5rem;
+        padding: 0 0.5rem;
+    }
+
+    .video-container {
+        border-radius: 0.75rem;
+        margin: 0 -0.5rem;
+    }
+
+    #player {
+        border-radius: 0.75rem;
+    }
+
+    .play-button-overlay {
+        width: 60px;
+        height: 60px;
+    }
+
+    .play-button-overlay i {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .movement-container {
+        margin: 5rem auto 1.5rem;
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .movement-description {
+        font-size: 0.95rem;
+        margin: 0.75rem 0 1.25rem;
+    }
+
+    .video-container {
+        border-radius: 0.5rem;
+        margin: 0 -0.25rem;
+    }
+
+    #player {
+        border-radius: 0.5rem;
+    }
+
+    .play-button-overlay {
+        width: 50px;
+        height: 50px;
+    }
+
+    .play-button-overlay i {
+        font-size: 1.25rem;
+    }
+}
 </style>
+
+<script>
+// Load YouTube API
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+var player;
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+        videoId: 'nUbtjygADEA',
+        playerVars: {
+            'playsinline': 1,
+            'controls': 1,
+            'rel': 0,
+            'showinfo': 0,
+            'fs': 1
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
+}
+
+function onPlayerReady(event) {
+    // Show custom play button
+    document.getElementById('custom-play-button').style.display = 'flex';
+}
+
+function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.PLAYING) {
+        // Hide custom play button when video starts
+        document.getElementById('custom-play-button').style.display = 'none';
+        
+        // Request fullscreen
+        var iframe = document.querySelector('#player');
+        if (iframe.requestFullscreen) {
+            iframe.requestFullscreen();
+        } else if (iframe.webkitRequestFullscreen) {
+            iframe.webkitRequestFullscreen();
+        } else if (iframe.mozRequestFullScreen) {
+            iframe.mozRequestFullScreen();
+        } else if (iframe.msRequestFullscreen) {
+            iframe.msRequestFullscreen();
+        }
+    }
+}
+
+// Custom play button click handler
+document.getElementById('custom-play-button').addEventListener('click', function() {
+    player.playVideo();
+});
+</script>
 {% endblock %} 
