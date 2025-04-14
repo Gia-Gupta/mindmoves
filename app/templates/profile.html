@@ -5,8 +5,38 @@
     <div class="profile-container">
         <h1>Your Profile</h1>
         <div class="profile-info">
-            <p>Username: {{ session.get('username') }}</p>
-            <p>Email: {{ session.get('email') }}</p>
+            <p>Username: {{ user.username }}</p>
+            <p>Email: {{ user.email }}</p>
+        </div>
+
+        <div class="game-history">
+            <h2>Recent Game History</h2>
+            {% if game_history %}
+            <div class="game-history-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Game</th>
+                            <th>Score</th>
+                            <th>Total</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for game in game_history %}
+                        <tr>
+                            <td>{{ game.game_type }}</td>
+                            <td>{{ game.score }}</td>
+                            <td>{{ game.total }}</td>
+                            <td>{{ game.date }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="no-games">No games played yet. Try out some games to see your history!</p>
+            {% endif %}
         </div>
 
         <div class="avatar-section">
@@ -92,23 +122,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="game-history">
-            <h2>Your Game History</h2>
-            <div class="history-list">
-                {% for score in game_history %}
-                <div class="score-card">
-                    <div class="score-info">
-                        <h3>{{ score.game_type }}</h3>
-                        <p>{{ score.timestamp.strftime('%Y-%m-%d %H:%M:%S') if score.timestamp else score.date }}</p>
-                    </div>
-                    <div class="score-value">
-                        Score: {{ score.score }}/{{ score.total if score.total else 100 }} ({{ "%.1f"|format((score.score/(score.total if score.total else 100))*100) }}%)
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
     </div>
 </div>
 
@@ -140,6 +153,53 @@
     padding: 1.5rem;
     background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(244, 114, 182, 0.05));
     border-radius: 1rem;
+}
+
+.game-history {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(244, 114, 182, 0.05));
+    border-radius: 1rem;
+}
+
+.game-history h2 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.game-history-table {
+    overflow-x: auto;
+}
+
+.game-history-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.game-history-table th,
+.game-history-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+}
+
+.game-history-table th {
+    background: rgba(124, 58, 237, 0.1);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.game-history-table tr:hover {
+    background: rgba(124, 58, 237, 0.05);
+}
+
+.no-games {
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin: 2rem 0;
 }
 
 .avatar-section {
@@ -252,75 +312,6 @@
 .modal-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.game-history {
-    margin-top: 2rem;
-}
-
-.history-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.score-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(244, 114, 182, 0.05));
-    border-radius: 0.75rem;
-    transition: transform 0.2s ease;
-}
-
-.score-card:hover {
-    transform: translateX(5px);
-}
-
-.score-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.score-info h3 {
-    font-weight: bold;
-    color: var(--primary-color);
-}
-
-.score-info p {
-    font-size: 0.9rem;
-    color: var(--text-color);
-    opacity: 0.8;
-}
-
-.score-value {
-    font-weight: bold;
-    color: var(--primary-color);
-}
-
-.success-message {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    animation: slideIn 0.3s ease-out;
-    z-index: 1000;
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
 }
 </style>
 

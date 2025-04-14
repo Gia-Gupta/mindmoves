@@ -215,9 +215,9 @@ def profile():
     user = get_user(username)
     if user:
         game_history = user.get('game_history', [])
-        sorted_game_history = sorted(game_history, key=lambda x: x['date'], reverse=True)
+        sorted_game_history = sorted(game_history, key=lambda x: x['date'], reverse=True)[:20]  # Limit to 20 most recent games
         user['avatar'] = user.get('avatar', 'WordNinja.jpg')  # Default to WordNinja if no avatar set
-        return render_template('profile.html', user=user, game_history=sorted_game_history)[:20]
+        return render_template('profile.html', user=user, game_history=sorted_game_history)
     else:
         flash('User not found', 'error')
         return redirect(url_for('main.index'))
