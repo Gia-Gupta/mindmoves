@@ -6,6 +6,7 @@ from datetime import datetime
 
 @bp.route("/")
 def index():
+    """Home page route."""
     user = None
     if session.get('username'):
         user = get_user(session['username'])
