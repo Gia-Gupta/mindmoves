@@ -1078,6 +1078,8 @@
                 e.preventDefault(); // Prevent scrolling while playing
                 e.stopPropagation();
                 
+                if (!this.isGameRunning || shape.dataset.clicked === 'true') return;
+                
                 const rect = this.gameArea.getBoundingClientRect();
                 const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
                 const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
@@ -1113,12 +1115,13 @@
                 }
                 
                 if (isClickInShape) {
+                    shape.dataset.clicked = 'true';
                     if (shapeType === 'circle') {
-                        shape.dataset.clicked = 'true';
                         this.handleHit(shape);
                     } else {
                         this.handleShapeMiss(shape);
                     }
+                    e.stopPropagation(); // Prevent the click from bubbling to gameArea
                 }
             };
 
@@ -1268,7 +1271,12 @@
         }
 
         handleMiss(e) {
-            if (!this.isGameRunning) return;
+            if (!this.isGameRunning || e.target.classList.contains('circle') || 
+                e.target.classList.contains('square') || 
+                e.target.classList.contains('triangle') || 
+                e.target.classList.contains('diamond')) {
+                return;
+            }
             
             const rect = this.gameArea.getBoundingClientRect();
             const x = e.clientX - rect.left;

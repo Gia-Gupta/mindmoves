@@ -318,9 +318,39 @@
                     "score": 6,
                     "total": 10,
                     "date": "2025-04-13 21:30:17"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 100,
+                    "total": 100,
+                    "date": "2025-04-13 22:15:32"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 170,
+                    "total": 100,
+                    "date": "2025-04-13 22:15:55"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 280,
+                    "total": 100,
+                    "date": "2025-04-13 22:16:02"
+                },
+                {
+                    "game_type": "Line Balance Master",
+                    "score": 380,
+                    "total": 100,
+                    "date": "2025-04-13 22:16:07"
+                },
+                {
+                    "game_type": "Speed Game",
+                    "score": 2200,
+                    "total": 48,
+                    "date": "2025-04-13 22:16:55"
                 }
             ],
-            "avatar": "Leprechaun.jpg"
+            "avatar": "WordNinja.jpg"
         },
         {
             "first_name": "Derek",
