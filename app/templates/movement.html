@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Movement{% endblock %}
+{% block header_title %}Movement Exercise{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="movement-container">
+        <h1>Movement Exercise</h1>
+        <p class="movement-description">Follow along with this guided exercise video to improve your movement and coordination.</p>
+        <div class="video-container">
+            <iframe 
+                width="100%" 
+                height="100%" 
+                src="https://www.youtube.com/embed/nUbtjygADEA" 
+                title="Movement Exercise" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+</div>
+
+<style>
+.movement-container {
+    max-width: 800px;
+    margin: 8rem auto 4rem;
+    padding: 2rem;
+    background: var(--card-background);
+    border-radius: 1.5rem;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.movement-description {
+    color: var(--text-color);
+    font-size: 1.2rem;
+    margin: 1.5rem 0 2.5rem;
+    line-height: 1.6;
+}
+
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 1rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 1rem;
+}
+</style>
+{% endblock %} 

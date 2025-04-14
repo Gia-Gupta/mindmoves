@@ -72,6 +72,15 @@ def dexterity():
             user['avatar'] = user.get('avatar', 'wordNinja.jpg')
     return render_template("dexterity.html", user=user)
 
+@bp.route("/movement")
+def movement():
+    user = None
+    if session.get('username'):
+        user = get_user(session['username'])
+        if user:
+            user['avatar'] = user.get('avatar', 'WordNinja.jpg')
+    return render_template("movement.html", user=user)
+
 @bp.route("/precision")
 def precision():
     user = None
