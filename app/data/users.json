@@ -168,6 +168,24 @@
                     "score": 7270,
                     "total": 53,
                     "date": "2025-04-13 18:43:14"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 100,
+                    "total": 100,
+                    "date": "2025-04-13 18:59:09"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 200,
+                    "total": 200,
+                    "date": "2025-04-13 18:59:20"
+                },
+                {
+                    "game_type": "Memory Master",
+                    "score": 300,
+                    "total": 300,
+                    "date": "2025-04-13 18:59:31"
                 }
             ],
             "avatar": "cuterobot.jpg"
