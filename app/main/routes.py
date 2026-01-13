@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash, session, jsonify
+from flask import render_template, request, redirect, url_for, flash, session, jsonify, current_app
 from app.main import bp
 from app.auth import register_user, login_user, logout_user, verify_secret_answer, update_user_password, get_user, login_required, get_user_game_history, verify_password, save_game_score
 import json
@@ -18,31 +18,21 @@ def index():
 def about():
     user = None
     if session.get('username'):
-        try:
-            with open('app/data/users.json', 'r') as f:
-                data = json.load(f)
-                users = data['users']
-                user = next((user for user in users if user['username'] == session.get('username')), None)
-                if user:
-                    user['avatar'] = user.get('avatar', 'WordNinja.jpg')
-        except FileNotFoundError:
-            pass
+        user = get_user(session['username'])
+        if user:
+            user['avatar'] = user.get('avatar', 'WordNinja.jpg')
     return render_template('about.html', user=user)
 
 @bp.route("/history")
 @login_required
 def history():
     username = session.get('username')
-    try:
-        with open('app/data/users.json', 'r') as f:
-            data = json.load(f)
-            users = data['users']
-            user = next((user for user in users if user['username'] == username), None)
-            if user:
-                game_history = user.get('game_history', [])
-                user['avatar'] = user.get('avatar', 'wordNinja.jpg')
-                return render_template('history.html', user=user, game_history=game_history)
-    except FileNotFoundError:
+    user = get_user(username)
+    if user:
+        game_history = user.get('game_history', [])
+        user['avatar'] = user.get('avatar', 'wordNinja.jpg')
+        return render_template('history.html', user=user, game_history=game_history)
+    else:
         flash('Error loading user data', 'error')
     return redirect(url_for('main.index'))
 
@@ -235,36 +225,11 @@ def save_score():
     if not all([game_type, score is not None, total is not None]):
         return jsonify({'error': 'Missing required fields'}), 400
 
-    try:
-        with open('app/data/users.json', 'r') as f:
-            data = json.load(f)
-            users = data['users']
-    except FileNotFoundError:
-        return jsonify({'error': 'Users file not found'}), 500
-
     username = session.get('username')
-    user = next((user for user in users if user['username'] == username), None)
-    if not user:
-        return jsonify({'error': 'User not found'}), 404
-
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    score_data = {
-        'game_type': game_type,
-        'score': score,
-        'total': total,
-        'date': current_time  # Using 'date' to be consistent with existing records
-    }
-
-    if 'game_history' not in user:
-        user['game_history'] = []
-    user['game_history'].append(score_data)
-
-    try:
-        with open('app/data/users.json', 'w') as f:
-            json.dump({'users': users}, f, indent=4)
+    if save_game_score(username, game_type, score, total):
         return jsonify({'message': 'Score saved successfully'}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    else:
+        return jsonify({'error': 'Failed to save score'}), 500
 
 @bp.route("/update_avatar", methods=['POST'])
 def update_avatar():
@@ -277,20 +242,20 @@ def update_avatar():
     if not avatar_name:
         return jsonify({'error': 'Avatar name is required'}), 400
 
-    try:
-        with open('app/data/users.json', 'r') as f:
-            data = json.load(f)
-            users = data['users']
-    except FileNotFoundError:
-        return jsonify({'error': 'Users file not found'}), 500
-
     username = session.get('username')
+    user = get_user(username)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    # Update avatar using auth module's save_users function
+    from app.auth import load_users, save_users
+    users = load_users()
     user_found = False
     
     # Find and update the user in the array
-    for user in users:
-        if user['username'] == username:
-            user['avatar'] = avatar_name
+    for u in users:
+        if u['username'] == username:
+            u['avatar'] = avatar_name
             user_found = True
             break
 
@@ -298,8 +263,7 @@ def update_avatar():
         return jsonify({'error': 'User not found'}), 404
 
     try:
-        with open('app/data/users.json', 'w') as f:
-            json.dump(data, f, indent=4)
+        save_users(users)
         return jsonify({'message': 'Avatar updated successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
